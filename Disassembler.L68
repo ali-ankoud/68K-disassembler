@@ -1,0 +1,103 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 5/17/2023 7:12:46 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Disassembler Snippet
+00000000                             3  * Written by : Ben Schipunov (ARM Cortex Companions)
+00000000                             4  * Date       : 5/15/2023
+00000000                             5  * Description: Ben Schipunov contribution to the disassembler
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000                             8  STARTER
+00001000                             9          ORG     $1000
+00001000                            10          
+00001000  43F9 000010D6             11  START   LEA     ASTART,A1
+00001006  103C 000E                 12          MOVE.B  #14,D0
+0000100A  4E4F                      13          TRAP    #15
+0000100C                            14  
+0000100C  103C 0002                 15          MOVE.B  #2,D0
+00001010  4E4F                      16          TRAP    #15
+00001012                            17          
+00001012  4EB9 00001038             18          JSR     PSTART
+00001018  2641                      19          MOVE.L  D1,A3
+0000101A                            20          
+0000101A  43F9 000010ED             21          LEA     AEND,A1
+00001020  103C 000E                 22          MOVE.B  #14,D0
+00001024  4E4F                      23          TRAP    #15
+00001026                            24          
+00001026  103C 0002                 25          MOVE.B  #2,D0
+0000102A  4E4F                      26          TRAP    #15
+0000102C                            27          
+0000102C  4EB9 00001038             28          JSR     PSTART
+00001032  2841                      29          MOVE.L  D1,A4
+00001034                            30          
+00001034  6000 0046                 31          BRA     END
+00001038                            32          
+00001038                            33  
+00001038                            34  PSTART                      *PSTART: Initialize variables involved in parsing
+00001038  123C 0000                 35          MOVE.B  #0,D1       * [D1] parse output
+0000103C  143C 0008                 36          MOVE.B  #8,D2       * [D2] max letter counter (size of longword)
+00001040                            37          
+00001040                            38  PSTEP                       *PSTEP: Step in parsing for loop
+00001040  1019                      39          MOVE.B  (A1)+,D0    *Read next byte from A1
+00001042  B03C 0000                 40          CMP.B   #0,D0       *Check if reached end of string input
+00001046  6700 002A                 41          BEQ     PDONE       *Break the for loop if reached end
+0000104A  E989                      42          LSL.L   #4,D1       *Logical shift left by 4 bits to insert next hex character
+0000104C  B03C 003A                 43          CMP.B   #58,D0      *Distinguish between letter and number
+00001050  6D00 000E                 44          BLT     PNUM        *Handle number
+00001054  6000 0002                 45          BRA     PHEX        *Handle hex letter
+00001058                            46  
+00001058  0400 0037                 47  PHEX    SUB.B   #55,D0      *ASCII value subtracted by 55 to match hex value
+0000105C  6000 0006                 48          BRA     PSTEP2
+00001060                            49  
+00001060  0400 0030                 50  PNUM    SUB.B   #48,D0      *ASCII value subtracted by 48 to match hex value
+00001064                            51          
+00001064  D280                      52  PSTEP2  ADD.L   D0,D1       *Append hex char to parse output
+00001066  5302                      53          SUBQ.B  #1,D2       *Decrement the counter
+00001068  B43C 0000                 54          CMP.B   #0,D2       *Compare if we reached max count
+0000106C  6700 0004                 55          BEQ     PDONE       *Complete parsing
+00001070  60CE                      56          BRA     PSTEP       *Or else continue loop
+00001072                            57  
+00001072  4E75                      58  PDONE   RTS
+00001074                            59  
+00001074  103C 0000                 60  VINPUT  MOVE.B  #0,D0       *Temporary line to allow compiling
+00001078                            61  
+00001078  103C 0000                 62  PROC    MOVE.B  #0,D0       *Temporary line to allow compiling
+0000107C                            63  
+0000107C                            64  
+0000107C  103C 0009                 65  END     MOVE.B  #9,D0
+00001080  4E4F                      66          TRAP    #15
+00001082                            67  
+00001082  =0000000D                 68  CR      EQU     $0D
+00001082  =0000000A                 69  LF      EQU     $0A
+00001082                            70  
+00001082= 54 68 69 73 20 69 ...     71  INTRO   DC.B    'This is a program that will disassemble machine code from a start to an end address!'
+000010D6= 45 6E 74 65 72 20 ...     72  ASTART  DC.B    'Enter start address: $',0
+000010ED= 45 6E 74 65 72 20 ...     73  AEND    DC.B    'Enter end address:   $',0
+00001104                            74  
+00001104                            75      END    START        ; last line of so
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+AEND                10ED
+ASTART              10D6
+CR                  D
+END                 107C
+INTRO               1082
+LF                  A
+PDONE               1072
+PHEX                1058
+PNUM                1060
+PROC                1078
+PSTART              1038
+PSTEP               1040
+PSTEP2              1064
+START               1000
+STARTER             0
+VINPUT              1074

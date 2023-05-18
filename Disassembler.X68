@@ -19,14 +19,14 @@ START                       *START: Start code
         JSR     PSTART      *Parse string #1
         MOVE.L  D1,A3
         
-        LEA     AEND,A1     *Input prompt text #1
+        LEA     AEND,A1     *Input prompt text #2
         MOVE.B  #14,D0
         TRAP    #15
         
-        MOVE.B  #2,D0       *String prompt #1
+        MOVE.B  #2,D0       *String prompt #2
         TRAP    #15
         
-        JSR     PSTART      *Parse string #1
+        JSR     PSTART      *Parse string #2
         MOVE.L  D1,A4
         
         BRA     VINPUT      *Verify inputs

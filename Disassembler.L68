@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 5/17/2023 8:56:34 PM
+Created On: 5/17/2023 9:11:42 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Snippet
@@ -12,88 +12,101 @@ Created On: 5/17/2023 8:56:34 PM
 00000000                             8  STARTER
 00001000                             9          ORG     $1000
 00001000                            10          
-00001000  43F9 00001102             11  START   LEA     ASTART,A1
-00001006  103C 000E                 12          MOVE.B  #14,D0
-0000100A  4E4F                      13          TRAP    #15
-0000100C                            14  
-0000100C  103C 0002                 15          MOVE.B  #2,D0
-00001010  4E4F                      16          TRAP    #15
-00001012                            17          
-00001012  4EB9 00001038             18          JSR     PSTART
-00001018  2641                      19          MOVE.L  D1,A3
-0000101A                            20          
-0000101A  43F9 00001119             21          LEA     AEND,A1
-00001020  103C 000E                 22          MOVE.B  #14,D0
-00001024  4E4F                      23          TRAP    #15
-00001026                            24          
-00001026  103C 0002                 25          MOVE.B  #2,D0
-0000102A  4E4F                      26          TRAP    #15
-0000102C                            27          
-0000102C  4EB9 00001038             28          JSR     PSTART
-00001032  2841                      29          MOVE.L  D1,A4
-00001034                            30          
-00001034  6000 0072                 31          BRA     END
-00001038                            32          
-00001038                            33  
-00001038                            34  PSTART                      *PSTART: Initialize variables involved in parsing
-00001038  123C 0000                 35          MOVE.B  #0,D1       * [D1] parse output
-0000103C  143C 0008                 36          MOVE.B  #8,D2       * [D2] max letter counter (size of longword)
-00001040                            37          
-00001040                            38  PSTEP                       *PSTEP: Step in parsing for loop
-00001040  1019                      39          MOVE.B  (A1)+,D0    *Read next byte from A1
-00001042  B03C 0000                 40          CMP.B   #0,D0       *Check if reached end of string input
-00001046  6700 004A                 41          BEQ     PDONE       *Break the for loop if reached end
-0000104A  E989                      42          LSL.L   #4,D1       *Logical shift left by 4 bits to insert next hex character
-0000104C  B03C 003A                 43          CMP.B   #58,D0      *Distinguish between letter and number
-00001050  6D00 001E                 44          BLT     PNUM        *Handle number
-00001054  6000 0002                 45          BRA     PHEX        *Handle hex letter
-00001058                            46  
-00001058  0400 0037                 47  PHEX    SUB.B   #55,D0      *ASCII value subtracted by 55 to match hex value
-0000105C  B03C 000F                 48          CMP.B   #15,D0
-00001060  6E00 0006                 49          BGT     PCAPS
-00001064  6000 000E                 50          BRA     PSTEP2
-00001068                            51       
-00001068  0400 0020                 52  PCAPS   SUB.B   #32,D0
-0000106C  6000 0006                 53          BRA     PSTEP2
-00001070                            54  
-00001070  0400 0030                 55  PNUM    SUB.B   #48,D0      *ASCII value subtracted by 48 to match hex value
-00001074                            56          
-00001074  B03C 000F                 57  PSTEP2  CMP.B   #15,D0      *If D0 is not in between 0 and 15 inclusively, throw an error
-00001078  6E00 001E                 58          BGT     VERR2
-0000107C  B03C 0000                 59          CMP.B   #0,D0
-00001080  6D00 0016                 60          BLT     VERR2
-00001084  D280                      61          ADD.L   D0,D1       *Append hex char to parse output
-00001086  5302                      62          SUBQ.B  #1,D2       *Decrement the counter
-00001088  B43C 0000                 63          CMP.B   #0,D2       *Compare if we reached max count
-0000108C  6700 0004                 64          BEQ     PDONE       *Complete parsing
-00001090  60AE                      65          BRA     PSTEP       *Or else continue loop
-00001092                            66  
-00001092  4E75                      67  PDONE   RTS
-00001094                            68  
-00001094  103C 0000                 69  VINPUT  MOVE.B  #0,D0       *Temporary line to allow compiling
-00001098                            70  
-00001098  43F9 00001168             71  VERR2   LEA     VERR2M,A1
-0000109E  103C 000E                 72          MOVE.B  #14,D0
-000010A2  4E4F                      73          TRAP    #15
-000010A4                            74  
-000010A4                            75  
-000010A4  103C 0000                 76  PROC    MOVE.B  #0,D0       *Temporary line to allow compiling
-000010A8                            77  
-000010A8                            78  
-000010A8  103C 0009                 79  END     MOVE.B  #9,D0
-000010AC  4E4F                      80          TRAP    #15
-000010AE                            81  
-000010AE  =0000000D                 82  CR      EQU     $0D
-000010AE  =0000000A                 83  LF      EQU     $0A
-000010AE                            84  
-000010AE= 54 68 69 73 20 69 ...     85  INTRO   DC.B    'This is a program that will disassemble machine code from a start to an end address!'
-00001102= 45 6E 74 65 72 20 ...     86  ASTART  DC.B    'Enter start address: $',0
-00001119= 45 6E 74 65 72 20 ...     87  AEND    DC.B    'Enter end address:   $',0
-00001130                            88  
-00001130= 45 52 52 4F 52 3A ...     89  VERR1M DC.B    'ERROR: End address must be greater than start address',CR,LF,0
-00001168= 45 52 52 4F 52 3A ...     90  VERR2M DC.B    'ERROR: Invalid input',CR,LF,0
-0000117F                            91  
-0000117F                            92      END    START        ; last line of so
+00001000                            11  START                       *START: Start code
+00001000  43F9 0000111F             12          LEA     ASTART,A1   *Input prompt text #1
+00001006  103C 000E                 13          MOVE.B  #14,D0      
+0000100A  4E4F                      14          TRAP    #15
+0000100C                            15  
+0000100C  103C 0002                 16          MOVE.B  #2,D0       *String prompt #1
+00001010  4E4F                      17          TRAP    #15
+00001012                            18          
+00001012  4EB9 00001038             19          JSR     PSTART      *Parse string #1
+00001018  2641                      20          MOVE.L  D1,A3
+0000101A                            21          
+0000101A  43F9 00001136             22          LEA     AEND,A1     *Input prompt text #1
+00001020  103C 000E                 23          MOVE.B  #14,D0
+00001024  4E4F                      24          TRAP    #15
+00001026                            25          
+00001026  103C 0002                 26          MOVE.B  #2,D0       *String prompt #1
+0000102A  4E4F                      27          TRAP    #15
+0000102C                            28          
+0000102C  4EB9 00001038             29          JSR     PSTART      *Parse string #1
+00001032  2841                      30          MOVE.L  D1,A4
+00001034                            31          
+00001034  6000 005E                 32          BRA     VINPUT      *Verify inputs
+00001038                            33          
+00001038                            34          
+00001038                            35          
+00001038                            36          
+00001038                            37          
+00001038                            38  
+00001038                            39  PSTART                      *PSTART: Initialize variables involved in parsing
+00001038  123C 0000                 40          MOVE.B  #0,D1       * [D1] parse output
+0000103C  143C 0008                 41          MOVE.B  #8,D2       * [D2] max letter counter (size of longword)
+00001040                            42          
+00001040                            43  PSTEP                       *PSTEP: Step in parsing for loop
+00001040  1019                      44          MOVE.B  (A1)+,D0    *Read next byte from A1
+00001042  B03C 0000                 45          CMP.B   #0,D0       *Check if reached end of string input
+00001046  6700 004A                 46          BEQ     PDONE       *Break the for loop if reached end
+0000104A  E989                      47          LSL.L   #4,D1       *Logical shift left by 4 bits to insert next hex character
+0000104C  B03C 003A                 48          CMP.B   #58,D0      *Distinguish between letter and number
+00001050  6D00 001E                 49          BLT     PNUM        *Handle number
+00001054  6000 0002                 50          BRA     PHEX        *Handle hex letter
+00001058                            51  
+00001058  0400 0037                 52  PHEX    SUB.B   #55,D0      *ASCII value subtracted by 55 to match hex value
+0000105C  B03C 000F                 53          CMP.B   #15,D0      *Check if ASCII is high for lowercase values
+00001060  6E00 0006                 54          BGT     PCAPS       *Handle lowercase
+00001064  6000 000E                 55          BRA     PSTEP2
+00001068                            56       
+00001068  0400 0020                 57  PCAPS   SUB.B   #32,D0      *32 is difference between uppercase and lowercase ASCII
+0000106C  6000 0006                 58          BRA     PSTEP2
+00001070                            59  
+00001070  0400 0030                 60  PNUM    SUB.B   #48,D0      *ASCII value subtracted by 48 to match hex value
+00001074                            61          
+00001074  B03C 000F                 62  PSTEP2  CMP.B   #15,D0      *If D0 is not in between 0 and 15 inclusively, throw an error
+00001078  6E00 0034                 63          BGT     VERR2
+0000107C  B03C 0000                 64          CMP.B   #0,D0
+00001080  6D00 002C                 65          BLT     VERR2
+00001084  D280                      66          ADD.L   D0,D1       *Append hex char to parse output
+00001086  5302                      67          SUBQ.B  #1,D2       *Decrement the counter
+00001088  B43C 0000                 68          CMP.B   #0,D2       *Compare if we reached max count
+0000108C  6700 0004                 69          BEQ     PDONE       *Complete parsing
+00001090  60AE                      70          BRA     PSTEP       *Or else continue loop
+00001092                            71  
+00001092  4E75                      72  PDONE   RTS
+00001094                            73  
+00001094  B9CB                      74  VINPUT  CMP.L   A3,A4
+00001096  6D00 0006                 75          BLT     VERR1
+0000109A  6000 0022                 76          BRA     PROC
+0000109E                            77  
+0000109E  43F9 0000114D             78  VERR1   LEA     VERR1M,A1
+000010A4  103C 000E                 79          MOVE.B  #14,D0
+000010A8  4E4F                      80          TRAP    #15
+000010AA  6000 0016                 81          BRA     END
+000010AE                            82  
+000010AE  43F9 00001186             83  VERR2   LEA     VERR2M,A1
+000010B4  103C 000E                 84          MOVE.B  #14,D0
+000010B8  4E4F                      85          TRAP    #15
+000010BA  6000 0006                 86          BRA     END
+000010BE                            87  
+000010BE                            88  
+000010BE  103C 0000                 89  PROC    MOVE.B  #0,D0       *Temporary line to allow compiling
+000010C2                            90  
+000010C2                            91  
+000010C2  103C 0009                 92  END     MOVE.B  #9,D0
+000010C6  4E4F                      93          TRAP    #15
+000010C8                            94  
+000010C8  =0000000D                 95  CR      EQU     $0D
+000010C8  =0000000A                 96  LF      EQU     $0A
+000010C8                            97  
+000010C8= 54 68 69 73 20 69 ...     98  INTRO   DC.B    'This is a program that will disassemble machine code from a start to an end address!',CR,LF,0
+0000111F= 45 6E 74 65 72 20 ...     99  ASTART  DC.B    'Enter start address: $',0
+00001136= 45 6E 74 65 72 20 ...    100  AEND    DC.B    'Enter end address:   $',0
+0000114D                           101  
+0000114D= 45 52 52 4F 52 3A ...    102  VERR1M  DC.B    'ERROR: End address must not be less than start address',CR,LF,0
+00001186= 45 52 52 4F 52 3A ...    103  VERR2M  DC.B    'ERROR: Invalid input',CR,LF,0
+0000119D                           104  
+0000119D                           105      END    START        ; last line of so
 
 No errors detected
 No warnings generated
@@ -102,23 +115,24 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-AEND                1119
-ASTART              1102
+AEND                1136
+ASTART              111F
 CR                  D
-END                 10A8
-INTRO               10AE
+END                 10C2
+INTRO               10C8
 LF                  A
 PCAPS               1068
 PDONE               1092
 PHEX                1058
 PNUM                1070
-PROC                10A4
+PROC                10BE
 PSTART              1038
 PSTEP               1040
 PSTEP2              1074
 START               1000
 STARTER             0
-VERR1M              1130
-VERR2               1098
-VERR2M              1168
+VERR1               109E
+VERR1M              114D
+VERR2               10AE
+VERR2M              1186
 VINPUT              1094

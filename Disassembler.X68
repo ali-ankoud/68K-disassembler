@@ -90,19 +90,21 @@ VERR2   LEA     VERR2M,A1
         
 *--------------------------------------------------------------------------------------------------
 
-READLN  SUBA.L  #4,A3
-        SUBA.L  #4,A4
-        MOVE.L  A3,A2
+READLN  MOVE.L  A3,A2
 
-RSTEP   MOVE.L  (A2)+,D2
+RSTEP   MOVE.L  (A2)+,D4
         MOVE.L  A2,D2
-        
+        SUBQ.L  #4,D2
         
         JSR     HEXOUT
         
         LEA     HTM,A1
         MOVE.B  #14,D0
         TRAP    #15
+        
+        MOVEM.L A0-A7/D0-D7,-(SP)
+        JSR     DISASM
+        MOVEM.L (SP)+,A0-A7/D0-D7
         
         *Disassembly code will start here
         *I will organize this area later on
@@ -118,7 +120,7 @@ RSTEP   MOVE.L  (A2)+,D2
         
         
         CMP.L   A2,A4
-        BLE     END
+        BLT     END
         BRA     RSTEP
 
 *--------------------------------------------------------------------------------------------------
@@ -148,6 +150,122 @@ HSTEP2  SUBQ.B  #1,D3
 HDONE   RTS
 
 *--------------------------------------------------------------------------------------------------
+*Each machine code iterated through will be in D4. You can use all data registers as there will be a stack pointer involved
+*You will kind of have to locate the label for the first 4 bits of the machine code. There is a special case where the prefix of 000 can be variable with the size parameter
+
+DISASM                      *DISASM: Disassemble a machine code
+        LSL.L   #1,D4
+        BCS     DS1
+        BRA     DS0
+        
+DS0      
+        LSL.L   #1,D4
+        BCS     DS01
+        BRA     DS00
+
+DS1      
+        LSL.L   #1,D4
+        BCS     DS11
+        BRA     DS10
+
+DS00     
+        ROL.L   #2,D4
+        MOVE.L  D4,D5
+        ANDI.B  #%11,D4
+        CMPI.B  #%00,D4
+        BEQ     DAND
+
+DAND    NOP                 *DAND: Disassembly function serving DAND        
+        
+DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
+        
+
+DMOVEA  NOP
+
+*DS Tier 2
+*--------------------------------------------------------------------------------------------------
+
+DS01    
+        LSL.L   #1,D4
+        BCS     DS011
+        BRA     DS010
+
+DS10    
+        LSL.L   #1,D4
+        BCS     DS101
+        BRA     DS100
+
+DS11    
+        LSL.L   #1,D4
+        BCS     DS111
+        BRA     DS110
+
+*DS Tier 3
+*--------------------------------------------------------------------------------------------------
+
+DS010    
+        LSL.L   #1,D4
+        BCS     DS0101
+        BRA     DS0100
+
+DS011    
+        LSL.L   #1,D4
+        BCS     DS0111
+        BRA     DS0110
+
+DS100    
+        LSL.L   #1,D4
+        BCS     DS1001
+        BRA     DS1000
+
+DS101    
+        LSL.L   #1,D4
+        BCS     DS1011
+        BRA     DS1010
+
+DS110    
+        LSL.L   #1,D4
+        BCS     DS1101
+        BRA     DS1100
+
+DS111    
+        LSL.L   #1,D4
+        BCS     DS1111
+        BRA     DS1110
+
+*DS Tier 4
+*--------------------------------------------------------------------------------------------------
+
+DS0100  NOP
+
+DS0101  NOP
+
+DS0110  NOP
+
+DS0111  NOP
+
+DS1000  NOP
+
+DS1001  NOP
+
+DS1010  NOP
+
+DS1011  NOP
+
+DS1100  NOP
+
+DS1101  NOP
+
+DS1110  NOP
+
+DS1111  NOP
+
+*DS Final
+*--------------------------------------------------------------------------------------------------
+
+DSERR   NOP
+
+DSEND   RTS
 
 END     MOVE.B  #9,D0
         TRAP    #15

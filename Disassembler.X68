@@ -110,9 +110,9 @@ READLN                              *READLN: Start READLN for loop
         MOVE.B  #0,D5               * [D5] Initialize counter to 32 (# lines to pause the screen)
 
 RSTEP                               *RSTEP: 
-        MOVE.L  (A2)+,D4
-        MOVE.L  A2,D2
-        SUBQ.L  #4,D2
+        MOVE.W  (A2)+,D4
+        MOVE.W  A2,D2
+        SUBQ.W  #2,D2
         
         JSR     HEXOUT              *Run printing operation for HEX address
         
@@ -120,9 +120,9 @@ RSTEP                               *RSTEP:
         MOVE.B  #14,D0
         TRAP    #15
         
-        MOVEM.L A0-A7/D0-D7,-(SP)   *Store data to stack
+        MOVEM.L A0-A7/D1-D7,-(SP)   *Store data to stack
         JSR     DISASM              *Run disassembly for current machine code
-        MOVEM.L (SP)+,A0-A7/D0-D7   *Recall data from stack
+        MOVEM.L (SP)+,A0-A7/D1-D7   *Recall data from stack
         
         ADDQ.B  #1,D5       *Increment counter by 1
         CMP.B   #32,D5      *Check if we reached 32 lines
@@ -179,28 +179,29 @@ HDONE   RTS
 *During the processing of each machine code, we skip the first four bits as they have been passed through during the searching system. The exception to this is two bits for machine codes that start with 00.
 
 DISASM                      *DISASM: Disassemble a machine code
-        LSL.L   #1,D4       * Tier 0 binary search
+        LSL.W   #1,D4       * Tier 0 binary search
         BCS     DS1
         BRA     DS0
 
 *DS Tier 1 ----------------------------------------------------------------------------------------
 
 DS0                         *DS0: Tier 1 binary search for 0 side
-        LSL.L   #1,D4       
+        LSL.W   #1,D4       
         BCS     DS01
         BRA     DS00
 
 DS1                         *DS1: Tier 1 binary search for 1 side
-        LSL.L   #1,D4       
+        LSL.W   #1,D4       
         BCS     DS11
         BRA     DS10
 
 DS00                        *DS00: Disassembly processing for 00 prefix
-        ROL.L   #2,D4       
-        MOVE.L  D4,D5
+        ROL.W   #2,D4       
+        MOVE.W  D4,D5
         ANDI.B  #%11,D4
         CMPI.B  #%00,D4
         BEQ     DAND
+        BRA     DSEND
 
 DAND    NOP                 *DAND: Disassembly function serving DAND        
         
@@ -212,77 +213,165 @@ DMOVEA  NOP
 *DS Tier 2 ----------------------------------------------------------------------------------------
 
 DS01                        *DS01: Tier 2 binary search for 01 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS011
         BRA     DS010
 
 DS10                        *DS10: Tier 2 binary search for 10 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS101
         BRA     DS100
 
 DS11                        *DS11: Tier 2 binary search for 11 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS111
         BRA     DS110
 
 *DS Tier 3 ----------------------------------------------------------------------------------------
 
 DS010                       *DS010: Tier 3 binary search for 010 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS0101
         BRA     DS0100
 
 DS011                       *DS011: Tier 3 binary search for 011 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS0111
         BRA     DS0110
 
 DS100                       *DS100: Tier 3 binary search for 100 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS1001
         BRA     DS1000
 
 DS101                       *DS101: Tier 3 binary search for 101 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS1011
         BRA     DS1010
 
 DS110                       *DS110: Tier 3 binary search for 110 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS1101
         BRA     DS1100
 
 DS111                       *DS111: Tier 3 binary search for 111 side
-        LSL.L   #1,D4
+        LSL.W   #1,D4
         BCS     DS1111
         BRA     DS1110
 
 *DS Tier 4 ----------------------------------------------------------------------------------------
 
-DS0100  NOP
+DS0100                      *DS0100: Processing for 0100 prefix
+        CMPI.W  #%1110011100010000,D4
+        BEQ     DNOP
+        BRA     DSEND
+
+DNOP    LEA     NOPM,A1
+        TRAP    #15
+        BRA     DSEND
+        
+DNOT    NOP
+        BRA     DSEND
+        
+DJSR    NOP
+        BRA     DSEND
+        
+DRTS    NOP
+        BRA     DSEND
+
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS0101  NOP
+        BRA     DSEND
+        
+DADDQ   NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS0110  NOP
+        BRA     DSEND
+        
+DBCC    NOP
+        BRA     DSEND
+        
+DBRA    NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS0111  NOP
+        BRA     DSEND
+        
+DMOVEQ  NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1000  NOP
+        BRA     DSEND
+        
+DOR     NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1001  NOP
+        BRA     DSEND
+        
+DSUB    NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1010  NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1011  NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1100  NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1101  NOP
+        BRA     DSEND
+        
+DADDA   NOP
+        BRA     DSEND
+        
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1110  NOP
+        BRA     DSEND
+        
+DLSL    NOP
+        BRA     DSEND
+        
+DLSR    NOP
+        BRA     DSEND
+        
+DASL    NOP
+        BRA     DSEND
+        
+DASR    NOP
+        BRA     DSEND
+        
+DROL    NOP
+        BRA     DSEND
+        
+DROR    NOP
+        BRA     DSEND
+ 
+* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1111  NOP
+        BRA     DSEND
 
 *DS Final
 *--------------------------------------------------------------------------------------------------
@@ -311,6 +400,43 @@ LB      DC.B    CR,LF,0
 HTM     DC.B    HT,0
 
 TESTM   DC.B    'TEST',0
+
+MODEB   DC.B    '.B',0
+MODEW   DC.B    '.W',0
+MODEL   DC.B    '.L',0
+
+
+NOPM    DC.B    'NOP',0
+
+MOVEM   DC.B    'MOVE',0
+
+ADDM    DC.B    'ADD',0
+
+SUBM    DC.B    'SUB',0
+
+LEAM    DC.B    'LEA',0
+
+ANDM    DC.B    'AND',0
+ORM     DC.B    'OR',0
+NOTM    DC.B    'NOT',0
+
+LSLM    DC.B    'LSL',0
+LSRM    DC.B    'LSR',0
+ASLM    DC.B    'ASL',0
+ASRM    DC.B    'ASR',0
+
+ROLM    DC.B    'ROL',0
+RORM    DC.B    'ROR',0
+
+BGTM    DC.B    'BGT',0
+BLEM    DC.B    'BLE',0
+BEQM    DC.B    'BEQ',0
+
+JSRM    DC.B    'JSR',0
+RTSM    DC.B    'RTS',0
+
+BRAM    DC.B    'BRA',0
+
 
     END    START        ; last line of so
 

@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 5/24/2023 6:11:07 PM
+Created On: 5/24/2023 8:36:08 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Snippet
@@ -16,11 +16,11 @@ Created On: 5/24/2023 6:11:07 PM
 00001000                            12         
 00001000                            13  START                       *START: Start code
 00001000                            14  
-00001000  43F9 0000121E             15          LEA     INTRO,A1    *Intro text
+00001000  43F9 000012C4             15          LEA     INTRO,A1    *Intro text
 00001006  103C 000E                 16          MOVE.B  #14,D0
 0000100A  4E4F                      17          TRAP    #15
 0000100C                            18          
-0000100C  43F9 000012A6             19          LEA     ASTART,A1   *Input prompt text #1
+0000100C  43F9 0000134C             19          LEA     ASTART,A1   *Input prompt text #1
 00001012  4E4F                      20          TRAP    #15
 00001014                            21  
 00001014  103C 0002                 22          MOVE.B  #2,D0       *String prompt #1
@@ -34,7 +34,7 @@ Created On: 5/24/2023 6:11:07 PM
 00001028                            30  
 00001028  2641                      31          MOVE.L  D1,A3
 0000102A                            32          
-0000102A  43F9 000012BD             33          LEA     AEND,A1     *Input prompt text #2
+0000102A  43F9 00001363             33          LEA     AEND,A1     *Input prompt text #2
 00001030  103C 000E                 34          MOVE.B  #14,D0
 00001034  4E4F                      35          TRAP    #15
 00001036                            36          
@@ -92,20 +92,20 @@ Created On: 5/24/2023 6:11:07 PM
 000010AA  6D00 0006                 88          BLT     VERR1
 000010AE  6000 0032                 89          BRA     READLN
 000010B2                            90  
-000010B2  43F9 000012D4             91  VERR1   LEA     VERR1M,A1   *Throw parsing error
+000010B2  43F9 0000137A             91  VERR1   LEA     VERR1M,A1   *Throw parsing error
 000010B8  103C 000E                 92          MOVE.B  #14,D0
 000010BC  4E4F                      93          TRAP    #15
-000010BE  6000 0158                 94          BRA     END
+000010BE  6000 01FE                 94          BRA     END
 000010C2                            95  
-000010C2  43F9 0000130E             96  VERR2   LEA     VERR2M,A1   *Throw range error
+000010C2  43F9 000013B4             96  VERR2   LEA     VERR2M,A1   *Throw range error
 000010C8  103C 000E                 97          MOVE.B  #14,D0
 000010CC  4E4F                      98          TRAP    #15
-000010CE  6000 0148                 99          BRA     END
+000010CE  6000 01EE                 99          BRA     END
 000010D2                           100  
-000010D2  43F9 00001334            101  VERR3   LEA     VERR3M,A1   *Throw length error
+000010D2  43F9 000013DA            101  VERR3   LEA     VERR3M,A1   *Throw length error
 000010D8  103C 000E                102          MOVE.B  #14,D0
 000010DC  4E4F                     103          TRAP    #15
-000010DE  6000 0138                104          BRA     END
+000010DE  6000 01DE                104          BRA     END
 000010E2                           105          
 000010E2                           106  *--------------------------------------------------------------------------------------------------
 000010E2                           107  
@@ -114,31 +114,31 @@ Created On: 5/24/2023 6:11:07 PM
 000010E4  1A3C 0000                110          MOVE.B  #0,D5               * [D5] Initialize counter to 32 (# lines to pause the screen)
 000010E8                           111  
 000010E8                           112  RSTEP                               *RSTEP: 
-000010E8  281A                     113          MOVE.L  (A2)+,D4
-000010EA  240A                     114          MOVE.L  A2,D2
-000010EC  5982                     115          SUBQ.L  #4,D2
+000010E8  381A                     113          MOVE.W  (A2)+,D4
+000010EA  340A                     114          MOVE.W  A2,D2
+000010EC  5542                     115          SUBQ.W  #2,D2
 000010EE                           116          
 000010EE  4EB9 00001138            117          JSR     HEXOUT              *Run printing operation for HEX address
 000010F4                           118          
-000010F4  43F9 0000136B            119          LEA     HTM,A1              *Horizontal tab indent after printing hex
+000010F4  43F9 00001411            119          LEA     HTM,A1              *Horizontal tab indent after printing hex
 000010FA  103C 000E                120          MOVE.B  #14,D0
 000010FE  4E4F                     121          TRAP    #15
 00001100                           122          
-00001100  48E7 FFFF                123          MOVEM.L A0-A7/D0-D7,-(SP)   *Store data to stack
+00001100  48E7 7FFF                123          MOVEM.L A0-A7/D1-D7,-(SP)   *Store data to stack
 00001104  4EB9 0000116E            124          JSR     DISASM              *Run disassembly for current machine code
-0000110A  4CDF FFFF                125          MOVEM.L (SP)+,A0-A7/D0-D7   *Recall data from stack
+0000110A  4CDF FFFE                125          MOVEM.L (SP)+,A0-A7/D1-D7   *Recall data from stack
 0000110E                           126          
 0000110E  5205                     127          ADDQ.B  #1,D5       *Increment counter by 1
 00001110  BA3C 0020                128          CMP.B   #32,D5      *Check if we reached 32 lines
 00001114  6700 0016                129          BEQ     RPAUSE      *Branch to pausing code
 00001118                           130          
-00001118  43F9 00001368            131          LEA     LB,A1       *Print line break
+00001118  43F9 0000140E            131          LEA     LB,A1       *Print line break
 0000111E  103C 000E                132          MOVE.B  #14,D0      
 00001122  4E4F                     133          TRAP    #15
 00001124                           134          
 00001124                           135  RCONT                       *RCONT: Used to continue off of the RPAUSE label after a pause in the printing
 00001124  B9CA                     136          CMP.L   A2,A4       *Check if we reached the end address
-00001126  6D00 00F0                137          BLT     END         *End loop if so
+00001126  6D00 0196                137          BLT     END         *End loop if so
 0000112A  60BC                     138          BRA     RSTEP       *Or else continue the loop
 0000112C                           139          
 0000112C                           140  RPAUSE                      *RPAUSE: Used to pause printing at the end of the screen and wait for ENTER to be pressed
@@ -183,140 +183,266 @@ Created On: 5/24/2023 6:11:07 PM
 0000116E                           179  *During the processing of each machine code, we skip the first four bits as they have been passed through during the searching system. The exception to this is two bits for machine codes that start with 00.
 0000116E                           180  
 0000116E                           181  DISASM                      *DISASM: Disassemble a machine code
-0000116E  E38C                     182          LSL.L   #1,D4       * Tier 0 binary search
+0000116E  E34C                     182          LSL.W   #1,D4       * Tier 0 binary search
 00001170  6500 0010                183          BCS     DS1
 00001174  6000 0002                184          BRA     DS0
 00001178                           185  
 00001178                           186  *DS Tier 1 ----------------------------------------------------------------------------------------
 00001178                           187  
 00001178                           188  DS0                         *DS0: Tier 1 binary search for 0 side
-00001178  E38C                     189          LSL.L   #1,D4       
-0000117A  6500 0026                190          BCS     DS01
+00001178  E34C                     189          LSL.W   #1,D4       
+0000117A  6500 002A                190          BCS     DS01
 0000117E  6000 000C                191          BRA     DS00
 00001182                           192  
 00001182                           193  DS1                         *DS1: Tier 1 binary search for 1 side
-00001182  E38C                     194          LSL.L   #1,D4       
-00001184  6500 0030                195          BCS     DS11
-00001188  6000 0022                196          BRA     DS10
+00001182  E34C                     194          LSL.W   #1,D4       
+00001184  6500 0034                195          BCS     DS11
+00001188  6000 0026                196          BRA     DS10
 0000118C                           197  
 0000118C                           198  DS00                        *DS00: Disassembly processing for 00 prefix
-0000118C  E59C                     199          ROL.L   #2,D4       
-0000118E  2A04                     200          MOVE.L  D4,D5
+0000118C  E55C                     199          ROL.W   #2,D4       
+0000118E  3A04                     200          MOVE.W  D4,D5
 00001190  0204 0003                201          ANDI.B  #%11,D4
 00001194  0C04 0000                202          CMPI.B  #%00,D4
-00001198  6700 0002                203          BEQ     DAND
-0000119C                           204  
-0000119C  4E71                     205  DAND    NOP                 *DAND: Disassembly function serving DAND        
-0000119E                           206          
-0000119E  4E71                     207  DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
-000011A0                           208          
-000011A0                           209  
-000011A0  4E71                     210  DMOVEA  NOP
-000011A2                           211  
-000011A2                           212  *DS Tier 2 ----------------------------------------------------------------------------------------
-000011A2                           213  
-000011A2                           214  DS01                        *DS01: Tier 2 binary search for 01 side
-000011A2  E38C                     215          LSL.L   #1,D4
-000011A4  6500 0024                216          BCS     DS011
-000011A8  6000 0016                217          BRA     DS010
-000011AC                           218  
-000011AC                           219  DS10                        *DS10: Tier 2 binary search for 10 side
-000011AC  E38C                     220          LSL.L   #1,D4
-000011AE  6500 002E                221          BCS     DS101
-000011B2  6000 0020                222          BRA     DS100
-000011B6                           223  
-000011B6                           224  DS11                        *DS11: Tier 2 binary search for 11 side
-000011B6  E38C                     225          LSL.L   #1,D4
-000011B8  6500 0038                226          BCS     DS111
-000011BC  6000 002A                227          BRA     DS110
-000011C0                           228  
-000011C0                           229  *DS Tier 3 ----------------------------------------------------------------------------------------
-000011C0                           230  
-000011C0                           231  DS010                       *DS010: Tier 3 binary search for 010 side
-000011C0  E38C                     232          LSL.L   #1,D4
-000011C2  6500 003A                233          BCS     DS0101
-000011C6  6000 0034                234          BRA     DS0100
-000011CA                           235  
-000011CA                           236  DS011                       *DS011: Tier 3 binary search for 011 side
-000011CA  E38C                     237          LSL.L   #1,D4
-000011CC  6500 0034                238          BCS     DS0111
-000011D0  6000 002E                239          BRA     DS0110
-000011D4                           240  
-000011D4                           241  DS100                       *DS100: Tier 3 binary search for 100 side
-000011D4  E38C                     242          LSL.L   #1,D4
-000011D6  6500 002E                243          BCS     DS1001
-000011DA  6000 0028                244          BRA     DS1000
-000011DE                           245  
-000011DE                           246  DS101                       *DS101: Tier 3 binary search for 101 side
-000011DE  E38C                     247          LSL.L   #1,D4
-000011E0  6500 0028                248          BCS     DS1011
-000011E4  6000 0022                249          BRA     DS1010
-000011E8                           250  
-000011E8                           251  DS110                       *DS110: Tier 3 binary search for 110 side
-000011E8  E38C                     252          LSL.L   #1,D4
-000011EA  6500 0022                253          BCS     DS1101
-000011EE  6000 001C                254          BRA     DS1100
-000011F2                           255  
-000011F2                           256  DS111                       *DS111: Tier 3 binary search for 111 side
-000011F2  E38C                     257          LSL.L   #1,D4
-000011F4  6500 001C                258          BCS     DS1111
-000011F8  6000 0016                259          BRA     DS1110
-000011FC                           260  
-000011FC                           261  *DS Tier 4 ----------------------------------------------------------------------------------------
-000011FC                           262  
-000011FC  4E71                     263  DS0100  NOP
-000011FE                           264  
-000011FE  4E71                     265  DS0101  NOP
-00001200                           266  
-00001200  4E71                     267  DS0110  NOP
-00001202                           268  
-00001202  4E71                     269  DS0111  NOP
-00001204                           270  
-00001204  4E71                     271  DS1000  NOP
-00001206                           272  
-00001206  4E71                     273  DS1001  NOP
-00001208                           274  
-00001208  4E71                     275  DS1010  NOP
-0000120A                           276  
-0000120A  4E71                     277  DS1011  NOP
-0000120C                           278  
-0000120C  4E71                     279  DS1100  NOP
-0000120E                           280  
-0000120E  4E71                     281  DS1101  NOP
-00001210                           282  
-00001210  4E71                     283  DS1110  NOP
-00001212                           284  
-00001212  4E71                     285  DS1111  NOP
-00001214                           286  
-00001214                           287  *DS Final
-00001214                           288  *--------------------------------------------------------------------------------------------------
-00001214                           289  
-00001214  4E71                     290  DSERR   NOP
-00001216                           291  
-00001216  4E75                     292  DSEND   RTS
-00001218                           293  
-00001218  103C 0009                294  END     MOVE.B  #9,D0
-0000121C  4E4F                     295          TRAP    #15
-0000121E                           296  
-0000121E  =0000000D                297  CR      EQU     $0D
-0000121E  =0000000A                298  LF      EQU     $0A
-0000121E  =00000009                299  HT      EQU     $09
-0000121E                           300  
-0000121E= 54 68 69 73 20 69 ...    301  INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
-000012A6= 45 6E 74 65 72 20 ...    302  ASTART  DC.B    'Enter start address: $',0
-000012BD= 45 6E 74 65 72 20 ...    303  AEND    DC.B    'Enter end address:   $',0
-000012D4                           304  
-000012D4= 45 52 52 4F 52 3A ...    305  VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
-0000130E= 45 52 52 4F 52 3A ...    306  VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
-00001334= 45 52 52 4F 52 3A ...    307  VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
-00001368                           308  
-00001368= 0D 0A 00                 309  LB      DC.B    CR,LF,0
-0000136B                           310  
-0000136B= 09 00                    311  HTM     DC.B    HT,0
-0000136D                           312  
-0000136D= 54 45 53 54 00           313  TESTM   DC.B    'TEST',0
-00001372                           314  
-00001372                           315      END    START        ; last line of so
+00001198  6700 0006                203          BEQ     DAND
+0000119C  6000 011E                204          BRA     DSEND
+000011A0                           205  
+000011A0  4E71                     206  DAND    NOP                 *DAND: Disassembly function serving DAND        
+000011A2                           207          
+000011A2  4E71                     208  DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
+000011A4                           209          
+000011A4                           210  
+000011A4  4E71                     211  DMOVEA  NOP
+000011A6                           212  
+000011A6                           213  *DS Tier 2 ----------------------------------------------------------------------------------------
+000011A6                           214  
+000011A6                           215  DS01                        *DS01: Tier 2 binary search for 01 side
+000011A6  E34C                     216          LSL.W   #1,D4
+000011A8  6500 0024                217          BCS     DS011
+000011AC  6000 0016                218          BRA     DS010
+000011B0                           219  
+000011B0                           220  DS10                        *DS10: Tier 2 binary search for 10 side
+000011B0  E34C                     221          LSL.W   #1,D4
+000011B2  6500 002E                222          BCS     DS101
+000011B6  6000 0020                223          BRA     DS100
+000011BA                           224  
+000011BA                           225  DS11                        *DS11: Tier 2 binary search for 11 side
+000011BA  E34C                     226          LSL.W   #1,D4
+000011BC  6500 0038                227          BCS     DS111
+000011C0  6000 002A                228          BRA     DS110
+000011C4                           229  
+000011C4                           230  *DS Tier 3 ----------------------------------------------------------------------------------------
+000011C4                           231  
+000011C4                           232  DS010                       *DS010: Tier 3 binary search for 010 side
+000011C4  E34C                     233          LSL.W   #1,D4
+000011C6  6500 0062                234          BCS     DS0101
+000011CA  6000 0034                235          BRA     DS0100
+000011CE                           236  
+000011CE                           237  DS011                       *DS011: Tier 3 binary search for 011 side
+000011CE  E34C                     238          LSL.W   #1,D4
+000011D0  6500 0076                239          BCS     DS0111
+000011D4  6000 0060                240          BRA     DS0110
+000011D8                           241  
+000011D8                           242  DS100                       *DS100: Tier 3 binary search for 100 side
+000011D8  E34C                     243          LSL.W   #1,D4
+000011DA  6500 0084                244          BCS     DS1001
+000011DE  6000 0074                245          BRA     DS1000
+000011E2                           246  
+000011E2                           247  DS101                       *DS101: Tier 3 binary search for 101 side
+000011E2  E34C                     248          LSL.W   #1,D4
+000011E4  6500 008C                249          BCS     DS1011
+000011E8  6000 0082                250          BRA     DS1010
+000011EC                           251  
+000011EC                           252  DS110                       *DS110: Tier 3 binary search for 110 side
+000011EC  E34C                     253          LSL.W   #1,D4
+000011EE  6500 008E                254          BCS     DS1101
+000011F2  6000 0084                255          BRA     DS1100
+000011F6                           256  
+000011F6                           257  DS111                       *DS111: Tier 3 binary search for 111 side
+000011F6  E34C                     258          LSL.W   #1,D4
+000011F8  6500 00BA                259          BCS     DS1111
+000011FC  6000 008C                260          BRA     DS1110
+00001200                           261  
+00001200                           262  *DS Tier 4 ----------------------------------------------------------------------------------------
+00001200                           263  
+00001200                           264  DS0100                      *DS0100: Processing for 0100 prefix
+00001200  0C44 E710                265          CMPI.W  #%1110011100010000,D4
+00001204  6700 0006                266          BEQ     DNOP
+00001208  6000 00B2                267          BRA     DSEND
+0000120C                           268  
+0000120C  43F9 00001421            269  DNOP    LEA     NOPM,A1
+00001212  4E4F                     270          TRAP    #15
+00001214  6000 00A6                271          BRA     DSEND
+00001218                           272          
+00001218  4E71                     273  DNOT    NOP
+0000121A  6000 00A0                274          BRA     DSEND
+0000121E                           275          
+0000121E  4E71                     276  DJSR    NOP
+00001220  6000 009A                277          BRA     DSEND
+00001224                           278          
+00001224  4E71                     279  DRTS    NOP
+00001226  6000 0094                280          BRA     DSEND
+0000122A                           281  
+0000122A                           282  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+0000122A                           283  
+0000122A  4E71                     284  DS0101  NOP
+0000122C  6000 008E                285          BRA     DSEND
+00001230                           286          
+00001230  4E71                     287  DADDQ   NOP
+00001232  6000 0088                288          BRA     DSEND
+00001236                           289          
+00001236                           290  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001236                           291  
+00001236  4E71                     292  DS0110  NOP
+00001238  6000 0082                293          BRA     DSEND
+0000123C                           294          
+0000123C  4E71                     295  DBCC    NOP
+0000123E  6000 007C                296          BRA     DSEND
+00001242                           297          
+00001242  4E71                     298  DBRA    NOP
+00001244  6000 0076                299          BRA     DSEND
+00001248                           300          
+00001248                           301  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001248                           302  
+00001248  4E71                     303  DS0111  NOP
+0000124A  6000 0070                304          BRA     DSEND
+0000124E                           305          
+0000124E  4E71                     306  DMOVEQ  NOP
+00001250  6000 006A                307          BRA     DSEND
+00001254                           308          
+00001254                           309  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001254                           310  
+00001254  4E71                     311  DS1000  NOP
+00001256  6000 0064                312          BRA     DSEND
+0000125A                           313          
+0000125A  4E71                     314  DOR     NOP
+0000125C  6000 005E                315          BRA     DSEND
+00001260                           316          
+00001260                           317  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001260                           318  
+00001260  4E71                     319  DS1001  NOP
+00001262  6000 0058                320          BRA     DSEND
+00001266                           321          
+00001266  4E71                     322  DSUB    NOP
+00001268  6000 0052                323          BRA     DSEND
+0000126C                           324          
+0000126C                           325  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+0000126C                           326  
+0000126C  4E71                     327  DS1010  NOP
+0000126E  6000 004C                328          BRA     DSEND
+00001272                           329          
+00001272                           330  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001272                           331  
+00001272  4E71                     332  DS1011  NOP
+00001274  6000 0046                333          BRA     DSEND
+00001278                           334          
+00001278                           335  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001278                           336  
+00001278  4E71                     337  DS1100  NOP
+0000127A  6000 0040                338          BRA     DSEND
+0000127E                           339          
+0000127E                           340  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+0000127E                           341  
+0000127E  4E71                     342  DS1101  NOP
+00001280  6000 003A                343          BRA     DSEND
+00001284                           344          
+00001284  4E71                     345  DADDA   NOP
+00001286  6000 0034                346          BRA     DSEND
+0000128A                           347          
+0000128A                           348  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+0000128A                           349  
+0000128A  4E71                     350  DS1110  NOP
+0000128C  6000 002E                351          BRA     DSEND
+00001290                           352          
+00001290  4E71                     353  DLSL    NOP
+00001292  6000 0028                354          BRA     DSEND
+00001296                           355          
+00001296  4E71                     356  DLSR    NOP
+00001298  6000 0022                357          BRA     DSEND
+0000129C                           358          
+0000129C  4E71                     359  DASL    NOP
+0000129E  6000 001C                360          BRA     DSEND
+000012A2                           361          
+000012A2  4E71                     362  DASR    NOP
+000012A4  6000 0016                363          BRA     DSEND
+000012A8                           364          
+000012A8  4E71                     365  DROL    NOP
+000012AA  6000 0010                366          BRA     DSEND
+000012AE                           367          
+000012AE  4E71                     368  DROR    NOP
+000012B0  6000 000A                369          BRA     DSEND
+000012B4                           370   
+000012B4                           371  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+000012B4                           372  
+000012B4  4E71                     373  DS1111  NOP
+000012B6  6000 0004                374          BRA     DSEND
+000012BA                           375  
+000012BA                           376  *DS Final
+000012BA                           377  *--------------------------------------------------------------------------------------------------
+000012BA                           378  
+000012BA  4E71                     379  DSERR   NOP
+000012BC                           380  
+000012BC  4E75                     381  DSEND   RTS
+000012BE                           382  
+000012BE  103C 0009                383  END     MOVE.B  #9,D0
+000012C2  4E4F                     384          TRAP    #15
+000012C4                           385  
+000012C4  =0000000D                386  CR      EQU     $0D
+000012C4  =0000000A                387  LF      EQU     $0A
+000012C4  =00000009                388  HT      EQU     $09
+000012C4                           389  
+000012C4= 54 68 69 73 20 69 ...    390  INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
+0000134C= 45 6E 74 65 72 20 ...    391  ASTART  DC.B    'Enter start address: $',0
+00001363= 45 6E 74 65 72 20 ...    392  AEND    DC.B    'Enter end address:   $',0
+0000137A                           393  
+0000137A= 45 52 52 4F 52 3A ...    394  VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
+000013B4= 45 52 52 4F 52 3A ...    395  VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
+000013DA= 45 52 52 4F 52 3A ...    396  VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
+0000140E                           397  
+0000140E= 0D 0A 00                 398  LB      DC.B    CR,LF,0
+00001411                           399  
+00001411= 09 00                    400  HTM     DC.B    HT,0
+00001413                           401  
+00001413= 54 45 53 54 00           402  TESTM   DC.B    'TEST',0
+00001418                           403  
+00001418= 2E 42 00                 404  MODEB   DC.B    '.B',0
+0000141B= 2E 57 00                 405  MODEW   DC.B    '.W',0
+0000141E= 2E 4C 00                 406  MODEL   DC.B    '.L',0
+00001421                           407  
+00001421                           408  
+00001421= 4E 4F 50 00              409  NOPM    DC.B    'NOP',0
+00001425                           410  
+00001425= 4D 4F 56 45 00           411  MOVEM   DC.B    'MOVE',0
+0000142A                           412  
+0000142A= 41 44 44 00              413  ADDM    DC.B    'ADD',0
+0000142E                           414  
+0000142E= 53 55 42 00              415  SUBM    DC.B    'SUB',0
+00001432                           416  
+00001432= 4C 45 41 00              417  LEAM    DC.B    'LEA',0
+00001436                           418  
+00001436= 41 4E 44 00              419  ANDM    DC.B    'AND',0
+0000143A= 4F 52 00                 420  ORM     DC.B    'OR',0
+0000143D= 4E 4F 54 00              421  NOTM    DC.B    'NOT',0
+00001441                           422  
+00001441= 4C 53 4C 00              423  LSLM    DC.B    'LSL',0
+00001445= 4C 53 52 00              424  LSRM    DC.B    'LSR',0
+00001449= 41 53 4C 00              425  ASLM    DC.B    'ASL',0
+0000144D= 41 53 52 00              426  ASRM    DC.B    'ASR',0
+00001451                           427  
+00001451= 52 4F 4C 00              428  ROLM    DC.B    'ROL',0
+00001455= 52 4F 52 00              429  RORM    DC.B    'ROR',0
+00001459                           430  
+00001459= 42 47 54 00              431  BGTM    DC.B    'BGT',0
+0000145D= 42 4C 45 00              432  BLEM    DC.B    'BLE',0
+00001461= 42 45 51 00              433  BEQM    DC.B    'BEQ',0
+00001465                           434  
+00001465= 4A 53 52 00              435  JSRM    DC.B    'JSR',0
+00001469= 52 54 53 00              436  RTSM    DC.B    'RTS',0
+0000146D                           437  
+0000146D= 42 52 41 00              438  BRAM    DC.B    'BRA',0
+00001471                           439  
+00001471                           440  
+00001471                           441      END    START        ; last line of so
 
 No errors detected
 No warnings generated
@@ -325,40 +451,65 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-AEND                12BD
-ASTART              12A6
+ADDM                142A
+AEND                1363
+ANDM                1436
+ASLM                1449
+ASRM                144D
+ASTART              134C
+BEQM                1461
+BGTM                1459
+BLEM                145D
+BRAM                146D
 CR                  D
-DAND                119C
+DADDA               1284
+DADDQ               1230
+DAND                11A0
+DASL                129C
+DASR                12A2
+DBCC                123C
+DBRA                1242
 DISASM              116E
-DMOVE2              119E
-DMOVEA              11A0
+DJSR                121E
+DLSL                1290
+DLSR                1296
+DMOVE2              11A2
+DMOVEA              11A4
+DMOVEQ              124E
+DNOP                120C
+DNOT                1218
+DOR                 125A
+DROL                12A8
+DROR                12AE
+DRTS                1224
 DS0                 1178
 DS00                118C
-DS01                11A2
-DS010               11C0
-DS0100              11FC
-DS0101              11FE
-DS011               11CA
-DS0110              1200
-DS0111              1202
+DS01                11A6
+DS010               11C4
+DS0100              1200
+DS0101              122A
+DS011               11CE
+DS0110              1236
+DS0111              1248
 DS1                 1182
-DS10                11AC
-DS100               11D4
-DS1000              1204
-DS1001              1206
-DS101               11DE
-DS1010              1208
-DS1011              120A
-DS11                11B6
-DS110               11E8
-DS1100              120C
-DS1101              120E
-DS111               11F2
-DS1110              1210
-DS1111              1212
-DSEND               1216
-DSERR               1214
-END                 1218
+DS10                11B0
+DS100               11D8
+DS1000              1254
+DS1001              1260
+DS101               11E2
+DS1010              126C
+DS1011              1272
+DS11                11BA
+DS110               11EC
+DS1100              1278
+DS1101              127E
+DS111               11F6
+DS1110              128A
+DS1111              12B4
+DSEND               12BC
+DSERR               12BA
+DSUB                1266
+END                 12BE
 HDONE               116C
 HEXOUT              1138
 HHEX                1152
@@ -366,10 +517,21 @@ HNUM                115A
 HSTEP               1140
 HSTEP2              115E
 HT                  9
-HTM                 136B
-INTRO               121E
-LB                  1368
+HTM                 1411
+INTRO               12C4
+JSRM                1465
+LB                  140E
+LEAM                1432
 LF                  A
+LSLM                1441
+LSRM                1445
+MODEB               1418
+MODEL               141E
+MODEW               141B
+MOVEM               1425
+NOPM                1421
+NOTM                143D
+ORM                 143A
 PARSE               1050
 PCAPS               107C
 PDONE               10A6
@@ -379,15 +541,19 @@ PSTEP               1058
 PSTEP2              1088
 RCONT               1124
 READLN              10E2
+ROLM                1451
+RORM                1455
 RPAUSE              112C
 RSTEP               10E8
+RTSM                1469
 START               1000
 STARTER             0
-TESTM               136D
+SUBM                142E
+TESTM               1413
 VERR1               10B2
-VERR1M              12D4
+VERR1M              137A
 VERR2               10C2
-VERR2M              130E
+VERR2M              13B4
 VERR3               10D2
-VERR3M              1334
+VERR3M              13DA
 VINPUT              10A8

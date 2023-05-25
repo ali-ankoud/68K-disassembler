@@ -176,6 +176,8 @@ HDONE   RTS
 *Each machine code iterated through will be in D4. You can use all data registers as there will be a stack pointer involved
 *You will kind of have to locate the label for the first 4 bits of the machine code. There is a special case where the prefix of 000 can be variable with the size parameter
 
+*During the processing of each machine code, we skip the first four bits as they have been passed through during the searching system. The exception to this is two bits for machine codes that start with 00.
+
 DISASM                      *DISASM: Disassemble a machine code
         LSL.L   #1,D4       * Tier 0 binary search
         BCS     DS1

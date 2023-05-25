@@ -178,6 +178,9 @@ HDONE   RTS
 
 *During the processing of each machine code, we skip the first four bits as they have been passed through during the searching system. The exception to this is two bits for machine codes that start with 00.
 
+*CODING INSTRUCTIONS: You should not touch D0 as we want to keep it as the trap task. If for any reason you have to touch D0, make sure ou set it back to #14 for printing the strings.
+*Some codes take up an extra length, and while the iterator goes through each word by default, you can manually increment the pointer within the disassembly
+
 DISASM                      *DISASM: Disassemble a machine code
         LSL.W   #1,D4       * Tier 0 binary search
         BCS     DS1
@@ -347,7 +350,8 @@ DADDA   NOP
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DS1110  NOP
+DS1110
+        
         BRA     DSEND
         
 DLSL    NOP

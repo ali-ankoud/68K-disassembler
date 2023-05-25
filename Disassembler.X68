@@ -1,22 +1,29 @@
 *-----------------------------------------------------------
 * Title      : Disassembler Snippet
-* Written by : Ben Schipunov (ARM Cortex Companions)
+* Written by : ARM Cortex Companions
 * Date       : 5/15/2023
 * Description: Ben Schipunov contribution to the disassembler
 *-----------------------------------------------------------
 
 STARTER
-        ORG     $1000
+        ORG     $1000       *Start at $1000
         
 *-------------------------------------------------------------------------------------------------- 
        
 START                       *START: Start code
+
+        LEA     INTRO,A1    *Intro text
+        MOVE.B  #14,D0
+        TRAP    #15
+        
         LEA     ASTART,A1   *Input prompt text #1
-        MOVE.B  #14,D0      
         TRAP    #15
 
         MOVE.B  #2,D0       *String prompt #1
         TRAP    #15
+        
+        CMP.W   #8,D1       *Throw error if length is greater than 8 (length stored in D1)
+        BGT     VERR3
         
         JSR     PARSE       *Parse string #1
         
@@ -29,6 +36,9 @@ START                       *START: Start code
         
         MOVE.B  #2,D0       *String prompt #2
         TRAP    #15
+        
+        CMP.W   #8,D1       *Throw error if length is greater than 8 (length stored in D1)
+        BGT     VERR3
         
         JSR     PARSE       *Parse string #2
         
@@ -74,78 +84,91 @@ PDONE   RTS
 
 *--------------------------------------------------------------------------------------------------
 
-VINPUT  CMP.L   A3,A4
+VINPUT  CMP.L   A3,A4       *Verify input from parsing
         BLT     VERR1
         BRA     READLN
 
-VERR1   LEA     VERR1M,A1
+VERR1   LEA     VERR1M,A1   *Throw parsing error
         MOVE.B  #14,D0
         TRAP    #15
         BRA     END
 
-VERR2   LEA     VERR2M,A1
+VERR2   LEA     VERR2M,A1   *Throw range error
+        MOVE.B  #14,D0
+        TRAP    #15
+        BRA     END
+
+VERR3   LEA     VERR3M,A1   *Throw length error
         MOVE.B  #14,D0
         TRAP    #15
         BRA     END
         
 *--------------------------------------------------------------------------------------------------
 
-READLN  MOVE.L  A3,A2
+READLN                              *READLN: Start READLN for loop
+        MOVE.L  A3,A2               *Set current address to start address
+        MOVE.B  #0,D5               * [D5] Initialize counter to 32 (# lines to pause the screen)
 
-RSTEP   MOVE.L  (A2)+,D4
+RSTEP                               *RSTEP: 
+        MOVE.L  (A2)+,D4
         MOVE.L  A2,D2
         SUBQ.L  #4,D2
         
-        JSR     HEXOUT
+        JSR     HEXOUT              *Run printing operation for HEX address
         
-        LEA     HTM,A1
+        LEA     HTM,A1              *Horizontal tab indent after printing hex
         MOVE.B  #14,D0
         TRAP    #15
         
-        MOVEM.L A0-A7/D0-D7,-(SP)
-        JSR     DISASM
-        MOVEM.L (SP)+,A0-A7/D0-D7
+        MOVEM.L A0-A7/D0-D7,-(SP)   *Store data to stack
+        JSR     DISASM              *Run disassembly for current machine code
+        MOVEM.L (SP)+,A0-A7/D0-D7   *Recall data from stack
         
-        *Disassembly code will start here
-        *I will organize this area later on
+        ADDQ.B  #1,D5       *Increment counter by 1
+        CMP.B   #32,D5      *Check if we reached 32 lines
+        BEQ     RPAUSE      *Branch to pausing code
         
-        LEA     TESTM,A1
-        MOVE.B  #14,D0
+        LEA     LB,A1       *Print line break
+        MOVE.B  #14,D0      
         TRAP    #15
         
-        LEA     LB,A1
-        MOVE.B  #14,D0
-        TRAP    #15
+RCONT                       *RCONT: Used to continue off of the RPAUSE label after a pause in the printing
+        CMP.L   A2,A4       *Check if we reached the end address
+        BLT     END         *End loop if so
+        BRA     RSTEP       *Or else continue the loop
         
-        
-        
-        CMP.L   A2,A4
-        BLT     END
-        BRA     RSTEP
+RPAUSE                      *RPAUSE: Used to pause printing at the end of the screen and wait for ENTER to be pressed
+        MOVE.B  #0,D5       * Reset D5 counter
+        MOVE.B  #5,D0       * [D0] Trap task #5: Character prompt
+        TRAP    #15         * Only used for waiting for user to hit ENTER
+        BRA     RCONT       *Continue with READLN loop
 
 *--------------------------------------------------------------------------------------------------
 
 HEXOUT                      *HEXOUT: Prints a value in hexadecimal
-        MOVE.B  #6,D0       * [D0] Trap task #6
-        MOVE.B  #0,D1
-        MOVE.B  #8,D3
+        MOVE.B  #6,D0       * [D0] Trap task #6: Print character (will apply to all trap operations involved)
+        MOVE.B  #8,D3       * [D3] Decrementing counter to keep track length of longword
         
-HSTEP   ROL.L   #4,D2
-        MOVE.L  D2,D1
-        ANDI.L  #$F,D1
-        CMP.B   #10,D1
-        BLT     HNUM
+HSTEP                       *HSTEP: An iteration in the HEXOUT for loop
+        ROL.L   #4,D2       *Rotational shift left by 4 bits to bring the first hex character to the other side
+        MOVE.L  D2,D1       * [D1] Used for the AND operation to filter to the right four bits
+        ANDI.L  #$F,D1      * Filter to the right four bits
+        CMP.B   #10,D1      *Distinguish between number and letter
+        BLT     HNUM        *Branch to number handling, or continue to letter handling
         
-HHEX    ADDI.B  #55,D1
-        BRA     HSTEP2
+HHEX                        *HHEX: Handle letters from HEXOUT for loop
+        ADDI.B  #55,D1      *Increment decimal value by 55 to match corresponding ASCII
+        BRA     HSTEP2      *Branch to step 2 of the iteration
 
-HNUM    ADDI.B  #48,D1
+HNUM                        *HNUM: Handle numbers from HEXOUT for loop
+        ADDI.B  #48,D1      *Increment decimal value by 55 to match corresponding ASCII
 
-HSTEP2  SUBQ.B  #1,D3
-        TRAP #15
-        CMPI.B  #0,D3
-        BEQ     HDONE
-        BRA     HSTEP
+HSTEP2                      *HSTEP2: 2nd part of an iteration from the HEXOUT for loop
+        SUBQ.B  #1,D3       *Decrement counter for longword tracking
+        TRAP #15            *Will print the ASCII value stored in D1
+        CMPI.B  #0,D3       *Check if we reached 8 characters for a longword
+        BEQ     HDONE       *End loop if done
+        BRA     HSTEP       *Or else continue loop
         
 HDONE   RTS
 
@@ -154,22 +177,24 @@ HDONE   RTS
 *You will kind of have to locate the label for the first 4 bits of the machine code. There is a special case where the prefix of 000 can be variable with the size parameter
 
 DISASM                      *DISASM: Disassemble a machine code
-        LSL.L   #1,D4
+        LSL.L   #1,D4       * Tier 0 binary search
         BCS     DS1
         BRA     DS0
-        
-DS0      
-        LSL.L   #1,D4
+
+*DS Tier 1 ----------------------------------------------------------------------------------------
+
+DS0                         *DS0: Tier 1 binary search for 0 side
+        LSL.L   #1,D4       
         BCS     DS01
         BRA     DS00
 
-DS1      
-        LSL.L   #1,D4
+DS1                         *DS1: Tier 1 binary search for 1 side
+        LSL.L   #1,D4       
         BCS     DS11
         BRA     DS10
 
-DS00     
-        ROL.L   #2,D4
+DS00                        *DS00: Disassembly processing for 00 prefix
+        ROL.L   #2,D4       
         MOVE.L  D4,D5
         ANDI.B  #%11,D4
         CMPI.B  #%00,D4
@@ -182,59 +207,56 @@ DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
 
 DMOVEA  NOP
 
-*DS Tier 2
-*--------------------------------------------------------------------------------------------------
+*DS Tier 2 ----------------------------------------------------------------------------------------
 
-DS01    
+DS01                        *DS01: Tier 2 binary search for 01 side
         LSL.L   #1,D4
         BCS     DS011
         BRA     DS010
 
-DS10    
+DS10                        *DS10: Tier 2 binary search for 10 side
         LSL.L   #1,D4
         BCS     DS101
         BRA     DS100
 
-DS11    
+DS11                        *DS11: Tier 2 binary search for 11 side
         LSL.L   #1,D4
         BCS     DS111
         BRA     DS110
 
-*DS Tier 3
-*--------------------------------------------------------------------------------------------------
+*DS Tier 3 ----------------------------------------------------------------------------------------
 
-DS010    
+DS010                       *DS010: Tier 3 binary search for 010 side
         LSL.L   #1,D4
         BCS     DS0101
         BRA     DS0100
 
-DS011    
+DS011                       *DS011: Tier 3 binary search for 011 side
         LSL.L   #1,D4
         BCS     DS0111
         BRA     DS0110
 
-DS100    
+DS100                       *DS100: Tier 3 binary search for 100 side
         LSL.L   #1,D4
         BCS     DS1001
         BRA     DS1000
 
-DS101    
+DS101                       *DS101: Tier 3 binary search for 101 side
         LSL.L   #1,D4
         BCS     DS1011
         BRA     DS1010
 
-DS110    
+DS110                       *DS110: Tier 3 binary search for 110 side
         LSL.L   #1,D4
         BCS     DS1101
         BRA     DS1100
 
-DS111    
+DS111                       *DS111: Tier 3 binary search for 111 side
         LSL.L   #1,D4
         BCS     DS1111
         BRA     DS1110
 
-*DS Tier 4
-*--------------------------------------------------------------------------------------------------
+*DS Tier 4 ----------------------------------------------------------------------------------------
 
 DS0100  NOP
 
@@ -274,12 +296,13 @@ CR      EQU     $0D
 LF      EQU     $0A
 HT      EQU     $09
 
-INTRO   DC.B    'This is a program that will disassemble machine code from a start to an end address!',CR,LF,0
+INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs should be in hex form of longword size (size 8 chars)!',CR,LF,0
 ASTART  DC.B    'Enter start address: $',0
 AEND    DC.B    'Enter end address:   $',0
 
-VERR1M  DC.B    'ERROR: End address must not be less than start address',CR,LF,0
-VERR2M  DC.B    'ERROR: Invalid input',CR,LF,0
+VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
+VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
+VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
 
 LB      DC.B    CR,LF,0
 
@@ -288,6 +311,7 @@ HTM     DC.B    HT,0
 TESTM   DC.B    'TEST',0
 
     END    START        ; last line of so
+
 
 *~Font name~Courier New~
 *~Font size~10~

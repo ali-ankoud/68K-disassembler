@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 5/24/2023 6:03:02 PM
+Created On: 5/24/2023 6:11:07 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Snippet
@@ -302,7 +302,7 @@ Created On: 5/24/2023 6:03:02 PM
 0000121E  =0000000A                298  LF      EQU     $0A
 0000121E  =00000009                299  HT      EQU     $09
 0000121E                           300  
-0000121E= 54 68 69 73 20 69 ...    301  INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs should be in hex form of longword size (size 8 chars)!',CR,LF,0
+0000121E= 54 68 69 73 20 69 ...    301  INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
 000012A6= 45 6E 74 65 72 20 ...    302  ASTART  DC.B    'Enter start address: $',0
 000012BD= 45 6E 74 65 72 20 ...    303  AEND    DC.B    'Enter end address:   $',0
 000012D4                           304  

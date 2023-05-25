@@ -298,7 +298,7 @@ CR      EQU     $0D
 LF      EQU     $0A
 HT      EQU     $09
 
-INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs should be in hex form of longword size (size 8 chars)!',CR,LF,0
+INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
 ASTART  DC.B    'Enter start address: $',0
 AEND    DC.B    'Enter end address:   $',0
 

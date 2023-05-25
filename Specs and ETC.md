@@ -24,3 +24,5 @@ ROL,ROR
 Bcc (BGT, BLE, BEQ)
 JSR, RTS
 BRA
+
+In the implementation, see line 181 for coding instructions

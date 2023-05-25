@@ -1,0 +1,81 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 5/24/2023 12:36:42 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000  283C E7100000             11          MOVE.L      #%11100111000100000000000000000000,D4
+00001006  2A3C 72100000             12          MOVE.L      #%1110010000100000000000000000000,D5    storing NOP comparison in d5
+0000100C  13FC 0000 00001080        13          MOVE.B      #0,NOPBOOL
+00001014                            14  
+00001014  7E00                      15          MOVE.L      #0,D7               loop counter
+00001016  760C                      16          MOVE.L      #12,D3              terminal val
+00001018  B647                      17  L0100   CMP         D7,D3               if equals
+0000101A  6700 0036                 18          BEQ         R0100               branch to result comparison
+0000101E  5287                      19          ADDQ.L      #1,D7               incrementing loop counter
+00001020  E38C                      20          LSL.L       #1,D4               doing shift op on d4
+00001022  6400 000A                 21          BCC         SA00100              if 0, jump to 0 store
+00001026  1C3C 0001                 22          MOVE.B      #1,D6               store 1 in d6
+0000102A  6000 0006                 23          BRA         CNP0100             after storing 1, jump to comparisons
+0000102E  1C3C 0000                 24  SA00100 MOVE.B      #0,D6               store 0 in d6
+00001032  E38D                      25  CNP0100 LSL.L       #1,D5               doing shift op on NOP comparison
+00001034  6400 000A                 26          BCC         SC00100
+00001038  143C 0001                 27          MOVE.B      #1,D2               storing nop comparison bit in d2
+0000103C  6000 0006                 28          BRA         CMP0100             branching to avoid 0 store
+00001040  143C 0000                 29  SC00100 MOVE.B      #0,D2               storing nop comparison bit in d2
+00001044  BC42                      30  CMP0100 CMP         D2,D6               comparing bits
+00001046  67D0                      31          BEQ         L0100               placeholder: branch to next opcode
+00001048  13FC 0001 00001080        32          MOVE.B      #1,NOPBOOL              Setting NOP to FALSE
+00001050                            33          *insert NOT, RTS, LEA, JSR comparisons here
+00001050                            34  
+00001050  60C6                      35          BRA         L0100               looping
+00001052                            36  
+00001052                            37  R0100   
+00001052  0C79 0000 00001080        38          CMP         #0,NOPBOOL
+0000105A  6700 0006                 39          BEQ         NOP
+0000105E  6000 0018                 40          BRA         END
+00001062                            41          
+00001062                            42          
+00001062  13F9 4E4F5000 0000107C    43  NOP     MOVE.B      'NOP',CURADR
+0000106C  43F9 0000107C             44          LEA         CURADR,A1
+00001072  103C 000E                 45          MOVE.B      #14,D0
+00001076  4E4F                      46          TRAP        #15
+00001078                            47          
+00001078                            48  END
+00001078                            49  
+00001078  FFFF FFFF                 50      SIMHALT             ; halt simulator
+0000107C                            51  
+0000107C                            52  * Put variables and constants here
+0000107C                            53  
+0000107C= 4E 4F 50 00               54  CURADR  DC.B    'NOP',0
+00001080                            55  
+00001080= 00 00                     56  NOPBOOL DC.B    0,0
+00001082                            57  
+00001082                            58      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CMP0100             1044
+CNP0100             1032
+CURADR              107C
+END                 1078
+L0100               1018
+NOP                 1062
+NOPBOOL             1080
+R0100               1052
+SA00100             102E
+SC00100             1040
+START               1000

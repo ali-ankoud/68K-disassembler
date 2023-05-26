@@ -173,6 +173,30 @@ HSTEP2                      *HSTEP2: 2nd part of an iteration from the HEXOUT fo
 HDONE   RTS
 
 *--------------------------------------------------------------------------------------------------
+
+SIZE    MOVE.B  #13,D0
+        CMP.B   #%00,D5
+        BEQ     SIZEB
+        CMP.B   #%01,D5
+        BEQ     SIZEW
+        CMP.B   #%10,D5
+        BEQ     SIZEL
+        BRA     SRET
+        
+SIZEB   LEA     MODEB,A1
+        BRA     SDONE
+
+SIZEW   LEA     MODEW,A1
+        BRA     SDONE
+
+SIZEL   LEA     MODEL,A1
+        BRA     SDONE
+
+SDONE   TRAP    #15
+
+SRET    RTS
+
+*--------------------------------------------------------------------------------------------------
 *Each machine code iterated through will be in D4. You can use all data registers as there will be a stack pointer involved
 *You will kind of have to locate the label for the first 4 bits of the machine code. There is a special case where the prefix of 000 can be variable with the size parameter
 
@@ -351,27 +375,76 @@ DADDA   NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1110
+        ROL.W   #3,D4
+        MOVE.B  D4,D2
+        ANDI.B  #%00000111,D2
         
+        ROL.W   #1,D4
+        MOVE.B  D4,D3
+        ANDI.B  #%00000001,D3
+        
+        ROL.W   #2,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%00000011,D5
+        
+        CMP.B   #%00000011,D5
+        BEQ     DS1110PTR
+        
+        ROL.W   #1,D4
+        MOVE.B  D4,D6
+        ANDI.B  #%00000001,D6
+        
+        ROL.W   #2,D4
+        MOVE.B  D4,D7
+        ANDI.B  #%00000011,D7
+        
+        ROL.W   #3,D4
+        MOVE.B  D4,D1
+        ANDI.B  #%00000111,D1
+        
+        CMP.B   #%00000001,D7
+        BEQ     DLS
+        CMP.B   #%00000000,D7
+        BEQ     DAS
+        CMP.B   #%00000011,D7
+        BEQ     DRO
         BRA     DSEND
         
-DLSL    NOP
+DS1110A MOVEM.L A0-A7/D0-D7,-(SP)
+        JSR     DS1110SIDE
+        MOVEM.L (SP)+,A0-A7/D0-D7
         BRA     DSEND
         
-DLSR    NOP
-        BRA     DSEND
+DLS     LEA     LSM,A1
+        TRAP    #15
+        BRA     DS1110A
         
-DASL    NOP
-        BRA     DSEND
+DAS     LEA     ASM,A1
+        TRAP    #15
+        BRA     DS1110A
         
-DASR    NOP
-        BRA     DSEND
+DRO     LEA     ROM,A1
+        TRAP    #15
+        BRA     DS1110A
         
-DROL    NOP
-        BRA     DSEND
+DS1110SIDE
+        MOVE.B  #6,D0
+        CMP.B   #1,D3
+        BEQ     DS1110LSIDE
+        MOVE.B  #82,D1
+        TRAP    #15
+        BRA     DS1110SIDEEND
+
+DS1110LSIDE
+        MOVE.B  #76,D1
+        TRAP    #15
         
-DROR    NOP
-        BRA     DSEND
- 
+DS1110SIDEEND
+        RTS 
+
+DS1110PTR
+        CMP.B   #%00000001,D2
+        
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1111  NOP
@@ -386,6 +459,9 @@ DSEND   RTS
 
 END     MOVE.B  #9,D0
         TRAP    #15
+
+*Initialized Variables
+*--------------------------------------------------------------------------------------------------
 
 CR      EQU     $0D
 LF      EQU     $0A
@@ -409,6 +485,9 @@ MODEB   DC.B    '.B',0
 MODEW   DC.B    '.W',0
 MODEL   DC.B    '.L',0
 
+VALA    DC.B    'A',0
+VALD    DC.B    'D',0
+VALN    DC.B    '#',0
 
 NOPM    DC.B    'NOP',0
 
@@ -424,12 +503,12 @@ ANDM    DC.B    'AND',0
 ORM     DC.B    'OR',0
 NOTM    DC.B    'NOT',0
 
-LSLM    DC.B    'LSL',0
+LSM    DC.B    'LS',0
 LSRM    DC.B    'LSR',0
-ASLM    DC.B    'ASL',0
+ASM    DC.B    'AS',0
 ASRM    DC.B    'ASR',0
 
-ROLM    DC.B    'ROL',0
+ROM    DC.B    'RO',0
 RORM    DC.B    'ROR',0
 
 BGTM    DC.B    'BGT',0

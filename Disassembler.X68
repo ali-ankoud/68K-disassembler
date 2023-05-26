@@ -174,12 +174,12 @@ HDONE   RTS
 
 *--------------------------------------------------------------------------------------------------
 
-SIZE    MOVE.B  #13,D0
-        CMP.B   #%00,D5
+SIZE    MOVE.B  #14,D0
+        CMP.B   #%00000000,D5
         BEQ     SIZEB
-        CMP.B   #%01,D5
+        CMP.B   #%00000001,D5
         BEQ     SIZEW
-        CMP.B   #%10,D5
+        CMP.B   #%00000010,D5
         BEQ     SIZEL
         BRA     SRET
         
@@ -375,30 +375,30 @@ DADDA   NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1110
-        ROL.W   #3,D4
+        ROL.W   #3,D4           * [D2] Reading count
         MOVE.B  D4,D2
         ANDI.B  #%00000111,D2
         
-        ROL.W   #1,D4
+        ROL.W   #1,D4           * [D3] Reading direction
         MOVE.B  D4,D3
         ANDI.B  #%00000001,D3
         
-        ROL.W   #2,D4
+        ROL.W   #2,D4           * [D5] Reading size
         MOVE.B  D4,D5
         ANDI.B  #%00000011,D5
         
-        CMP.B   #%00000011,D5
-        BEQ     DS1110PTR
+        CMP.B   #%00000011,D5   * Start processing code as memory if size is 11
+        BEQ     DS1110MEM
         
-        ROL.W   #1,D4
+        ROL.W   #1,D4           * [D6] Reading count mode
         MOVE.B  D4,D6
         ANDI.B  #%00000001,D6
         
-        ROL.W   #2,D4
+        ROL.W   #2,D4           * [D7] reading type of shift
         MOVE.B  D4,D7
         ANDI.B  #%00000011,D7
         
-        ROL.W   #3,D4
+        ROL.W   #3,D4           * [D1] reading register
         MOVE.B  D4,D1
         ANDI.B  #%00000111,D1
         
@@ -408,12 +408,36 @@ DS1110
         BEQ     DAS
         CMP.B   #%00000011,D7
         BEQ     DRO
+        
+        CMP.B   #%00000011,D5
+        BEQ     DS1110MEMA
+        
         BRA     DSEND
         
 DS1110A MOVEM.L A0-A7/D0-D7,-(SP)
         JSR     DS1110SIDE
         MOVEM.L (SP)+,A0-A7/D0-D7
+        
+        MOVEM.L A0-A7/D0-D7,-(SP)
+        JSR     SIZE
+        MOVEM.L (SP)+,A0-A7/D0-D7
+        
+        MOVE.B  #14,D0
+        LEA     HTM,A1
+        TRAP    #15
+        
+        
+        
+        LEA     TESTM,A1
+        TRAP    #15
+        
         BRA     DSEND
+        
+DS1110_REG_I
+        NOP
+
+DS1110_REG_D
+        NOP        
         
 DLS     LEA     LSM,A1
         TRAP    #15
@@ -442,8 +466,35 @@ DS1110LSIDE
 DS1110SIDEEND
         RTS 
 
-DS1110PTR
+DS1110MEM
+                                * Shift type is instead stored in D2
+        
+        ROL.W   #1,D4           * [D6] Reading address mode
+        MOVE.B  D4,D6
+        ANDI.B  #%00000001,D6
+        
+        ROL.W   #1,D4           * [D7] Reading address register
+        MOVE.B  D4,D7
+        ANDI.B  #%00000001,D7
+        
         CMP.B   #%00000001,D2
+        BEQ     DLS
+        CMP.B   #%00000000,D2
+        BEQ     DAS
+        CMP.B   #%00000011,D2
+        BEQ     DRO
+        
+        BRA     DSEND
+        
+        
+DS1110MEMA
+        
+        
+        
+        BRA     DSEND
+
+
+        
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -522,6 +573,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 *~Font name~Courier New~

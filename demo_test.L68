@@ -1,6 +1,6 @@
 00009000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 5/24/2023 8:10:35 PM
+Created On: 5/25/2023 6:56:41 PM
 
 00000000                             1  *****************************
 00000000                             2  *
@@ -228,8 +228,10 @@ Created On: 5/24/2023 8:10:35 PM
 000091BC  E2AA                     224      LSR.L     D1,D2    
 000091BE  E222                     225      ASR.B     D1,D2
 000091C0  E262                     226      ASR.W     D1,D2
-000091C2  E0D1                     227      ASR.W     (A1)
-000091C4  E0D9                     228      ASR.W     (A1)+
+Line 227 ERROR: Invalid size code
+000091C2  E0D1                     227      ASR.B     (A1)
+Line 228 ERROR: Invalid size code
+000091C4  E0D9                     228      ASR.B     (A1)+
 000091C6  E0E1                     229      ASR.W     -(A1)
 000091C8  E2A2                     230      ASR.L     D1,D2
 000091CA  E322                     231      ASL.B     D1,D2
@@ -359,7 +361,7 @@ Created On: 5/24/2023 8:10:35 PM
 000093C8                           355  
 000093C8                           356      END    START        ; last line of source
 
-No errors detected
+2 errors detected
 No warnings generated
 
 

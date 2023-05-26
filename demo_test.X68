@@ -15,6 +15,7 @@ start		EQU	$00009000	* ORG and END address
 		ORG	start
 
 NOP
+    LSL.W     $9999999
     RTS
     NOP
     RTS
@@ -210,10 +211,10 @@ NOP
     OR.L     (A1),D1
     OR.L     (A1)+,D1
     OR.L     -(A1),D1
-    LSL.B     D1,D2
+    LSL.B     #1,D2
     LSL.W     D1,D2
-    LSL.W     (A1)
-    LSL.W     (A1)+
+    LSL.W     $5000
+    LSL.W     $9999999
     LSL.W     -(A1)
     LSL.L     D1,D2
     LSR.B     D1,D2
@@ -354,6 +355,8 @@ label4
 * Put variables and constants here
 
     END    START        ; last line of source
+
+
 
 
 

@@ -114,15 +114,18 @@ RSTEP                               *RSTEP:
         MOVE.W  A2,D2
         SUBQ.W  #2,D2
         
+        MOVEM.L D5,-(SP)
+        MOVE.B  #0,D5
         JSR     HEXOUT              *Run printing operation for HEX address
+        MOVEM.L (SP)+,D5
         
-        LEA     HTM,A1              *Horizontal tab indent after printing hex
+        LEA     SM2,A1              *Horizontal tab indent after printing hex
         MOVE.B  #14,D0
         TRAP    #15
         
-        MOVEM.L A0-A7/D1-D7,-(SP)   *Store data to stack
+        MOVEM.L A4-A7/D1-D7,-(SP)   *Store data to stack
         JSR     DISASM              *Run disassembly for current machine code
-        MOVEM.L (SP)+,A0-A7/D1-D7   *Recall data from stack
+        MOVEM.L (SP)+,A4-A7/D1-D7   *Recall data from stack
         
         ADDQ.B  #1,D5       *Increment counter by 1
         CMP.B   #32,D5      *Check if we reached 32 lines
@@ -165,22 +168,35 @@ HNUM                        *HNUM: Handle numbers from HEXOUT for loop
 
 HSTEP2                      *HSTEP2: 2nd part of an iteration from the HEXOUT for loop
         SUBQ.B  #1,D3       *Decrement counter for longword tracking
+        
+        CMP.B   D5,D1
+        BEQ     HSKIP2
+        
         TRAP #15            *Will print the ASCII value stored in D1
-        CMPI.B  #0,D3       *Check if we reached 8 characters for a longword
+HSKIP2  CMPI.B  #0,D3       *Check if we reached 8 characters for a longword
         BEQ     HDONE       *End loop if done
-        BRA     HSTEP       *Or else continue loop
+        
+        CMP.B   #48,D1
+        BEQ     HSKIP3
+        
+        MOVE.B  #0,D5
+        
+HSKIP3  BRA     HSTEP       *Or else continue loop
         
 HDONE   RTS
+
 
 *--------------------------------------------------------------------------------------------------
 
 SIZE    MOVE.B  #14,D0
-        CMP.B   #%00000000,D5
+        CMP.B   #%00,D5
         BEQ     SIZEB
-        CMP.B   #%00000001,D5
+        CMP.B   #%01,D5
         BEQ     SIZEW
-        CMP.B   #%00000010,D5
+        CMP.B   #%10,D5
         BEQ     SIZEL
+        CMP.B   #%11,D5
+        BEQ     SIZEW       *Assume WORD type on memory pointer things
         BRA     SRET
         
 SIZEB   LEA     MODEB,A1
@@ -202,7 +218,7 @@ SRET    RTS
 
 *During the processing of each machine code, we skip the first four bits as they have been passed through during the searching system. The exception to this is two bits for machine codes that start with 00.
 
-*CODING INSTRUCTIONS: You should not touch D0 as we want to keep it as the trap task. If for any reason you have to touch D0, make sure ou set it back to #14 for printing the strings.
+*CODING INSTRUCTIONS: You should not touch D0 as we want to keep it as the trap task. If for any reason you have to touch D0, make sure you set it back to #14 for printing the strings.
 *Some codes take up an extra length, and while the iterator goes through each word by default, you can manually increment the pointer within the disassembly
 
 DISASM                      *DISASM: Disassemble a machine code
@@ -377,67 +393,87 @@ DADDA   NOP
 DS1110
         ROL.W   #3,D4           * [D2] Reading count
         MOVE.B  D4,D2
-        ANDI.B  #%00000111,D2
+        ANDI.B  #%111,D2
         
         ROL.W   #1,D4           * [D3] Reading direction
         MOVE.B  D4,D3
-        ANDI.B  #%00000001,D3
+        ANDI.B  #%1,D3
         
         ROL.W   #2,D4           * [D5] Reading size
         MOVE.B  D4,D5
-        ANDI.B  #%00000011,D5
+        ANDI.B  #%11,D5
         
-        CMP.B   #%00000011,D5   * Start processing code as memory if size is 11
+        CMP.B   #%11,D5   * Start processing code as memory if size is 11
         BEQ     DS1110MEM
         
         ROL.W   #1,D4           * [D6] Reading count mode
         MOVE.B  D4,D6
-        ANDI.B  #%00000001,D6
+        ANDI.B  #%1,D6
         
         ROL.W   #2,D4           * [D7] reading type of shift
         MOVE.B  D4,D7
-        ANDI.B  #%00000011,D7
+        ANDI.B  #%11,D7
         
         ROL.W   #3,D4           * [D1] reading register
         MOVE.B  D4,D1
-        ANDI.B  #%00000111,D1
+        ANDI.B  #%111,D1
         
-        CMP.B   #%00000001,D7
+        CMP.B   #%01,D7   *Determine shift type
         BEQ     DLS
-        CMP.B   #%00000000,D7
+        CMP.B   #%00,D7
         BEQ     DAS
-        CMP.B   #%00000011,D7
+        CMP.B   #%11,D7
         BEQ     DRO
         
-        CMP.B   #%00000011,D5
-        BEQ     DS1110MEMA
+        BRA     DSEND               *Fallback in case of invalid code
         
-        BRA     DSEND
-        
-DS1110A MOVEM.L A0-A7/D0-D7,-(SP)
+DS1110A MOVEM.L A0-A7/D0-D7,-(SP)   *Print shift direction
         JSR     DS1110SIDE
         MOVEM.L (SP)+,A0-A7/D0-D7
         
-        MOVEM.L A0-A7/D0-D7,-(SP)
+        MOVEM.L A0-A7/D0-D7,-(SP)   *Print size
         JSR     SIZE
         MOVEM.L (SP)+,A0-A7/D0-D7
         
         MOVE.B  #14,D0
-        LEA     HTM,A1
+        LEA     SM5,A1
         TRAP    #15
         
+        CMP.B   #%11,D5
+        BEQ     DS1110MEMA
         
+        CMP.B   #%1,D6
+        BEQ     DS1110_REG_D
+        BRA     DS1110_REG_I
         
-        LEA     TESTM,A1
+DS1110B MOVE.B  D1,D6               *We ned D1 for trap task so since we're done using D6, we put D1 into D6 temporarily
+        
+        MOVE.B  #3,D0
+        MOVE.B  D2,D1
+        TRAP    #15
+        
+        MOVE.B  #14,D0
+        LEA     COMMA,A1
+        TRAP    #15
+        
+        LEA     VALD,A1
+        TRAP    #15
+        
+        MOVE.B  #3,D0
+        MOVE.B  D6,D1
         TRAP    #15
         
         BRA     DSEND
         
 DS1110_REG_I
-        NOP
+        LEA     VALN,A1
+        TRAP    #15
+        BRA     DS1110B
 
 DS1110_REG_D
-        NOP        
+        LEA     VALD,A1
+        TRAP    #15
+        BRA     DS1110B       
         
 DLS     LEA     LSM,A1
         TRAP    #15
@@ -469,33 +505,111 @@ DS1110SIDEEND
 DS1110MEM
                                 * Shift type is instead stored in D2
         
-        ROL.W   #1,D4           * [D6] Reading address mode
+        ROL.W   #3,D4           * [D6] Reading address mode
         MOVE.B  D4,D6
-        ANDI.B  #%00000001,D6
+        ANDI.B  #%111,D6
         
-        ROL.W   #1,D4           * [D7] Reading address register
-        MOVE.B  D4,D7
-        ANDI.B  #%00000001,D7
+        ROL.W   #3,D4           * [D1] Reading address register
+        MOVE.B  D4,D1
+        ANDI.B  #%111,D1
         
-        CMP.B   #%00000001,D2
+        CMP.B   #%01,D2
         BEQ     DLS
-        CMP.B   #%00000000,D2
+        CMP.B   #%00,D2
         BEQ     DAS
-        CMP.B   #%00000011,D2
+        CMP.B   #%11,D2
         BEQ     DRO
-        
         BRA     DSEND
         
         
 DS1110MEMA
         
+        CMP.B   #%010,D6
+        BEQ     DS1110MEM_REG
+        CMP.B   #%011,D6
+        BEQ     DS1110MEM_INC
+        CMP.B   #%100,D6
+        BEQ     DS1110MEM_DEC
         
+        CMP.B   #%111,D6
+        BNE     DSERR
+        
+        CMP.B   #%000,D1
+        BEQ     DS1110MEM_CUSW
+        CMP.B   #%001,D1
+        BEQ     DS1110MEM_CUSL
         
         BRA     DSEND
 
+DS1110MEM_REG
+        LEA     OPENPTR,A1
+        TRAP    #15
+        
+        LEA     VALA,A1
+        TRAP    #15
+        
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        LEA     CLOSEPTR,A1
+        TRAP    #15
+        
+        BRA     DSEND
 
+DS1110MEM_INC
+        LEA     OPENPTR,A1
+        TRAP    #15
         
+        LEA     VALA,A1
+        TRAP    #15
         
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        LEA     CLOSEIPTR,A1
+        TRAP    #15
+        
+        BRA     DSEND
+
+DS1110MEM_DEC
+        LEA     OPENDPTR,A1
+        TRAP    #15
+        
+        LEA     VALA,A1
+        TRAP    #15
+        
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        LEA     CLOSEPTR,A1
+        TRAP    #15
+        
+        BRA     DSEND
+        
+DS1110MEM_CUSW
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.W  (A2)+,D2
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     DSEND
+        
+DS1110MEM_CUSL
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.L  (A2)+,D2
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     DSEND
+        
+
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1111  NOP
@@ -504,7 +618,9 @@ DS1111  NOP
 *DS Final
 *--------------------------------------------------------------------------------------------------
 
-DSERR   NOP
+DSERR   MOVE.B  #14,D0
+        LEA     ERRM,A1
+        TRAP    #15
 
 DSEND   RTS
 
@@ -530,7 +646,15 @@ LB      DC.B    CR,LF,0
 
 HTM     DC.B    HT,0
 
+SM1     DC.B    ' ',0
+SM2     DC.B    '  ',0
+SM3     DC.B    '   ',0
+SM4     DC.B    '    ',0
+SM5     DC.B    '     ',0
+
 TESTM   DC.B    'TEST',0
+
+ERRM    DC.B    '  *ERROR',0
 
 MODEB   DC.B    '.B',0
 MODEW   DC.B    '.W',0
@@ -539,6 +663,15 @@ MODEL   DC.B    '.L',0
 VALA    DC.B    'A',0
 VALD    DC.B    'D',0
 VALN    DC.B    '#',0
+
+OPENPTR     DC.B    '(',0
+OPENDPTR    DC.B    '-(',0
+
+CLOSEPTR    DC.B    ')',0
+CLOSEIPTR   DC.B    ')+',0
+
+COMMA   DC.B    ',',0
+DOLLAR  DC.B    '$',0
 
 NOPM    DC.B    'NOP',0
 
@@ -573,6 +706,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

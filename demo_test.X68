@@ -15,6 +15,7 @@ start		EQU	$00009000	* ORG and END address
 		ORG	start
 
 NOP
+    JSR       $12345678
     LSL.W     $9999999
     RTS
     NOP

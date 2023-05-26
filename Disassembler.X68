@@ -307,6 +307,19 @@ DS111                       *DS111: Tier 3 binary search for 111 side
 DS0100                      *DS0100: Processing for 0100 prefix
         CMPI.W  #%1110011100010000,D4
         BEQ     DNOP
+        CMPI.W  #%1110011101010000,D4
+        BEQ     DRTS
+        
+        ROL.W   #4,D4
+        MOVE.B  D4,D2
+        ANDI.B  #%1111,D2
+        
+        CMP.B   #%1110,D2
+        BEQ     DJSR
+        
+        CMP.B   #%0110,D2
+        BEQ     DNOT
+        
         BRA     DSEND
 
 DNOP    LEA     NOPM,A1
@@ -316,10 +329,81 @@ DNOP    LEA     NOPM,A1
 DNOT    NOP
         BRA     DSEND
         
-DJSR    NOP
+DJSR    ROL.W   #2,D4
+        MOVE.B  D4,D2
+        ANDI.B  #%111,D2
+        CMPI.B  #%10,D2
+        BNE     DSERR
+        
+        LEA     JSRM,A1
+        TRAP    #15
+        
+        LEA     SM7,A1
+        TRAP    #15
+
+        ROL.W   #3,D4       * [D2] address mode
+        MOVE.B  D4,D2
+        ANDI.B  #%111,D2
+        
+        ROL.W   #3,D4       * [D1] address register
+        MOVE.B  D4,D1
+        ANDI.B  #%111,D1
+        
+        CMPI.B  #%010,D2
+        BEQ     DJSR_REG
+        
+        CMPI.B  #%111,D2
+        BNE     DSERR
+        
+        CMPI.B  #%000,D1
+        BEQ     DJSR_CUSW
+        
+        CMPI.B  #%001,D1
+        BEQ     DJSR_CUSL
+        
         BRA     DSEND
         
-DRTS    NOP
+        
+        
+DJSR_REG        
+        LEA     OPENPTR,A1
+        TRAP    #15
+        
+        LEA     VALA,A1
+        TRAP    #15
+        
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        LEA     CLOSEPTR,A1
+        TRAP    #15
+        
+        BRA     DSEND
+
+        
+DJSR_CUSW
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.W  (A2)+,D2
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     DSEND
+
+DJSR_CUSL
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.L  (A2)+,D2
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     DSEND
+        
+DRTS    LEA     RTSM,A1
+        TRAP    #15
         BRA     DSEND
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -651,6 +735,8 @@ SM2     DC.B    '  ',0
 SM3     DC.B    '   ',0
 SM4     DC.B    '    ',0
 SM5     DC.B    '     ',0
+SM6     DC.B    '      ',0
+SM7     DC.B    '       ',0
 
 TESTM   DC.B    'TEST',0
 

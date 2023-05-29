@@ -246,6 +246,9 @@ NOP
     JSR       (A0)
     JSR       $1234
     JSR       $12345678
+    BRA       label1
+    BRA       label2
+    BRA       label3
     JSR       label1
     JSR       label2
     JSR       label3
@@ -356,6 +359,8 @@ label4
 * Put variables and constants here
 
     END    START        ; last line of source
+
+
 
 
 

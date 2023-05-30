@@ -416,15 +416,89 @@ DADDQ   NOP
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DS0110  NOP
+DS0110  
+        ROL.W   #4,D4   *Get next 4 bits
+        MOVE.B  D4,D2   *Copy to D2
+        ANDI.B  #%1111,D2   *Set all bits to 0 except next 4
+        
+        CMP.B   #%0000,D2   *BRA
+        BEQ     DBRA
+        
+        CMP.B   #%1110,D2   *BGT   
+        BEQ     DBGT
+        
+        CMP.B   #%1111,D2   *BLE   
+        BEQ     DBLE
+        
+        CMP.B   #%0111,D2   *BEQ   
+        BEQ     DBEQ
+        
         BRA     DSEND
         
-DBCC    NOP
+DBRA    LEA     BRAM,A1
+        TRAP    #15
+        
+        LEA     SM7,A1
+        TRAP    #15
+
+        ROL.W   #8,D4       * [D1] 8 bit Displacement 
+        MOVE.B  D4,D1
+        ANDI.L  #$1100,D1
+        
+        CMPI.B  #%00000000,D1
+        BEQ     DBRA_16BIT      * Word
+        
+        CMPI.B  #%11111111,D1
+        BEQ     DBRA_32BIT      * Long
+        
+        * 8 Bit Displacement
+        LEA     DOLLAR,A1
+        TRAP    #15
+        
+        ROR.W #8,D1
+        ROR.W #8,D1
+        ROR.W #8,D1
+
+        *Displacement is put in D1      
+        
+        
         BRA     DSEND
         
-DBRA    NOP
+DBRA_16BIT
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.W  (A2)+,D2
+        ADD.W   A2,D2
+        ADD.W   #4,D2   *unsure
+        MOVEM.L D5,-(SP)    
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     DSEND
+
+DBRA_32BIT
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.L  (A2)+,D2
+        ADD.L   A2,D2
+        ADD.L   #4,D2   *unsure
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
         BRA     DSEND
         
+        
+        
+DBGT    NOP
+        BRA     DSEND
+
+DBLE    NOP
+        BRA     DSEND
+
+DBEQ    NOP
+        BRA     DSEND
+
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS0111  NOP
@@ -749,6 +823,7 @@ MODEL   DC.B    '.L',0
 VALA    DC.B    'A',0
 VALD    DC.B    'D',0
 VALN    DC.B    '#',0
+VAL0    DC.B    '0',0
 
 OPENPTR     DC.B    '(',0
 OPENDPTR    DC.B    '-(',0
@@ -792,6 +867,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

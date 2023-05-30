@@ -455,9 +455,12 @@ DBRA    LEA     BRAM,A1
         LEA     DOLLAR,A1
         TRAP    #15
         
-        ROR.W #8,D1
-        ROR.W #8,D1
-        ROR.W #8,D1
+        MOVE.W  (A2)+,D2
+        ADD.W   D1,D2
+        ADD.W   #4,D2   *unsure   
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        BRA     DSEND
 
         *Displacement is put in D1      
         
@@ -469,7 +472,7 @@ DBRA_16BIT
         TRAP    #15
         MOVE.W  (A2)+,D2
         ADD.W   A2,D2
-        ADD.W   #4,D2   *unsure
+        SUB.W   #2,D2   *unsure
         MOVEM.L D5,-(SP)    
         MOVE.B  #48,D5
         JSR     HEXOUT
@@ -481,7 +484,7 @@ DBRA_32BIT
         TRAP    #15
         MOVE.L  (A2)+,D2
         ADD.L   A2,D2
-        ADD.L   #4,D2   *unsure
+        SUB.L   #2,D2   *unsure
         MOVEM.L D5,-(SP)
         MOVE.B  #48,D5
         JSR     HEXOUT
@@ -490,13 +493,84 @@ DBRA_32BIT
         
         
         
-DBGT    NOP
+DBGT    LEA     BGTM,A1
+        TRAP    #15
+        
+        LEA     SM7,A1
+        TRAP    #15
+        
+        ROL.W   #8,D4       * [D1] 8 bit Displacement 
+        MOVE.B  D4,D1
+        ANDI.W  #%0000000011111111,D1
+        
+        CMPI.B  #%00000000,D1
+        BEQ     DBRA_16BIT      * Word
+        
+        CMPI.B  #%11111111,D1
+        BEQ     DBRA_32BIT      * Long
+        
+        LEA     DOLLAR,A1
+        TRAP    #15
+    
+        MOVE.W  A2,D2
+        ADD.W   D1,D2
+  
+        MOVE.B  #48,D5
+        JSR     HEXOUT
         BRA     DSEND
 
-DBLE    NOP
+DBLE    LEA     BLEM,A1
+        TRAP    #15
+        
+        LEA     SM7,A1
+        TRAP    #15
+        
+        ROL.W   #8,D4       * [D1] 8 bit Displacement 
+        MOVE.B  D4,D1
+        ANDI.W  #%0000000011111111,D1
+        
+        CMPI.B  #%00000000,D1
+        BEQ     DBRA_16BIT      * Word
+        
+        CMPI.B  #%11111111,D1
+        BEQ     DBRA_32BIT      * Long
+        
+        LEA     DOLLAR,A1
+        TRAP    #15
+        
+        MOVE.W  A2,D2
+        ADD.W   D1,D2
+ 
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        
         BRA     DSEND
 
-DBEQ    NOP
+DBEQ    LEA     BEQM,A1
+        TRAP    #15
+        
+        LEA     SM7,A1
+        TRAP    #15
+        
+        ROL.W   #8,D4       * [D1] 8 bit Displacement 
+        MOVE.B  D4,D1
+        ANDI.W  #%0000000011111111,D1
+        
+        CMPI.B  #%00000000,D1
+        BEQ     DBRA_16BIT      * Word
+        
+        CMPI.B  #%11111111,D1
+        BEQ     DBRA_32BIT      * Long
+        
+        LEA     DOLLAR,A1
+        TRAP    #15
+
+        MOVE.W  A2,D2
+        ADD.W   D1,D2
+ 
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        
         BRA     DSEND
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -867,6 +941,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

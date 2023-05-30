@@ -240,7 +240,6 @@ NOP
     BGT.B     label2
     BLE.B     label1
     BLE.B     label2
-    BGE.B     label1
     BEQ.B     label2
     BEQ.W     label1
     JSR       (A0)
@@ -359,6 +358,7 @@ label4
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

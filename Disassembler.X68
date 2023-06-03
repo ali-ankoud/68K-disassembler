@@ -11,6 +11,8 @@ STARTER
 *-------------------------------------------------------------------------------------------------- 
        
 START                       *START: Start code
+        BCC     TEST
+TEST
 
         LEA     INTRO,A1    *Intro text
         MOVE.B  #14,D0
@@ -212,6 +214,121 @@ SDONE   TRAP    #15
 
 SRET    RTS
 
+*-----------------------------------------------------------------------------------
+*using values in d3 (mode), d6 (register), and d5 (size) prints address mode
+*uses d1, d0, and a1
+*using values in d3 (mode), d6 (register), and d5 (size) prints address mode
+*uses d1, d0, and a1
+ADDRMODEALL
+*comparisons
+AM000   CMP     #%000,D3
+        BNE     AM001
+        LEA     VALD,A1
+        TRAP    #15
+        MOVE.B  D6,D1       *moving ea num to d1 to print
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        BRA     AMEND
+
+        
+AM001   CMP     #%001,D3
+        BNE     AM010
+        CMP     #00,D5
+        BEQ     DSERR
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  D6,D1       *moving ea num to d1 to print
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        BRA     AMEND
+
+AM010   CMP     #%010,D3
+        BNE     AM011
+        LEA     OPENPTR,A1
+        TRAP    #15
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  D6,D1       *moving ea num to d1 to print
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        LEA     CLOSEPTR,A1
+        TRAP    #15
+        BRA     AMEND
+
+AM011   CMP     #%011,D3
+        BNE     AM100
+        LEA     OPENPTR,A1
+        TRAP    #15
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  D6,D1       *moving ea num to d1 to print
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        LEA     CLOSEIPTR,A1
+        TRAP    #15
+        BRA     AMEND
+
+AM100   CMP     #%100,D3
+        BNE     AM111
+        LEA     OPENDPTR,A1
+        TRAP    #15
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  D6,D1       *moving ea num to d1 to print
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        LEA     CLOSEPTR,A1
+        TRAP    #15
+        BRA     AMEND
+
+AM111   CMP     #%111,D3
+        BNE     DSERR
+        CMP     #%000,D6
+        BNE     AM111001
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.W  (A2)+,D2
+        MOVEM.L D5,-(SP)    
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     AMEND
+        
+AM111001
+        CMP     #%001,D6
+        BNE     AM111100
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.L  (A2)+,D2
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        BRA     AMEND
+        
+AM111100
+        CMP     #%100,D6
+        BNE     DSERR
+        LEA     VALN,A1
+        TRAP    #15
+        MOVE.W  (A2)+,D2
+        MOVEM.L D5,-(SP)    
+        MOVE.B  #48,D5
+        MOVE.B  #3,D0
+        MOVE.B  D2,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        MOVEM.L (SP)+,D5
+        BRA     AMEND
+        
+AMEND   MOVE.B  #14,D0
+        RTS
+
 *--------------------------------------------------------------------------------------------------
 *Each machine code iterated through will be in D4. You can use all data registers as there will be a stack pointer involved
 *You will kind of have to locate the label for the first 4 bits of the machine code. There is a special case where the prefix of 000 can be variable with the size parameter
@@ -240,18 +357,95 @@ DS1                         *DS1: Tier 1 binary search for 1 side
 
 DS00                        *DS00: Disassembly processing for 00 prefix
         ROL.W   #2,D4       
-        MOVE.W  D4,D5
-        ANDI.B  #%11,D4
-        CMPI.B  #%00,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%11,D5
+        CMPI.B  #%00,D5
         BEQ     DAND
-        BRA     DSEND
+        BRA     DMOVE2
 
 DAND    NOP                 *DAND: Disassembly function serving DAND        
         
-DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
         
+*NEEDS INTEGRATION WITH AND OPCODE AND REST OF 00 PROCESSING
+DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
+        *size in d5 from above processing
+        LEA     MOVEM,A1
+        TRAP    #15
+                
+        *dest reg to d7
+        ROL.W   #3,D4
+        MOVE.B  D4,D7
+        AND.B   #%111,D7
+        
+        *dest mode to d3: An means MOVEA
+        ROL.W   #3,D4
+        MOVE.B  D4,D3
+        AND.B   #%111,D3
+        MOVE.W  D3,A6
+        
+        CMP     #%001,D3
+        BEQ     DMOVEA
+MOVECONT
+*printing size then first addressing moode, then comma
+*size is different for move
+MSIZE   MOVE.B  #14,D0
+        CMP.B   #%01,D5
+        BEQ     MSIZEB
+        CMP.B   #%11,D5
+        BEQ     MSIZEW
+        CMP.B   #%10,D5
+        BEQ     MSIZEL
+        CMP.B   #%11,D5
+        BEQ     MSIZEW       *Assume WORD type on memory pointer things
+        BRA     DSERR
+        
+MSIZEB  LEA     MODEB,A1
+        BRA     MSDONE
+
+MSIZEW  LEA     MODEW,A1
+        BRA     MSDONE
+
+MSIZEL  LEA     MODEL,A1
+        BRA     MSDONE
+
+MSDONE  TRAP    #15
+
+        LEA     SM7,A1
+        TRAP    #15
+        
+        *source mode to d3
+        ROL.W   #3,D4
+        MOVE.B  D4,D3
+        AND.B   #%111,D3
+        
+        *source reg to d6
+        ROL.W   #3,D4
+        MOVE.B  D4,D6
+        AND.B   #%111,D6
+        
+        JSR     ADDRMODEALL
+        CMP     #%001,D3
+        BEQ     MOVEERRCHECK    *as size is diff, err check for byte op on addr reg direct
+        LEA     COMMA,A1
+        TRAP    #15
+        MOVE.B  D7,D6
+        MOVE.W  A6,D3
+        JSR     ADDRMODEALL
+        BRA     DSEND
 
 DMOVEA  NOP
+        CMP     #%01,D5     *if size is byte, err
+        BEQ     DSERR
+        LEA     VALA,A1        *else, print A and return
+        TRAP    #15
+        BRA     MOVECONT
+
+MOVEERRCHECK
+        CMP     #%01,D5
+        BEQ     DSERR
+        BRA     DSEND
+
+        
 
 *DS Tier 2 ----------------------------------------------------------------------------------------
 
@@ -319,6 +513,11 @@ DS0100                      *DS0100: Processing for 0100 prefix
         
         CMP.B   #%0110,D2
         BEQ     DNOT
+        
+        MOVE.B  D2,D3
+        ANDI.B  #%1,D3
+        CMP.B   #1,D3
+        BEQ     DLEA
         
         BRA     DSEND
 
@@ -405,13 +604,146 @@ DJSR_CUSL
 DRTS    LEA     RTSM,A1
         TRAP    #15
         BRA     DSEND
+        
+        
+DLEA    *printing
+        LEA     LEAM,A1
+        TRAP    #15
+        LEA     SM7,A1
+        TRAP    #15
+
+        *getting destination register
+        ANDI.B  #%1110,D2
+        ROR.B   #1,D2
+        MOVE.W  D2,D7
+        
+        *ensuring that next two bits are 11
+        ROL.W   #2,D4
+        MOVE.B  D4,D6
+        ANDI.B  #%11,D6
+        CMP.B   #%11,D6
+        BNE     DSERR
+        
+        *getting ea mode
+        ROL.W   #3,D4
+        MOVE.B  D4,D3
+        ANDI.B  #%111,D3
+        
+        *getting ea reg
+        ROL.W   #3,D4
+        MOVE.B  D4,D6
+        ANDI.B  #%111,D6
+        
+        *printing
+JSR010
+        CMP.B   #%010,D3
+        BNE     JSR111
+        LEA     OPENPTR,A1
+        TRAP    #15
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        MOVE.B  D6,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        LEA     CLOSEPTR,A1
+        TRAP    #15
+        BRA     JSRPRINT2
+JSR111
+        CMP.B   #%111,D3
+        BNE     DSERR
+        CMP.B   #%000,D6
+        BNE     JSR111001
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.W  (A2)+,D2
+        MOVEM.L D5,-(SP)    
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        MOVE.B  #14,D0
+        BRA     JSRPRINT2
+        
+JSR111001
+        CMP.B   #%001,D6
+        BNE     DSERR
+        LEA     DOLLAR,A1
+        TRAP    #15
+        MOVE.L  (A2)+,D2
+        MOVEM.L D5,-(SP)
+        MOVE.B  #48,D5
+        JSR     HEXOUT
+        MOVEM.L (SP)+,D5
+        MOVE.B  #14,D0
+        BRA     JSRPRINT2
+        
+JSRPRINT2
+        LEA     COMMA,A1
+        TRAP    #15
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        MOVE.W  D7,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        BRA     DSEND
+        
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS0101  NOP
-        BRA     DSEND
         
 DADDQ   NOP
+        LEA     ADDM,A1
+        TRAP    #15
+        LEA     VALQ,A1
+        TRAP    #15
+        
+        *parsing data to d1
+        ROL.W   #3,D4
+        MOVE.B  D4,D1
+        AND.B   #%111,D1
+        
+        *ensuring next bit is 0
+        ROL.W   #1,D4
+        MOVE.B  D4,D5
+        AND.B   #%1,D5
+        CMP     #0,D5
+        BNE     DSERR
+        
+        *parsing and printing size
+        ROL.W   #2,D4
+        MOVE.B  D4,D5
+        AND.B   #%11,D5
+        JSR     SIZE
+        LEA     SM7,A1
+        TRAP    #15
+        
+        *parsing effective address information
+        *mode:
+        ROL.W   #3,D4
+        MOVE.B  D4,D3
+        AND.B   #%111,D3
+        
+        *register:
+        ROL.B   #3,D4
+        MOVE.B  D4,D6
+        AND.B   #%111,D6
+        
+        *printing data
+        LEA     VALN,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        LEA     COMMA,A1
+        TRAP    #15
+        
+        CMP     #%100,D3
+        BEQ     DSERR
+        JSR     ADDRMODEALL
+        
         BRA     DSEND
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -576,9 +908,44 @@ DBEQ    LEA     BEQM,A1
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS0111  NOP
-        BRA     DSEND
         
 DMOVEQ  NOP
+        LEA     MOVEM,A1
+        TRAP    #15
+        LEA     VALQ,A1
+        TRAP    #15
+        LEA     SM7,A1
+        TRAP    #15
+        
+        *getting register number
+        ROL.W   #3,D4
+        MOVE.B  D4,D5
+        AND.B   #%111,D5
+        
+        *throwing error if next digit not 0
+        ROL.W   #1,D4
+        MOVE.B  D4,D6
+        AND.B   #%1,D6
+        CMP.B   #0,D6
+        BNE     DSERR
+        
+        *getting data and printing information
+        ROL.W   #8,D4
+        MOVE.B  D4,D1
+        AND.B   #%11111111,D1
+        LEA     VALN,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        LEA     COMMA,A1
+        TRAP    #15
+        LEA     VALD,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        MOVE.W  D5,D1
+        TRAP    #15
+        
         BRA     DSEND
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -592,15 +959,91 @@ DOR     NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1001  NOP
-        BRA     DSEND
-        
 DSUB    NOP
-        BRA     DSEND
+*print sub
+        LEA     SUBM,A1
+        TRAP    #15
+
+*parse dn reg: 3 bits
+*number of the data register involved
+*nums 0-7, paired with below
+        ROL.W   #3,D4       *dn reg num in d1
+        MOVE.B  D4,D7
+        ANDI.B  #%111,D7
         
-* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        MOVE.W  D7,A6       *temporary for storage
+
+*parse opmode: 3 bits
+*Dn - <ea> -> Dn: .B=000, .W=001, .L=010
+*<ea> - <Dn> -> <ea>: .B=100, .W=101, .L=110
+*invalid: 111, 011
+*parse first digit separately
+        ROL.W   #1,D4       *addressing mode in d2
+        MOVE.B  D4,D7
+        ANDI.B  #%1,D7
+        
+*parsing next two digits of size
+        ROL.W   #2,D4       *size in d5
+        MOVE.B  D4,D5
+        ANDI.B  #%11,D5
+        JSR     SIZE
+        LEA     SM7,A1
+        TRAP    #15
+        
+*if addressing mode=<ea>-Dn -> <ea> print ea info first
+        CMP.B   #%0,D7       *if 1, then register info printed last
+        BEQ     DSUBEA      *branch to ea before register
+        
+*printing register information
+DSUBPRNTREG
+        LEA     VALD,A1
+        TRAP    #15
+        MOVE.W  A6,D1       *retrieving a6 register data
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        CMP.B   #%0,D7      *if info finished printing
+        BEQ     DSEND      *branch to end
+        LEA     COMMA,A1
+        TRAP    #15
+
+        
+* parse ea mode: 3 bits
+*Dn000, An001, (An)010, (An)+011, -(An)100, (d16An)101, (d8An,Xn)110, data111
+*address reg direct not allowed for .B operations
+*no invalid
+DSUBEA
+        ROL.W   #3,D4       *ea mode
+        MOVE.B  D4,D3
+        ANDI.B  #%111,D3
+
+*parse ea reg: 3 bits
+*no invalid: paired with opmode below (nums 0-7)
+*if mode=111, 000=.W, 001=.L, 100=#<data>
+        ROL.W   #3,D4       *ea mode
+        MOVE.B  D4,D6
+        ANDI.B  #%111,D6
+        
+        MOVE.L  D3,D4   *temporarily using D4 
+        
+*comparisons
+        CMP     #%100,D3
+        BEQ     DSERR
+        JSR     ADDRMODEALL
+        CMP.B   #%1,D7      *if info printed
+        BEQ     DSEND       *end
+        LEA     COMMA,A1
+        TRAP    #15
+        BRA     DSUBPRNTREG *check d6 for size of data
+*then take data from d4 and print (?)
+
+        BRA     DSEND
+
+
 
 DS1010  NOP
         BRA     DSEND
+
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -615,10 +1058,113 @@ DS1100  NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1101  NOP
+
+DADD    NOP
+        LEA     ADDM,A1
+        TRAP    #15
+        
+        *parse dn reg: 3 bits
+*number of the data register involved
+*nums 0-7, paired with below
+        ROL.W   #3,D4       *dn reg num in d7
+        MOVE.B  D4,D7
+        ANDI.B  #%111,D7
+        
+        MOVE.W  D7,A6
+
+*parse opmode: 3 bits
+*Dn - <ea> -> Dn: .B=000, .W=001, .L=010
+*<ea> - <Dn> -> <ea>: .B=100, .W=101, .L=110
+*invalid: 111, 011
+*parse first digit separately
+        ROL.W   #1,D4       *addressing mode in d2
+        MOVE.B  D4,D7
+        ANDI.B  #%1,D7
+        
+*parsing next two digits of size
+        ROL.W   #2,D4       *size in d5
+        MOVE.B  D4,D5
+        ANDI.B  #%11,D5
+        CMP.B   #%11,D5     *if size is 11, then opcode is ADDA
+        BEQ     DADDA
+        JSR     SIZE
+        LEA     SM7,A1
+        TRAP    #15
+        
+*if addressing mode=<ea>-Dn -> <ea> print ea info first
+        CMP.B   #%0,D7       *if 0, then register info printed last
+        BEQ     DADDEA      *branch to ea before register
+        
+*printing register information
+DADDPRNTREG
+        CMP.B   #%11,D5
+        BEQ     PRINTA
+        LEA     VALD,A1
+ADDCONT
+        TRAP    #15
+        MOVE.W  A6,D1       *moving reg num to d1 to print
+        MOVE.B  #3,D0       *moving 3 to d0 to print register number
+        TRAP    #15         *printing register number
+        MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+        CMP.B   #%0,D7      *if info finished printing
+        BEQ     DSEND      *branch to end
+        LEA     COMMA,A1
+        TRAP    #15
+
+        
+* parse ea mode: 3 bits
+*Dn000, An001, (An)010, (An)+011, -(An)100, (d16An)101, (d8An,Xn)110, data111
+*address reg direct not allowed for .B operations
+*no invalid
+DADDEA
+        ROL.W   #3,D4       *ea mode
+        MOVE.B  D4,D3
+        ANDI.B  #%111,D3
+
+*parse ea reg: 3 bits
+*no invalid: paired with opmode below (nums 0-7)
+*if mode=111, 000=.W, 001=.L, 100=#<data>
+        ROL.W   #3,D4       *ea mode
+        MOVE.B  D4,D6
+        ANDI.B  #%111,D6
+        
+*comparisons
+        CMP     #%100,D3
+        BEQ     ADDDATACHECK
+DATACHECKCONT
+        JSR     ADDRMODEALL
+        CMP.B   #%1,D7      *if info printed
+        BEQ     DSEND       *end
+        LEA     COMMA,A1
+        TRAP    #15
+        BRA     DADDPRNTREG 
+
         BRA     DSEND
         
+PRINTA  LEA     VALA,A1
+        BRA     ADDCONT
+
+        
 DADDA   NOP
-        BRA     DSEND
+        LEA     VALA,A1
+        TRAP    #15
+        CMP.B   #%0,D7      *for adda, 0=word, 1=longword
+        BNE     ADDAL
+        LEA     MODEW,A1
+        BRA     ADDSIZEEND
+ADDAL   LEA     MODEL,A1
+        BRA     ADDSIZEEND
+ADDSIZEEND
+        TRAP    #15
+        LEA     SM7,A1
+        TRAP    #15
+        MOVE.B  #%0,D7       *set d2 to print adda in correct order: address register always last
+        BRA     DADDEA
+ADDDATACHECK
+        CMP.B   #%11,D5
+        BEQ     DSERR
+        BRA     DATACHECKCONT
+        
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -898,6 +1444,7 @@ VALA    DC.B    'A',0
 VALD    DC.B    'D',0
 VALN    DC.B    '#',0
 VAL0    DC.B    '0',0
+VALQ    DC.B    'Q',0
 
 OPENPTR     DC.B    '(',0
 OPENDPTR    DC.B    '-(',0
@@ -941,13 +1488,3 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
-
-
-
-
-
-
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~

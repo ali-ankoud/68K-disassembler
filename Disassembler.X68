@@ -2,7 +2,7 @@
 * Title      : Disassembler Snippet
 * Written by : ARM Cortex Companions
 * Date       : 5/15/2023
-* Description: Ben Schipunov contribution to the disassembler
+* Description: Ali Ankoud contribution to the disassembler
 *-----------------------------------------------------------
 
 STARTER
@@ -525,8 +525,102 @@ DNOP    LEA     NOPM,A1
         TRAP    #15
         BRA     DSEND
         
-DNOT    NOP
+DNOT    ROL.W   #2,D4           ; shift D4 left by 2 bits to get size
+        MOVE.B  D4,D5           ; move the byte in D4 to D5
+        ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+
+        CMP.B   #%00,D5         ; compare with byte size
+        BEQ     DNOTB
+        CMP.B   #%01,D5         ; compare with word size
+        BEQ     DNOTW
+        CMP.B   #%10,D5         ; compare with long size
+        BEQ     DNOTL
+        
+        BRA     DSEND           ; branch to DSEND in case of invalid code
+
+DNOTB   LEA     NOTM,A1         ; load effective address of NOTM string
+        TRAP    #15             ; print NOTM string
+        LEA     MODEB,A1        ; load effective address of MODEB string
+        TRAP    #15             ; print MODEB string
+        BRA     DNOTA           ; branch to addressing mode parsing
+
+DNOTW   LEA     NOTM,A1         ; load effective address of NOTM string
+        TRAP    #15             ; print NOTM string
+        LEA     MODEW,A1        ; load effective address of MODEW string
+        TRAP    #15             ; print MODEW string
+        BRA     DNOTA           ; branch to addressing mode parsing
+
+DNOTL   LEA     NOTM,A1         ; load effective address of NOTM string
+        TRAP    #15             ; print NOTM string
+        LEA     MODEL,A1        ; load effective address of MODEL string
+        TRAP    #15             ; print MODEL string
+        BRA     DNOTA           ; branch to addressing mode parsing
+
+DNOTA   ROL.W   #6,D4           ; shift D4 left by 6 bits to get addressing mode and register
+        MOVE.B  D4,D1           ; move the byte in D4 to D1
+        ANDI.B  #%111111,D1     ; AND operation to isolate the last 6 bits
+
+        ; Now process addressing mode and register based on the value in D1
+
+        MOVE.B  D1,D5           ; Move the byte in D1 to D5
+        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
+        BEQ     DREG            ; If it is direct register mode
+        CMP.B   #%010,D5        ; Compare with An
+        BEQ     ADREG
+        CMP.B   #%011,D5        ; Compare with (An)+
+        BEQ     ADREGP
+        CMP.B   #%100,D5        ; Compare with -(An)
+        BEQ     MADREG
+        CMP.B   #%111,D5        ; Compare with (xxx).W or (xxx).L
+        BEQ     EXT
+            
         BRA     DSEND
+
+DREG    MOVE.B  D1,D6           ; Move the byte in D1 to D6
+        ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits for register number
+        ADD.B   VALD,D6         ; Convert register number to ASCII
+        LEA     VALD,A1         ; Load effective address of Dn
+        TRAP    #15             ; Print Dn
+        BRA     DSEND
+
+ADREG   MOVE.B  D1,D6           ; Similar to DREG, but for An mode
+        ANDI.B  #%111,D6
+        ADD.B   VALA,D6
+        LEA     VALA,A1
+        TRAP    #15
+        BRA     DSEND
+
+ADREGP  MOVE.B  D1,D6           ; Similar to ADREG, but for (An)+ mode
+        ANDI.B  #%111,D6
+        ADD.B   VALA,D6
+        LEA     VALA,A1
+        TRAP    #15
+        LEA     CLOSEIPTR,A1    ; Load effective address of )+
+        TRAP    #15             ; Print )+
+        BRA     DSEND
+
+MADREG  MOVE.B  D1,D6           ; Similar to ADREG, but for -(An) mode
+        ANDI.B  #%111,D6
+        ADD.B   VALA,D6
+        LEA     OPENDPTR,A1     ; Load effective address of -(
+        TRAP    #15             ; Print -(
+        LEA     VALA,A1
+        TRAP    #15
+        LEA     CLOSEPTR,A1     ; Load effective address of )
+        TRAP    #15             ; Print )
+        BRA     DSEND
+
+EXT     MOVE.B  D1,D6           ; For (xxx).W and (xxx).L modes
+        ANDI.B  #%1,D6
+        BEQ     EXTW
+        LEA     VALN,A1         ; Load effective address of #
+        TRAP    #15             ; Print #
+        BRA     DSEND
+
+EXTW    LEA     VAL0,A1         ; Load effective address of 0
+        TRAP    #15             ; Print 0
+        BRA     DSEND
+
         
 DJSR    ROL.W   #2,D4
         MOVE.B  D4,D2

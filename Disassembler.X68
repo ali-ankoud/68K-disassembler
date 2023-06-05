@@ -11,16 +11,28 @@ STARTER
 *-------------------------------------------------------------------------------------------------- 
        
 START                       *START: Start code
-        BCC     TEST
-TEST
-
+        MOVE.B  #0,D0
+        MOVE.B  #0,D1
+        MOVE.B  #0,D2
+        MOVE.B  #0,D3
+        MOVE.B  #0,D4
+        MOVE.B  #0,D5
+        MOVE.B  #0,D6
+        MOVE.B  #0,D7
+        
+        MOVE.B  #11,D0
+        MOVE.W  #$FF00,D1
+        TRAP    #15
+        
+TEST    
         LEA     INTRO,A1    *Intro text
         MOVE.B  #14,D0
         TRAP    #15
         
         LEA     ASTART,A1   *Input prompt text #1
         TRAP    #15
-
+        
+        LEA     NOTH,A1     *Fix to pervent weird thing about printing input
         MOVE.B  #2,D0       *String prompt #1
         TRAP    #15
         
@@ -36,6 +48,13 @@ TEST
         MOVE.B  #14,D0
         TRAP    #15
         
+        MOVE.B  #1,D0
+        MOVE.B  #0,D1
+        LEA     NOTH,A1
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        LEA     NOTH,A1     *Fix to pervent weird thing about printing input
         MOVE.B  #2,D0       *String prompt #2
         TRAP    #15
         
@@ -139,7 +158,7 @@ RSTEP                               *RSTEP:
         
 RCONT                       *RCONT: Used to continue off of the RPAUSE label after a pause in the printing
         CMP.L   A2,A4       *Check if we reached the end address
-        BLT     END         *End loop if so
+        BLT     DSEOF       *End loop if so
         BRA     RSTEP       *Or else continue the loop
         
 RPAUSE                      *RPAUSE: Used to pause printing at the end of the screen and wait for ENTER to be pressed
@@ -1618,7 +1637,42 @@ DSERR   MOVE.B  #14,D0
 
 DSEND   RTS
 
-END     MOVE.B  #9,D0
+DSEOF   LEA     LB,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        LEA     REST,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        MOVE.B  #5,D0
+        TRAP    #15
+        
+        CMP.B   #89,D1
+        BEQ     START
+        CMP.B   #121,D1
+        BEQ     START
+
+END     LEA     LB,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        LEA     LB,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        LEA     ENDMSG,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        LEA     AUTHOR,A1
+        TRAP    #15
+        
+        LEA     LB,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        
+        MOVE.B  #9,D0
         TRAP    #15
 
 *Initialized Variables
@@ -1631,6 +1685,9 @@ HT      EQU     $09
 INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
 ASTART  DC.B    'Enter start address: $',0
 AEND    DC.B    'Enter end address:   $',0
+REST    DC.B    'Restart Disassembler (y/n)? ',0
+ENDMSG  DC.B    'Thank you for using the Disassembler!',CR,LF,0
+AUTHOR  DC.B    'Made by the ARM Cortex Companions!',CR,LF,0
 
 VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
 VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
@@ -1649,6 +1706,8 @@ SM6     DC.B    '      ',0
 SM7     DC.B    '       ',0
 
 TESTM   DC.B    'TEST',0
+
+NOTH    DC.B    '',0
 
 ERRM    DC.B    '  *ERROR',0
 
@@ -1705,3 +1764,8 @@ BRAM    DC.B    'BRA',0
 
     END    START        ; last line of so
 
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~

@@ -379,10 +379,7 @@ DS00                        *DS00: Disassembly processing for 00 prefix
 DAND    ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        ADD.B   VALD,D5         ; Convert register number to ASCII
-        LEA     VALD,A1         ; Load effective address of Dn
-        TRAP    #15             ; Print Dn
-        MOVE.B  D5,D7           ; Store the register number for later use
+        MOVE.B  D5,D6           ; Store the register number in D6 for later use
 
         ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -415,29 +412,17 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
         BRA     DANDA           ; Branch to addressing mode parsing
 
 DANDA   ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
-
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
         ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
-        MOVE.B  D5,D6           ; Store mode in D6 for further checks
-
+        MOVE.B  D5,D3           ; Store mode in D3 for further checks
         ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-        ADD.B   VALD,D4         ; Convert register number to ASCII
-        LEA     VALD,A1         ; Load effective address of Dn
-        TRAP    #15             ; Print Dn
+        MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
-        CMP.B   #%000,D6        ; Compare mode with Dn
-        BEQ     DSEND
-        CMP.B   #%111,D6        ; Compare mode with (xxx).W or (xxx).L
-        BEQ     DSEND
-        CMP.B   #%010,D6        ; Compare mode with (An)
-        BEQ     DSEND
-        CMP.B   #%011,D6        ; Compare mode with (An)+
-        BEQ     DSEND
-        CMP.B   #%100,D6        ; Compare mode with -(An)
-        BEQ     DSEND
-        
-        BRA     DSEND
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+
+        BRA     DSEND                 
+
 
         
 *NEEDS INTEGRATION WITH AND OPCODE AND REST OF 00 PROCESSING

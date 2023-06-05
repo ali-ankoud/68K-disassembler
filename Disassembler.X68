@@ -48,12 +48,6 @@ TEST
         MOVE.B  #14,D0
         TRAP    #15
         
-        MOVE.B  #1,D0
-        MOVE.B  #0,D1
-        LEA     NOTH,A1
-        TRAP    #15
-        MOVE.B  #14,D0
-        
         LEA     NOTH,A1     *Fix to pervent weird thing about printing input
         MOVE.B  #2,D0       *String prompt #2
         TRAP    #15
@@ -1708,6 +1702,7 @@ SM7     DC.B    '       ',0
 TESTM   DC.B    'TEST',0
 
 NOTH    DC.B    '',0
+NOTH2   DC.B    '',0
 
 ERRM    DC.B    '  *ERROR',0
 

@@ -578,6 +578,11 @@ DS0100                      *DS0100: Processing for 0100 prefix
         CMPI.W  #%1110011101010000,D4
         BEQ     DRTS
         
+        MOVE.W  D4,D2
+        ANDI.W  #%0001110000000000,D2
+        CMPI.W  #%0001110000000000,D2
+        BEQ     DLEA
+        
         ROL.W   #4,D4
         MOVE.B  D4,D2
         ANDI.B  #%1111,D2
@@ -588,12 +593,7 @@ DS0100                      *DS0100: Processing for 0100 prefix
         CMP.B   #%0110,D2
         BEQ     DNOT
         
-        MOVE.B  D2,D3
-        ANDI.B  #%1,D3
-        CMP.B   #1,D3
-        BEQ     DLEA
-        
-        BRA     DSEND
+        BRA     DSERRUNS
 
 DNOP    LEA     NOPM,A1
         TRAP    #15
@@ -781,28 +781,42 @@ DLEA    *printing
         TRAP    #15
 
         *getting destination register
-        ANDI.B  #%1110,D2
-        ROR.B   #1,D2
-        MOVE.W  D2,D7
-        
-        *ensuring that next two bits are 11
-        ROL.W   #2,D4
-        MOVE.B  D4,D6
-        ANDI.B  #%11,D6
-        CMP.B   #%11,D6
-        BNE     DSERR
+        ROL.W   #3,D4
+        MOVE.B  D4,D2
+        ANDI.B  #%111,D2
         
         *getting ea mode
         ROL.W   #3,D4
         MOVE.B  D4,D3
         ANDI.B  #%111,D3
         
+        CMP.B   #%010,D3
+        BEQ     DLEAP
+        
+        CMP.B   #%111,D3
+        BEQ     DLEAP
+        
+        BRA     DSERREA
+        
         *getting ea reg
-        ROL.W   #3,D4
+DLEAP   ROL.W   #3,D4
         MOVE.B  D4,D6
         ANDI.B  #%111,D6
         
         *printing
+        JSR     ADDRMODEALL
+        
+        LEA     COMMA,A1
+        TRAP    #15
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        MOVE.B  D2,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        BRA DSEND
+        
 JSR010
         CMP.B   #%010,D3
         BNE     JSR111
@@ -1628,6 +1642,18 @@ DS1111  NOP
 DSERR   MOVE.B  #14,D0
         LEA     ERRM,A1
         TRAP    #15
+        BRA     DSEND
+        
+DSERRUNS
+        MOVE.B  #14,D0
+        LEA     ERRMUNS,A1
+        TRAP    #15
+        BRA     DSEND
+
+DSERREA
+        MOVE.B  #14,D0
+        LEA     ERRMEA,A1
+        TRAP    #15
 
 DSEND   RTS
 
@@ -1704,7 +1730,9 @@ TESTM   DC.B    'TEST',0
 NOTH    DC.B    '',0
 NOTH2   DC.B    '',0
 
-ERRM    DC.B    '  *ERROR',0
+ERRM    DC.B    ' *ERROR',0
+ERRMUNS DC.B    ' *ERROR: Unsupported Instruction',0
+ERRMEA  DC.B    ' *ERROR: Unsupported Addressing Mode',0
 
 MODEB   DC.B    '.B',0
 MODEW   DC.B    '.W',0
@@ -1758,6 +1786,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 *~Font name~Courier New~

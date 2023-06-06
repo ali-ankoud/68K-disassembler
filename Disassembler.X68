@@ -752,13 +752,13 @@ DLEA    *printing
         LEA     SM7,A1
         TRAP    #15
         
-        *shifting out 111
-        ROL.W   #3,D4
-        
         *getting destination register
         ROL.W   #3,D4
         MOVE.B  D4,D2
         ANDI.B  #%111,D2
+        
+        *shifting out 111
+        ROL.W   #3,D4
         
         *getting ea mode
         ROL.W   #3,D4
@@ -2049,6 +2049,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

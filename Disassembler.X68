@@ -331,12 +331,12 @@ AM111100
         TRAP    #15
         MOVE.W  (A2)+,D2
         MOVEM.L D5,-(SP)    
-        MOVE.B  #48,D5
         MOVE.B  #3,D0
-        MOVE.B  D2,D1
+        MOVE.W  D2,D1
         TRAP    #15
         MOVE.B  #14,D0
         MOVEM.L (SP)+,D5
+        MOVE.W  #0,D1
         BRA     AMEND
         
 AMEND   MOVE.B  #14,D0

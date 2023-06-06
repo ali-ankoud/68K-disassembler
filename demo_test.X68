@@ -83,7 +83,7 @@ NOP
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
     MOVEM.W   D1,-(A1)
-    MOVEM.W   A1-A7/D1-D7,-(A1)
+    MOVEM.W   A1-A5/D4-D7,-(A1)
     MOVEM.L   D1-D7,-(A1)
     MOVEM.W   A1/D7,-(A1)
     MOVEM.L   A1/D7,-(A1)
@@ -359,6 +359,7 @@ label4
 * Put variables and constants here
 
     END    START        ; last line of source
+
 
 
 

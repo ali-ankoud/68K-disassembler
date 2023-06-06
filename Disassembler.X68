@@ -394,11 +394,11 @@ DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
         
         *dest mode to d3: An means MOVEA
         ROL.W   #3,D4
-        MOVE.B  D4,D3
-        AND.B   #%111,D3
-        MOVE.W  D3,A6
+        MOVE.B  D4,D2
+        AND.B   #%111,D2
+        MOVE.W  D2,A6
         
-        CMP     #%001,D3
+        CMP.B   #%001,D2
         BEQ     DMOVEA
 MOVECONT
 *printing size then first addressing moode, then comma
@@ -464,13 +464,15 @@ MSDONE  TRAP    #15
         MOVE.B  D4,D6
         AND.B   #%111,D6
         
+        MOVEM   D2,-(SP)
         JSR     ADDRMODEALL
+        MOVEM   (SP)+,D2
         CMP     #%001,D3
         BEQ     MOVEERRCHECK    *as size is diff, err check for byte op on addr reg direct
-        LEA     COMMA,A1
+MSDONE2 LEA     COMMA,A1
         TRAP    #15
         MOVE.B  D7,D6
-        MOVE.W  A6,D3
+        MOVE.B  D2,D3
         JSR     ADDRMODEALL
         BRA     DSEND
 
@@ -484,7 +486,7 @@ DMOVEA  NOP
 MOVEERRCHECK
         CMP     #%01,D5
         BEQ     DSERR
-        BRA     DSEND
+        BRA     MSDONE2
 
         
 

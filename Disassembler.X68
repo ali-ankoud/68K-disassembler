@@ -962,7 +962,9 @@ MOVEMEA
         CMP.B   #1,D7
         BNE     MOVEMEB
         
+        MOVEM.L D2,-(SP)
         JSR     ADDRMODEALL
+        MOVEM.L (SP)+,D2
         
         LEA     COMMA,A1
         TRAP    #15
@@ -1346,7 +1348,7 @@ DMOVEQ  NOP
         TRAP    #15
         LEA     VALQ,A1
         TRAP    #15
-        LEA     SM3,A1
+        LEA     SM5,A1
         TRAP    #15
         
         *getting register number

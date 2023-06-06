@@ -439,7 +439,7 @@ MSIZEL  LEA     MODEL,A1
 
 MSDONE  TRAP    #15
 
-        LEA     SM5,A1
+        LEA     SM4,A1
         TRAP    #15
         
         *source mode to d3
@@ -1054,7 +1054,7 @@ DMOVEQ  NOP
         TRAP    #15
         LEA     VALQ,A1
         TRAP    #15
-        LEA     SM5,A1
+        LEA     SM4,A1
         TRAP    #15
         
         *getting register number

@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 6/5/2023 5:43:08 PM
+Created On: 6/5/2023 5:48:59 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Snippet
@@ -443,7 +443,7 @@ Created On: 6/5/2023 5:43:08 PM
 0000142C                           439  
 0000142C  4E4F                     440  MSDONE  TRAP    #15
 0000142E                           441  
-0000142E  43F9 00002203            442          LEA     SM5,A1
+0000142E  43F9 000021FE            442          LEA     SM4,A1
 00001434  4E4F                     443          TRAP    #15
 00001436                           444          
 00001436                           445          *source mode to d3
@@ -1058,7 +1058,7 @@ Created On: 6/5/2023 5:43:08 PM
 00001A20  4E4F                    1054          TRAP    #15
 00001A22  43F9 0000225E           1055          LEA     VALQ,A1
 00001A28  4E4F                    1056          TRAP    #15
-00001A2A  43F9 00002203           1057          LEA     SM5,A1
+00001A2A  43F9 000021FE           1057          LEA     SM4,A1
 00001A30  4E4F                    1058          TRAP    #15
 00001A32                          1059          
 00001A32                          1060          *getting register number

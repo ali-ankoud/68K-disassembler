@@ -1170,7 +1170,9 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
+DORA    LEA     SM6,A1
+        TRAP    #15
+		ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
         ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode

@@ -121,6 +121,11 @@ VERR3   LEA     VERR3M,A1   *Throw length error
 *--------------------------------------------------------------------------------------------------
 
 READLN                              *READLN: Start READLN for loop
+        MOVE.B  #11,D0              *Clear screen for fun
+        MOVE.W  #$FF00,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        
         MOVE.L  A3,A2               *Set current address to start address
         MOVE.B  #0,D5               * [D5] Initialize counter to 32 (# lines to pause the screen)
 
@@ -372,69 +377,9 @@ DS00                        *DS00: Disassembly processing for 00 prefix
         ROL.W   #2,D4       
         MOVE.B  D4,D5
         ANDI.B  #%11,D5
-        CMPI.B  #%00,D5
-        BEQ     DAND
         BRA     DMOVE2
 
-DAND    ROL.W   #4,D4
-        MOVE.B  D4,D5
-        ANDI.B  #%0010,D5
-        CMPI.B  #%0010,D5
-        BNE     DSERRINS
-        
-        ROL.W   #2,D4
-        MOVE.B  D4,D5
-        ANDI.B  #%111,D5
-        
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
-        MOVE.B  D4,D3           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D3        ; AND operation to isolate the last 3 bits
-        
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
-        MOVE.B  D4,D6           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits
-        
-        LEA     VALD,A1         ; Load effective address of Dn
-        TRAP    #15             ; Print Dn
-        MOVE.B  D5,D7           ; Store the register number for later use
-
-        
-        CMP.B   #%000,D5        ; Compare with byte size
-        BEQ     DANDB
-        CMP.B   #%001,D5        ; Compare with word size
-        BEQ     DANDW
-        CMP.B   #%010,D5        ; Compare with long size
-        BEQ     DANDL
-        
-        BRA     DSEND           ; Branch to DSEND in case of invalid code
-
-DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEB,A1        ; Load effective address of MODEB string
-        TRAP    #15             ; Print MODEB string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEW,A1        ; Load effective address of MODEW string
-        TRAP    #15             ; Print MODEW string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEL,A1        ; Load effective address of MODEL string
-        TRAP    #15             ; Print MODEL string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDA   LEA     SM5,A1
-        TRAP    #15
-
-        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-        MOVE.B  D4,D6           ; Store the register number in D6 for later use
-
-        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
-
-        BRA     DSEND                 
+ 
 
 
         
@@ -1282,7 +1227,66 @@ DS1011  NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1100  NOP
-        BRA     DSERRINS
+        
+DAND    ROL.W   #4,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%0010,D5
+        CMPI.B  #%0010,D5
+        BNE     DSERRINS
+        
+        ROL.W   #2,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%111,D5
+        
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        MOVE.B  D4,D3           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D3        ; AND operation to isolate the last 3 bits
+        
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
+        MOVE.B  D4,D6           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits
+        
+        LEA     VALD,A1         ; Load effective address of Dn
+        TRAP    #15             ; Print Dn
+        MOVE.B  D5,D7           ; Store the register number for later use
+
+        
+        CMP.B   #%000,D5        ; Compare with byte size
+        BEQ     DANDB
+        CMP.B   #%001,D5        ; Compare with word size
+        BEQ     DANDW
+        CMP.B   #%010,D5        ; Compare with long size
+        BEQ     DANDL
+        
+        BRA     DSEND           ; Branch to DSEND in case of invalid code
+
+DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEB,A1        ; Load effective address of MODEB string
+        TRAP    #15             ; Print MODEB string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEW,A1        ; Load effective address of MODEW string
+        TRAP    #15             ; Print MODEW string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEL,A1        ; Load effective address of MODEL string
+        TRAP    #15             ; Print MODEL string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDA   LEA     SM5,A1
+        TRAP    #15
+
+        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
+        MOVE.B  D4,D6           ; Store the register number in D6 for later use
+
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+
+        BRA     DSEND                
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1772,6 +1776,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

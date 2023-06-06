@@ -2033,7 +2033,7 @@ NOTH    DC.B    '',0
 NOTH2   DC.B    '',0
 
 ERRM    DC.B    ' *ERROR',0
-ERRMINS DC.B    '',0
+ERRMINS DC.B    ' *ERROR: Unsupported Instruction',0
 ERRMEA  DC.B    ' *ERROR: Unsupported Addressing Mode',0
 
 MODEB   DC.B    '.B',0
@@ -2091,6 +2091,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

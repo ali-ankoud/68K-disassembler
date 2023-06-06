@@ -24,7 +24,7 @@ START                       *START: Start code
         MOVE.W  #$FF00,D1
         TRAP    #15
         
-NONINIT    
+TEST    
         LEA     INTRO,A1    *Intro text
         MOVE.B  #14,D0
         TRAP    #15
@@ -103,41 +103,24 @@ VINPUT  CMP.L   A3,A4       *Verify input from parsing
         BLT     VERR1
         BRA     READLN
 
-VERR1   MOVE.B  #11,D0
-        MOVE.W  #$FF00,D1
-        TRAP    #15
-        
-        LEA     VERR1M,A1   *Throw parsing error
+VERR1   LEA     VERR1M,A1   *Throw parsing error
         MOVE.B  #14,D0
         TRAP    #15
-        BRA     NONINIT
+        BRA     END
 
-VERR2   MOVE.B  #11,D0
-        MOVE.W  #$FF00,D1
-        TRAP    #15
-        
-        LEA     VERR2M,A1   *Throw range error
+VERR2   LEA     VERR2M,A1   *Throw range error
         MOVE.B  #14,D0
         TRAP    #15
-        BRA     NONINIT
+        BRA     END
 
-VERR3   MOVE.B  #11,D0
-        MOVE.W  #$FF00,D1
-        TRAP    #15
-        
-        LEA     VERR3M,A1   *Throw length error
+VERR3   LEA     VERR3M,A1   *Throw length error
         MOVE.B  #14,D0
         TRAP    #15
-        BRA     NONINIT
+        BRA     END
         
 *--------------------------------------------------------------------------------------------------
 
 READLN                              *READLN: Start READLN for loop
-        MOVE.B  #11,D0              *Clear screen for fun
-        MOVE.W  #$FF00,D1
-        TRAP    #15
-        MOVE.B  #14,D0
-        
         MOVE.L  A3,A2               *Set current address to start address
         MOVE.B  #0,D5               * [D5] Initialize counter to 32 (# lines to pause the screen)
 
@@ -389,9 +372,69 @@ DS00                        *DS00: Disassembly processing for 00 prefix
         ROL.W   #2,D4       
         MOVE.B  D4,D5
         ANDI.B  #%11,D5
+        CMPI.B  #%00,D5
+        BEQ     DAND
         BRA     DMOVE2
 
- 
+DAND    ROL.W   #4,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%0010,D5
+        CMPI.B  #%0010,D5
+        BNE     DSERRINS
+        
+        ROL.W   #2,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%111,D5
+        
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        MOVE.B  D4,D3           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D3        ; AND operation to isolate the last 3 bits
+        
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
+        MOVE.B  D4,D6           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits
+        
+        LEA     VALD,A1         ; Load effective address of Dn
+        TRAP    #15             ; Print Dn
+        MOVE.B  D5,D7           ; Store the register number for later use
+
+        
+        CMP.B   #%000,D5        ; Compare with byte size
+        BEQ     DANDB
+        CMP.B   #%001,D5        ; Compare with word size
+        BEQ     DANDW
+        CMP.B   #%010,D5        ; Compare with long size
+        BEQ     DANDL
+        
+        BRA     DSEND           ; Branch to DSEND in case of invalid code
+
+DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEB,A1        ; Load effective address of MODEB string
+        TRAP    #15             ; Print MODEB string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEW,A1        ; Load effective address of MODEW string
+        TRAP    #15             ; Print MODEW string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEL,A1        ; Load effective address of MODEL string
+        TRAP    #15             ; Print MODEL string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDA   LEA     SM5,A1
+        TRAP    #15
+
+        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
+        MOVE.B  D4,D6           ; Store the register number in D6 for later use
+
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+
+        BRA     DSEND                 
 
 
         
@@ -439,7 +482,7 @@ MSIZEL  LEA     MODEL,A1
 
 MSDONE  TRAP    #15
 
-        LEA     SM4,A1
+        LEA     SM7,A1
         TRAP    #15
         
         *source mode to d3
@@ -537,6 +580,11 @@ DS0100                      *DS0100: Processing for 0100 prefix
         ANDI.W  #%0001110000000000,D2
         CMPI.W  #%0001110000000000,D2
         BEQ     DLEA
+        
+        MOVE.W  D4,D2
+        ANDI.W  #%1011100000000000,D2
+        CMPI.W  #%1000100000000000,D2
+        BEQ     DMOVEM
         
         ROL.W   #4,D4
         MOVE.B  D4,D2
@@ -829,6 +877,45 @@ JSRPRINT2
         
         BRA     DSEND
         
+        
+DMOVEM
+*printing movem
+        LEA     MOVEM,A1
+        TRAP    #15
+        LEA     VALM,A1
+        TRAP    #15
+        
+*parsing initial bits
+        ROL.W   #2,D4
+        MOVE.B  D4,D6
+        ANDI.B  #%1,D6      *getting dr field
+        
+        ROL.W   #4,D4
+        MOVE.B  D4,D5
+        ANDI.B  #1,D5       *getting size field
+        
+        *printing size
+        CMP     #0,D5
+        BNE     MOVEML
+        LEA     MODEW,A1
+        TRAP    #15
+        BRA     MOVEMEA
+MOVEML        
+        LEA     MODEL,A1
+        TRAP    #15
+        
+MOVEMEA
+        LEA     SM7,A1
+        TRAP    #15
+        
+        ROL.W   #3,D4       *mode bits
+        MOVE.B  D4,D3
+        ANDI.B  #%111,D3
+        ROL.W   #3,D4       *register bits
+        MOVE.B  D4,D6
+        ANDI.B  #%111,D6
+        
+        
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1054,7 +1141,7 @@ DMOVEQ  NOP
         TRAP    #15
         LEA     VALQ,A1
         TRAP    #15
-        LEA     SM4,A1
+        LEA     SM7,A1
         TRAP    #15
         
         *getting register number
@@ -1096,14 +1183,6 @@ DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
         MOVE.B  D5,D6           ; Store the register number in D6 for later use
-        LEA     VALD,A1         ; Load effective address of VALD string
-        TRAP    #15             ; Print D
-        MOVE.B  #3,D0           ; Move 3 to D0 to print register number
-        MOVE.B  D6,D1           ; Move the register number in D6 to D1
-        TRAP    #15             ; Print the register number
-
-        LEA     COMMA,A1        ; Load effective address of COMMA string
-        TRAP    #15             ; Print comma
 
         ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1144,8 +1223,8 @@ DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode
         MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
         JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
-                    
-        BRA     DSEND                     
+
+        BRA     DSEND                    
 
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1245,66 +1324,7 @@ DS1011  NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1100  NOP
-        
-DAND    ROL.W   #4,D4
-        MOVE.B  D4,D5
-        ANDI.B  #%0010,D5
-        CMPI.B  #%0010,D5
-        BNE     DSERRINS
-        
-        ROL.W   #2,D4
-        MOVE.B  D4,D5
-        ANDI.B  #%111,D5
-        
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
-        MOVE.B  D4,D3           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D3        ; AND operation to isolate the last 3 bits
-        
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
-        MOVE.B  D4,D6           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits
-        
-        LEA     VALD,A1         ; Load effective address of Dn
-        TRAP    #15             ; Print Dn
-        MOVE.B  D5,D7           ; Store the register number for later use
-
-        
-        CMP.B   #%000,D5        ; Compare with byte size
-        BEQ     DANDB
-        CMP.B   #%001,D5        ; Compare with word size
-        BEQ     DANDW
-        CMP.B   #%010,D5        ; Compare with long size
-        BEQ     DANDL
-        
-        BRA     DSEND           ; Branch to DSEND in case of invalid code
-
-DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEB,A1        ; Load effective address of MODEB string
-        TRAP    #15             ; Print MODEB string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEW,A1        ; Load effective address of MODEW string
-        TRAP    #15             ; Print MODEW string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEL,A1        ; Load effective address of MODEL string
-        TRAP    #15             ; Print MODEL string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDA   LEA     SM5,A1
-        TRAP    #15
-
-        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-        MOVE.B  D4,D6           ; Store the register number in D6 for later use
-
-        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
-
-        BRA     DSEND                
+        BRA     DSERRINS
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1718,8 +1738,8 @@ ENDMSG  DC.B    'Thank you for using the Disassembler!',CR,LF,0
 AUTHOR  DC.B    'Made by the ARM Cortex Companions!',CR,LF,0
 
 VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
-VERR2M  DC.B    'ERROR: Invalid characters in input! Please type the inputs again!',CR,LF,CR,LF,0
-VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters! Please type the inputs again!',CR,LF,CR,LF,0
+VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
+VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
 
 LB      DC.B    CR,LF,0
 
@@ -1751,6 +1771,7 @@ VALD    DC.B    'D',0
 VALN    DC.B    '#',0
 VAL0    DC.B    '0',0
 VALQ    DC.B    'Q',0
+VALM    DC.B    'M',0
 
 OPENPTR     DC.B    '(',0
 OPENDPTR    DC.B    '-(',0
@@ -1794,7 +1815,6 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
-
 
 
 

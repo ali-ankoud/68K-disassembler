@@ -887,8 +887,8 @@ DMOVEM
         
 *parsing initial bits
         ROL.W   #2,D4
-        MOVE.B  D4,D6
-        ANDI.B  #%1,D6      *getting dr field
+        MOVE.B  D4,D7
+        ANDI.B  #%1,D7      *getting dr field
         
         ROL.W   #4,D4
         MOVE.B  D4,D5
@@ -904,8 +904,8 @@ MOVEML
         LEA     MODEL,A1
         TRAP    #15
         
-MOVEMEA
-        LEA     SM7,A1
+MOVEMEA   
+        LEA     SM3,A1
         TRAP    #15
         
         ROL.W   #3,D4       *mode bits
@@ -915,7 +915,168 @@ MOVEMEA
         MOVE.B  D4,D6
         ANDI.B  #%111,D6
         
+        CMP.B   #1,D7
+        BNE     MOVEMEB
         
+        JSR     ADDRMODEALL
+        
+        LEA     COMMA,A1
+        TRAP    #15
+        
+MOVEMEB MOVE.W  (A2)+,D2
+        
+        MOVEM.L D7,-(SP)
+        
+        CMP.B   #%100,D3
+        BEQ     MOVEMEB1
+        
+        MOVE.W  D2,D7
+        ANDI.W  #$FF00,D7
+        LSR.W   #8,D7
+        BRA     MOVEMEB2
+        
+MOVEMEB1 
+        MOVE.W  D2,D7
+        ANDI.W  #$FF,D7
+        
+MOVEMEB2
+
+        JSR     MOVEMLOOP
+        MOVEM.L (SP)+,D7
+        MOVE.B  #55,D0
+        CMP.B   #8,D4
+        BGE     MOVEM3
+        MOVE.B  #14,D0
+        
+MOVEM2  LEA     VALA,A1
+        TRAP    #15
+        
+        MOVE.B  #3,D0
+        MOVE.B  D4,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        CMP.B   #1,D5
+        BEQ     MOVEM3
+        
+        LEA     DASH,A1
+        TRAP    #15
+        ADD.B   D5,D1
+        SUBQ.B  #1,D1
+        
+        LEA     VALA,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+MOVEM3  MOVEM.L D7,-(SP)
+        MOVE.W  D2,D7
+        
+        CMP.B   #%100,D3
+        BEQ     MOVEM31
+        
+        ANDI.W  #$FF,D7
+        BRA     MOVEM32
+        
+MOVEM31 
+        ANDI.W  #$FF00,D7
+        LSR.W   #8,D7
+
+MOVEM32 JSR     MOVEMLOOP
+        MOVEM.L (SP)+,D7
+        
+        CMP.B   #55,D0
+        BEQ     MOVEM4
+        
+        CMP.B   #8,D4
+        BGE     MOVEM5
+        
+        MOVE.B  #14,D0
+        LEA     SLASH,A1
+        TRAP    #15
+
+MOVEM4  MOVE.B  #14,D0
+        CMP.B   #8,D4
+        BGE     MOVEM5
+        
+        LEA     VALD,A1
+        TRAP    #15
+        
+        MOVE.B  #3,D0
+        MOVE.B  D4,D1
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        CMP.B   #1,D5
+        BEQ     MOVEM5
+        
+        LEA     DASH,A1
+        TRAP    #15
+        ADD.B   D5,D1
+        SUBQ.B  #1,D1
+        
+        LEA     VALD,A1
+        TRAP    #15
+        MOVE.B  #3,D0
+        TRAP    #15
+        MOVE.B  #14,D0
+        
+        
+
+MOVEM5  MOVE.B  #14,D0
+        
+        CMP.B   #1,D7
+        BEQ     DSEND
+        
+        LEA     COMMA,A1
+        TRAP    #15
+        
+        JSR     ADDRMODEALL
+        
+        BRA     DSEND
+
+MOVEMLOOP
+        MOVE.B  #0,D5
+        MOVE.B  #0,D4
+        
+MOVEMSTEP
+        CMP.B   #%100,D3
+        BEQ     MOVEMSHIFTL
+        BRA     MOVEMSHIFTR
+MOVEMSTEP1
+        CMPI.B  #0,D5
+        BGT     MOVEMLOOPDONE
+        ADDQ.B  #1,D4
+        BRA     MOVEMSTEP2
+
+MOVEMSHIFTL
+        LSL.B   #1,D7
+        BCS     MOVEMLOOPINC
+        BRA     MOVEMSTEP1
+
+MOVEMSHIFTR
+        LSR.B   #1,D7
+        BCS     MOVEMLOOPINC
+        BRA     MOVEMSTEP1
+
+MOVEMSTEP2
+        CMP.B   #8,D4
+        BLT     MOVEMSTEP
+        BRA     MOVEMLOOPDONE
+
+MOVEMLOOPINC
+        ADDQ.B  #1,D5
+        BRA     MOVEMSTEP2
+
+MOVEMLOOPDONE
+        RTS
+        
+        
+MOVEMLOOPSINGLEAR
+        
+        
+        BRA     DSEND
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1781,6 +1942,8 @@ CLOSEIPTR   DC.B    ')+',0
 
 COMMA   DC.B    ',',0
 DOLLAR  DC.B    '$',0
+SLASH   DC.B    '/',0
+DASH    DC.B    '-',0
 
 NOPM    DC.B    'NOP',0
 
@@ -1815,6 +1978,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

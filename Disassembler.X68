@@ -1348,13 +1348,14 @@ DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
+        MOVE.B  D5,D7           ; Store opmode in D7 for later use
         CMP.B   #%000,D5        ; Compare with byte size
         BEQ     DORB
         CMP.B   #%001,D5        ; Compare with word size
         BEQ     DORW
         CMP.B   #%010,D5        ; Compare with long size
         BEQ     DORL
-        
+
         BRA     DSEND           ; Branch to DSEND in case of invalid code
 
 DORB    LEA     ORM,A1          ; Load effective address of ORM string
@@ -1375,7 +1376,9 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
+DORA    LEA     SM4,A1
+        TRAP    #15
+        ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
         ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
@@ -1383,9 +1386,31 @@ DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode
         ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
         MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
-        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+        CMP.B   #%100,D7        ; Compare opmode with '100'
+        BLT     DORAE           ; If opmode < '100', branch to DORAE
+        BRA     DORAD           ; Else, branch to DORAD
 
-        BRA     DSEND                    
+DORAE   JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+        MOVE.B  #14,D0          ; Set D0 to #14 to print strings
+        LEA     COMMA,A1        ; Load effective address of COMMA string
+        TRAP    #15             ; Print comma
+        LEA     VALD,A1
+        TRAP    #15
+        MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.B  #3,D0           ; Set D0 to #3 to print register number
+        TRAP    #15             ; Print register number
+        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+        BRA     DSEND           ; Branch to DSEND
+
+DORAD   MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.B  #3,D0           ; Set D0 to #3 to print register number
+        TRAP    #15             ; Print register number
+        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+        LEA     COMMA,A1        ; Load effective address of COMMA string
+        TRAP    #15             ; Print comma
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+        BRA     DSEND           ; Branch to DSEND                 
 
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

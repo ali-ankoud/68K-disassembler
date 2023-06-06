@@ -376,17 +376,29 @@ DS00                        *DS00: Disassembly processing for 00 prefix
         BEQ     DAND
         BRA     DMOVE2
 
-DAND    ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
-        MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        ADD.B   VALD,D5         ; Convert register number to ASCII
+DAND    ROL.W   #4,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%0010,D5
+        CMPI.B  #%0010,D5
+        BNE     DSERRINS
+        
+        ROL.W   #2,D4
+        MOVE.B  D4,D5
+        ANDI.B  #%111,D5
+        
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        MOVE.B  D4,D3           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D3        ; AND operation to isolate the last 3 bits
+        
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
+        MOVE.B  D4,D6           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits
+        
         LEA     VALD,A1         ; Load effective address of Dn
         TRAP    #15             ; Print Dn
         MOVE.B  D5,D7           ; Store the register number for later use
 
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
-        MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
+        
         CMP.B   #%000,D5        ; Compare with byte size
         BEQ     DANDB
         CMP.B   #%001,D5        ; Compare with word size
@@ -414,13 +426,9 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
         TRAP    #15             ; Print MODEL string
         BRA     DANDA           ; Branch to addressing mode parsing
 
-DANDA   ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
-
-        MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
-        ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
-        MOVE.B  D5,D6           ; Store mode in D6 for further checks
-
+DANDA   LEA     SM5,A1
+        TRAP    #15
+        
         ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
         ADD.B   VALD,D4         ; Convert register number to ASCII
         LEA     VALD,A1         ; Load effective address of Dn
@@ -593,7 +601,7 @@ DS0100                      *DS0100: Processing for 0100 prefix
         CMP.B   #%0110,D2
         BEQ     DNOT
         
-        BRA     DSERRUNS
+        BRA     DSERRINS
 
 DNOP    LEA     NOPM,A1
         TRAP    #15
@@ -779,7 +787,10 @@ DLEA    *printing
         TRAP    #15
         LEA     SM7,A1
         TRAP    #15
-
+        
+        *shifting out 111
+        ROL.W   #3,D4
+        
         *getting destination register
         ROL.W   #3,D4
         MOVE.B  D4,D2
@@ -947,7 +958,7 @@ DS0110
         CMP.B   #%0111,D2   *BEQ   
         BEQ     DBEQ
         
-        BRA     DSEND
+        BRA     DSERRINS
         
 DBRA    LEA     BRAM,A1
         TRAP    #15
@@ -1133,7 +1144,6 @@ DMOVEQ  NOP
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1000  NOP
-        BRA     DSEND
         
 DOR     ROL.W   #3,D4           ; shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; move the byte in D4 to D5
@@ -1285,18 +1295,18 @@ DSUBEA
 
 
 DS1010  NOP
-        BRA     DSEND
+        BRA     DSERRINS
 
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1011  NOP
-        BRA     DSEND
+        BRA     DSERRINS
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DS1100  NOP
-        BRA     DSEND
+        BRA     DSERRINS
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1644,9 +1654,9 @@ DSERR   MOVE.B  #14,D0
         TRAP    #15
         BRA     DSEND
         
-DSERRUNS
+DSERRINS
         MOVE.B  #14,D0
-        LEA     ERRMUNS,A1
+        LEA     ERRMINS,A1
         TRAP    #15
         BRA     DSEND
 
@@ -1731,7 +1741,7 @@ NOTH    DC.B    '',0
 NOTH2   DC.B    '',0
 
 ERRM    DC.B    ' *ERROR',0
-ERRMUNS DC.B    ' *ERROR: Unsupported Instruction',0
+ERRMINS DC.B    '',0
 ERRMEA  DC.B    ' *ERROR: Unsupported Addressing Mode',0
 
 MODEB   DC.B    '.B',0

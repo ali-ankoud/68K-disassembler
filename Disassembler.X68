@@ -378,79 +378,8 @@ DS00                        *DS00: Disassembly processing for 00 prefix
         MOVE.B  D4,D5
         ANDI.B  #%11,D5
         CMPI.B  #%00,D5
-        BEQ     DAND
+        BEQ     DS010
         BRA     DMOVE2
-
-DAND    ROL.W   #4,D4
-        MOVE.B  D4,D5
-        ANDI.B  #%0010,D5
-        CMPI.B  #%0010,D5
-        BNE     DSERRINS
-        
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
-        MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        MOVE.B  D5,D6           ; Store the register number in D6 for later use
-
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
-        MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        MOVE.B  D5,D7           ; Store opmode in D7 for later use
-        CMP.B   #%000,D5        ; Compare with byte size
-        BEQ     DANDB
-        CMP.B   #%001,D5        ; Compare with word size
-        BEQ     DANDW
-        CMP.B   #%010,D5        ; Compare with long size
-        BEQ     DANDL
-
-        BRA     DSEND           ; Branch to DSEND in case of invalid code
-
-DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEB,A1        ; Load effective address of MODEB string
-        TRAP    #15             ; Print MODEB string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEW,A1        ; Load effective address of MODEW string
-        TRAP    #15             ; Print MODEW string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
-        TRAP    #15             ; Print ANDM string
-        LEA     MODEL,A1        ; Load effective address of MODEL string
-        TRAP    #15             ; Print MODEL string
-        BRA     DANDA           ; Branch to addressing mode parsing
-
-DANDA   LEA     SM4,A1
-        TRAP    #15
-        ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
-        MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
-        ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
-        MOVE.B  D5,D3           ; Store mode in D3 for further checks
-        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-        MOVE.B  D4,D6           ; Store the register number in D6 for later use
-
-        CMP.B   #%100,D7        ; Compare opmode with '100'
-        BLT     DANDAE          ; If opmode < '100', branch to DANDAE
-        BRA     DANDA           ; Else, branch to DANDAD
-
-DANDAE  JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
-        MOVE.B  #14,D0          ; Set D0 to #14 to print strings
-        LEA     COMMA,A1        ; Load effective address of COMMA string
-        TRAP    #15             ; Print comma
-        LEA     VALD,A1
-        TRAP    #15
-        MOVE.B  D6,D1           ; Move ea num to D1 to print
-        MOVE.B  #3,D0           ; Set D0 to #3 to print register number
-        TRAP    #15             ; Print register number
-        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
-        BRA     DSEND           ; Branch to DSEND
-             
-
-
         
 *NEEDS INTEGRATION WITH AND OPCODE AND REST OF 00 PROCESSING
 DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
@@ -471,25 +400,10 @@ DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
         
         CMP     #%001,D3
         BEQ     DMOVEA
-        
-
 MOVECONT
 *printing size then first addressing moode, then comma
 *size is different for move
-MSIZENORM  
-        MOVE.B  #14,D0
-        CMP.B   #%01,D5
-        BEQ     MSIZEBN
-        CMP.B   #%11,D5
-        BEQ     MSIZEWN
-        CMP.B   #%10,D5
-        BEQ     MSIZELN
-        CMP.B   #%11,D5
-        BEQ     MSIZEW       *Assume WORD type on memory pointer things
-        BRA     DSERR
-        
-MSIZE
-        MOVE.B  #14,D0
+MSIZE   MOVE.B  #14,D0
         CMP.B   #%01,D5
         BEQ     MSIZEB
         CMP.B   #%11,D5
@@ -499,22 +413,7 @@ MSIZE
         CMP.B   #%11,D5
         BEQ     MSIZEW       *Assume WORD type on memory pointer things
         BRA     DSERR
-
-MSIZEBN LEA     MODEB,A1
-        TRAP    #15
-        LEA     SM1,A1
-        BRA     MSDONE
-
-MSIZEWN LEA     MODEW,A1
-        TRAP    #15
-        LEA     SM1,A1
-        BRA     MSDONE
-
-MSIZELN LEA     MODEL,A1
-        TRAP    #15
-        LEA     SM1,A1
-        BRA     MSDONE
-    
+        
 MSIZEB  LEA     MODEB,A1
         BRA     MSDONE
 
@@ -554,7 +453,7 @@ DMOVEA  NOP
         BEQ     DSERR
         LEA     VALA,A1        *else, print A and return
         TRAP    #15
-        BRA     MSIZE
+        BRA     MOVECONT
 
 MOVEERRCHECK
         CMP     #%01,D5
@@ -605,7 +504,7 @@ DS101                       *DS101: Tier 3 binary search for 101 side
 DS110                       *DS110: Tier 3 binary search for 110 side
         LSL.W   #1,D4
         BCS     DS1101
-        BRA     DS1100
+        BRA     DAND
 
 DS111                       *DS111: Tier 3 binary search for 111 side
         LSL.W   #1,D4
@@ -958,7 +857,7 @@ MOVEMEA
         ROL.W   #3,D4       *register bits
         MOVE.B  D4,D6
         ANDI.B  #%111,D6
-        MOVE.W  (A2)+,D2
+        
         CMP.B   #1,D7
         BNE     MOVEMEB
         
@@ -969,7 +868,7 @@ MOVEMEA
         LEA     COMMA,A1
         TRAP    #15
         
-MOVEMEB 
+MOVEMEB MOVE.W  (A2)+,D2
         
         MOVEM.L D7,-(SP)
         
@@ -1422,7 +1321,7 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    LEA     SM6,A1
+DORA    LEA     SM4,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1490,7 +1389,7 @@ DSUB    NOP
         MOVE.B  D4,D5
         ANDI.B  #%11,D5
         JSR     SIZE
-        LEA     SM5,A1
+        LEA     SM7,A1
         TRAP    #15
         
 *if addressing mode=<ea>-Dn -> <ea> print ea info first
@@ -1555,8 +1454,81 @@ DS1011  NOP
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DS1100  NOP
-        BRA     DSERRINS
+DAND    
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
+        MOVE.B  D5,D6           ; Store the register number in D6 for later use
+
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
+        MOVE.B  D5,D7           ; Store opmode in D7 for later use
+        CMP.B   #%000,D5        ; Compare with byte size
+        BEQ     DANDB
+        CMP.B   #%001,D5        ; Compare with word size
+        BEQ     DANDW
+        CMP.B   #%010,D5        ; Compare with long size
+        BEQ     DANDL
+
+        BRA     DSEND           ; Branch to DSEND in case of invalid code
+
+DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEB,A1        ; Load effective address of MODEB string
+        TRAP    #15             ; Print MODEB string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEW,A1        ; Load effective address of MODEW string
+        TRAP    #15             ; Print MODEW string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
+        TRAP    #15             ; Print ANDM string
+        LEA     MODEL,A1        ; Load effective address of MODEL string
+        TRAP    #15             ; Print MODEL string
+        BRA     DANDA           ; Branch to addressing mode parsing
+
+DANDA   LEA     SM4,A1
+        TRAP    #15
+        ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
+        ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
+        MOVE.B  D5,D3           ; Store mode in D3 for further checks
+        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
+        MOVE.B  D4,D6           ; Store the register number in D6 for later use
+
+        CMP.B   #%100,D7        ; Compare opmode with '100'
+        BLT     DANDAE          ; If opmode < '100', branch to DANDAE
+        BRA     DANDAD          ; Else, branch to DANDAD
+
+DANDAE  JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+        MOVE.B  #14,D0          ; Set D0 to #14 to print strings
+        LEA     COMMA,A1        ; Load effective address of COMMA string
+        TRAP    #15             ; Print comma
+        LEA     VALD,A1
+        TRAP    #15
+        MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.B  #3,D0           ; Set D0 to #3 to print register number
+        TRAP    #15             ; Print register number
+        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+        BRA     DSEND           ; Branch to DSEND
+
+DANDAD  MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.B  #3,D0           ; Set D0 to #3 to print register number
+        TRAP    #15             ; Print register number
+        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+        LEA     COMMA,A1        ; Load effective address of COMMA string
+        TRAP    #15             ; Print comma
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+        MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+        BRA     DSEND           ; Branch to DSEND 
+
+
+        BRA     DSEND       
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1659,7 +1631,7 @@ ADDAL   LEA     MODEL,A1
         BRA     ADDSIZEEND
 ADDSIZEEND
         TRAP    #15
-        LEA     SM4,A1
+        LEA     SM7,A1
         TRAP    #15
         MOVE.B  #%0,D7       *set d2 to print adda in correct order: address register always last
         BRA     DADDEA
@@ -2055,9 +2027,3 @@ BRAM    DC.B    'BRA',0
 
 
 
-
-
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~

@@ -24,7 +24,7 @@ START                       *START: Start code
         MOVE.W  #$FF00,D1
         TRAP    #15
         
-TEST    
+NONINIT    
         LEA     INTRO,A1    *Intro text
         MOVE.B  #14,D0
         TRAP    #15
@@ -103,20 +103,32 @@ VINPUT  CMP.L   A3,A4       *Verify input from parsing
         BLT     VERR1
         BRA     READLN
 
-VERR1   LEA     VERR1M,A1   *Throw parsing error
+VERR1   MOVE.B  #11,D0
+        MOVE.W  #$FF00,D1
+        TRAP    #15
+        
+        LEA     VERR1M,A1   *Throw parsing error
         MOVE.B  #14,D0
         TRAP    #15
-        BRA     END
+        BRA     NONINIT
 
-VERR2   LEA     VERR2M,A1   *Throw range error
+VERR2   MOVE.B  #11,D0
+        MOVE.W  #$FF00,D1
+        TRAP    #15
+        
+        LEA     VERR2M,A1   *Throw range error
         MOVE.B  #14,D0
         TRAP    #15
-        BRA     END
+        BRA     NONINIT
 
-VERR3   LEA     VERR3M,A1   *Throw length error
+VERR3   MOVE.B  #11,D0
+        MOVE.W  #$FF00,D1
+        TRAP    #15
+        
+        LEA     VERR3M,A1   *Throw length error
         MOVE.B  #14,D0
         TRAP    #15
-        BRA     END
+        BRA     NONINIT
         
 *--------------------------------------------------------------------------------------------------
 
@@ -427,7 +439,7 @@ MSIZEL  LEA     MODEL,A1
 
 MSDONE  TRAP    #15
 
-        LEA     SM7,A1
+        LEA     SM5,A1
         TRAP    #15
         
         *source mode to d3
@@ -1042,7 +1054,7 @@ DMOVEQ  NOP
         TRAP    #15
         LEA     VALQ,A1
         TRAP    #15
-        LEA     SM7,A1
+        LEA     SM5,A1
         TRAP    #15
         
         *getting register number
@@ -1706,8 +1718,8 @@ ENDMSG  DC.B    'Thank you for using the Disassembler!',CR,LF,0
 AUTHOR  DC.B    'Made by the ARM Cortex Companions!',CR,LF,0
 
 VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
-VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
-VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
+VERR2M  DC.B    'ERROR: Invalid characters in input! Please type the inputs again!',CR,LF,CR,LF,0
+VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters! Please type the inputs again!',CR,LF,CR,LF,0
 
 LB      DC.B    CR,LF,0
 
@@ -1782,6 +1794,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

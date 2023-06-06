@@ -779,7 +779,9 @@ DLEAP   ROL.W   #3,D4
         ANDI.B  #%111,D6
         
         *printing
+        MOVEM.L D2,-(SP)
         JSR     ADDRMODEALL
+        MOVEM.L (SP)+,D2
         
         LEA     COMMA,A1
         TRAP    #15

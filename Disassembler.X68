@@ -19,6 +19,11 @@ START                       *START: Start code
         MOVE.B  #0,D5
         MOVE.B  #0,D6
         MOVE.B  #0,D7
+*to test demo edge cases, disassemble from 8000 - 8008
+        MOVE.W  #%0100000111000111,$8000
+*for demo: instruction corresponds to LEA     D0,A0: invalid addressing mode
+        MOVE.W  #%1100100011000001, $8004
+*for demo: instruction corresponds to MULU    D1,D4: unsupported instruction
         
         MOVE.B  #11,D0
         MOVE.W  #$FF00,D1

@@ -428,24 +428,14 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
 
 DANDA   LEA     SM5,A1
         TRAP    #15
-        
-        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-        ADD.B   VALD,D4         ; Convert register number to ASCII
-        LEA     VALD,A1         ; Load effective address of Dn
-        TRAP    #15             ; Print Dn
 
-        CMP.B   #%000,D6        ; Compare mode with Dn
-        BEQ     DSEND
-        CMP.B   #%111,D6        ; Compare mode with (xxx).W or (xxx).L
-        BEQ     DSEND
-        CMP.B   #%010,D6        ; Compare mode with (An)
-        BEQ     DSEND
-        CMP.B   #%011,D6        ; Compare mode with (An)+
-        BEQ     DSEND
-        CMP.B   #%100,D6        ; Compare mode with -(An)
-        BEQ     DSEND
-        
-        BRA     DSEND
+        ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
+        MOVE.B  D4,D6           ; Store the register number in D6 for later use
+
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+
+        BRA     DSEND                 
+
 
         
 *NEEDS INTEGRATION WITH AND OPCODE AND REST OF 00 PROCESSING
@@ -1145,69 +1135,53 @@ DMOVEQ  NOP
 
 DS1000  NOP
         
-DOR     ROL.W   #3,D4           ; shift D4 left by 3 bits to get register number
-        MOVE.B  D4,D5           ; move the byte in D4 to D5
+DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        ADD.B   VALD,D5         ; Convert register number to ASCII
-        LEA     VALD,A1         ; Load effective address of Dn
-        TRAP    #15             ; Print Dn
-        MOVE.B  D5,D7           ; Store the register number for later use
+        MOVE.B  D5,D6           ; Store the register number in D6 for later use
 
-        ROL.W   #3,D4           ; shift D4 left by 3 bits to get opmode
-        MOVE.B  D4,D5           ; move the byte in D4 to D5
+        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        CMP.B   #%000,D5        ; compare with byte size
+        CMP.B   #%000,D5        ; Compare with byte size
         BEQ     DORB
-        CMP.B   #%001,D5        ; compare with word size
+        CMP.B   #%001,D5        ; Compare with word size
         BEQ     DORW
-        CMP.B   #%010,D5        ; compare with long size
+        CMP.B   #%010,D5        ; Compare with long size
         BEQ     DORL
         
-        BRA     DSEND           ; branch to DSEND in case of invalid code
+        BRA     DSEND           ; Branch to DSEND in case of invalid code
 
-DORB    LEA     ORM,A1          ; load effective address of ORM string
-        TRAP    #15             ; print ORM string
-        LEA     MODEB,A1        ; load effective address of MODEB string
-        TRAP    #15             ; print MODEB string
-        BRA     DORA           ; branch to addressing mode parsing
+DORB    LEA     ORM,A1          ; Load effective address of ORM string
+        TRAP    #15             ; Print ORM string
+        LEA     MODEB,A1        ; Load effective address of MODEB string
+        TRAP    #15             ; Print MODEB string
+        BRA     DORA            ; Branch to addressing mode parsing
 
-DORW    LEA     ORM,A1          ; load effective address of ORM string
-        TRAP    #15             ; print ORM string
-        LEA     MODEW,A1        ; load effective address of MODEW string
-        TRAP    #15             ; print MODEW string
-        BRA     DORA           ; branch to addressing mode parsing
+DORW    LEA     ORM,A1          ; Load effective address of ORM string
+        TRAP    #15             ; Print ORM string
+        LEA     MODEW,A1        ; Load effective address of MODEW string
+        TRAP    #15             ; Print MODEW string
+        BRA     DORA            ; Branch to addressing mode parsing
 
-DORL    LEA     ORM,A1          ; load effective address of ORM string
-        TRAP    #15             ; print ORM string
-        LEA     MODEL,A1        ; load effective address of MODEL string
-        TRAP    #15             ; print MODEL string
-        BRA     DORA           ; branch to addressing mode parsing
+DORL    LEA     ORM,A1          ; Load effective address of ORM string
+        TRAP    #15             ; Print ORM string
+        LEA     MODEL,A1        ; Load effective address of MODEL string
+        TRAP    #15             ; Print MODEL string
+        BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    ROL.W   #6,D4           ; shift D4 left by 6 bits to get addressing mode and register
-
-        MOVE.B  D4,D5           ; move the byte in D4 to D5
+DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
-        ROR.B   #3,D5           ; shift D5 right by 3 bits to get mode
-        LEA     SM3,A1          ; load effective address of SM3 string
-        TRAP    #15             ; print space
-        MOVE.B  D5,D6           ; store mode in D6 for further checks
-
+        ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
+        MOVE.B  D5,D3           ; Store mode in D3 for further checks
         ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-        ADD.B   VALD,D4         ; convert register number to ASCII
-        LEA     VALD,A1         ; load effective address of Dn
-        TRAP    #15             ; print Dn
+        MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
-        CMP.B   #%000,D6        ; compare mode with Dn
-        BEQ     DSEND
-        CMP.B   #%010,D6        ; compare mode with (An)
-        BEQ     DSEND
-        CMP.B   #%011,D6        ; compare mode with (An)+
-        BEQ     DSEND
-        CMP.B   #%100,D6        ; compare mode with -(An)
-        BEQ     DSEND
-        CMP.B   #%111,D6        ; compare mode with (xxx).W or (xxx).L
-        BEQ     DSEND
-        BRA     DSEND           ; branch to DSEND in case of invalid code
+        JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+
+        BRA     DSEND                    
+
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

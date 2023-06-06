@@ -482,7 +482,7 @@ MSIZEL  LEA     MODEL,A1
 
 MSDONE  TRAP    #15
 
-        LEA     SM4,A1
+        LEA     SM3,A1
         TRAP    #15
         
         *source mode to d3
@@ -1105,7 +1105,7 @@ DADDQ   NOP
         MOVE.B  D4,D5
         AND.B   #%11,D5
         JSR     SIZE
-        LEA     SM7,A1
+        LEA     SM4,A1
         TRAP    #15
         
         *parsing effective address information
@@ -1545,7 +1545,7 @@ DADD    NOP
         CMP.B   #%11,D5     *if size is 11, then opcode is ADDA
         BEQ     DADDA
         JSR     SIZE
-        LEA     SM7,A1
+        LEA     SM5,A1
         TRAP    #15
         
 *if addressing mode=<ea>-Dn -> <ea> print ea info first
@@ -2003,6 +2003,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

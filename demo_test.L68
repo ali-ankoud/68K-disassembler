@@ -1,6 +1,6 @@
 00009000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 6/5/2023 8:01:38 PM
+Created On: 6/5/2023 8:05:24 PM
 
 00000000                             1  *****************************
 00000000                             2  *
@@ -86,7 +86,7 @@ Created On: 6/5/2023 8:01:38 PM
 00009088  22A0                      82      MOVE.L    -(A0),(A1)
 0000908A  22E0                      83      MOVE.L    -(A0),(A1)+
 0000908C  2320                      84      MOVE.L    -(A0),-(A1)
-0000908E  48A1 007F                 85      MOVEM.W   A1-A7,-(A1)
+0000908E  48A1 4000                 85      MOVEM.W   D1,-(A1)
 00009092  48A1 7F7F                 86      MOVEM.W   A1-A7/D1-D7,-(A1)
 00009096  48E1 7F00                 87      MOVEM.L   D1-D7,-(A1)
 0000909A  48A1 0140                 88      MOVEM.W   A1/D7,-(A1)

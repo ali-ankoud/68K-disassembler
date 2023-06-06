@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 6/5/2023 8:01:46 PM
+Created On: 6/5/2023 8:18:46 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassembler Snippet
@@ -29,14 +29,14 @@ Created On: 6/5/2023 8:01:46 PM
 00001028  4E4F                      25          TRAP    #15
 0000102A                            26          
 0000102A                            27  TEST    
-0000102A  43F9 00002198             28          LEA     INTRO,A1    *Intro text
+0000102A  43F9 000021EE             28          LEA     INTRO,A1    *Intro text
 00001030  103C 000E                 29          MOVE.B  #14,D0
 00001034  4E4F                      30          TRAP    #15
 00001036                            31          
-00001036  43F9 00002220             32          LEA     ASTART,A1   *Input prompt text #1
+00001036  43F9 00002276             32          LEA     ASTART,A1   *Input prompt text #1
 0000103C  4E4F                      33          TRAP    #15
 0000103E                            34          
-0000103E  43F9 00002379             35          LEA     NOTH,A1     *Fix to pervent weird thing about printing input
+0000103E  43F9 000023CF             35          LEA     NOTH,A1     *Fix to pervent weird thing about printing input
 00001044  103C 0002                 36          MOVE.B  #2,D0       *String prompt #1
 00001048  4E4F                      37          TRAP    #15
 0000104A                            38          
@@ -48,11 +48,11 @@ Created On: 6/5/2023 8:01:46 PM
 00001058                            44  
 00001058  2641                      45          MOVE.L  D1,A3
 0000105A                            46          
-0000105A  43F9 00002237             47          LEA     AEND,A1     *Input prompt text #2
+0000105A  43F9 0000228D             47          LEA     AEND,A1     *Input prompt text #2
 00001060  103C 000E                 48          MOVE.B  #14,D0
 00001064  4E4F                      49          TRAP    #15
 00001066                            50          
-00001066  43F9 00002379             51          LEA     NOTH,A1     *Fix to pervent weird thing about printing input
+00001066  43F9 000023CF             51          LEA     NOTH,A1     *Fix to pervent weird thing about printing input
 0000106C  103C 0002                 52          MOVE.B  #2,D0       *String prompt #2
 00001070  4E4F                      53          TRAP    #15
 00001072                            54          
@@ -107,20 +107,20 @@ Created On: 6/5/2023 8:01:46 PM
 000010E0  6D00 0006                103          BLT     VERR1
 000010E4  6000 0032                104          BRA     READLN
 000010E8                           105  
-000010E8  43F9 000022B8            106  VERR1   LEA     VERR1M,A1   *Throw parsing error
+000010E8  43F9 0000230E            106  VERR1   LEA     VERR1M,A1   *Throw parsing error
 000010EE  103C 000E                107          MOVE.B  #14,D0
 000010F2  4E4F                     108          TRAP    #15
-000010F4  6000 1064                109          BRA     END
+000010F4  6000 10BA                109          BRA     END
 000010F8                           110  
-000010F8  43F9 000022F2            111  VERR2   LEA     VERR2M,A1   *Throw range error
+000010F8  43F9 00002348            111  VERR2   LEA     VERR2M,A1   *Throw range error
 000010FE  103C 000E                112          MOVE.B  #14,D0
 00001102  4E4F                     113          TRAP    #15
-00001104  6000 1054                114          BRA     END
+00001104  6000 10AA                114          BRA     END
 00001108                           115  
-00001108  43F9 00002318            116  VERR3   LEA     VERR3M,A1   *Throw length error
+00001108  43F9 0000236E            116  VERR3   LEA     VERR3M,A1   *Throw length error
 0000110E  103C 000E                117          MOVE.B  #14,D0
 00001112  4E4F                     118          TRAP    #15
-00001114  6000 1044                119          BRA     END
+00001114  6000 109A                119          BRA     END
 00001118                           120          
 00001118                           121  *--------------------------------------------------------------------------------------------------
 00001118                           122  
@@ -138,7 +138,7 @@ Created On: 6/5/2023 8:01:46 PM
 0000112C  4EB9 0000117A            134          JSR     HEXOUT              *Run printing operation for HEX address
 00001132  4CDF 0020                135          MOVEM.L (SP)+,D5
 00001136                           136          
-00001136  43F9 00002353            137          LEA     SM2,A1              *Horizontal tab indent after printing hex
+00001136  43F9 000023A9            137          LEA     SM2,A1              *Horizontal tab indent after printing hex
 0000113C  103C 000E                138          MOVE.B  #14,D0
 00001140  4E4F                     139          TRAP    #15
 00001142                           140          
@@ -150,13 +150,13 @@ Created On: 6/5/2023 8:01:46 PM
 00001152  BA3C 0020                146          CMP.B   #32,D5      *Check if we reached 32 lines
 00001156  6700 0016                147          BEQ     RPAUSE      *Branch to pausing code
 0000115A                           148          
-0000115A  43F9 0000234C            149          LEA     LB,A1       *Print line break
+0000115A  43F9 000023A2            149          LEA     LB,A1       *Print line break
 00001160  103C 000E                150          MOVE.B  #14,D0      
 00001164  4E4F                     151          TRAP    #15
 00001166                           152          
 00001166                           153  RCONT                       *RCONT: Used to continue off of the RPAUSE label after a pause in the printing
 00001166  B9CA                     154          CMP.L   A2,A4       *Check if we reached the end address
-00001168  6D00 0FC2                155          BLT     DSEOF       *End loop if so
+00001168  6D00 1018                155          BLT     DSEOF       *End loop if so
 0000116C  60B0                     156          BRA     RSTEP       *Or else continue the loop
 0000116E                           157          
 0000116E                           158  RPAUSE                      *RPAUSE: Used to pause printing at the end of the screen and wait for ENTER to be pressed
@@ -218,13 +218,13 @@ Created On: 6/5/2023 8:01:46 PM
 000011E2  6700 0010                214          BEQ     SIZEW       *Assume WORD type on memory pointer things
 000011E6  6000 0022                215          BRA     SRET
 000011EA                           216          
-000011EA  43F9 000023A9            217  SIZEB   LEA     MODEB,A1
+000011EA  43F9 000023FF            217  SIZEB   LEA     MODEB,A1
 000011F0  6000 0016                218          BRA     SDONE
 000011F4                           219  
-000011F4  43F9 000023AC            220  SIZEW   LEA     MODEW,A1
+000011F4  43F9 00002402            220  SIZEW   LEA     MODEW,A1
 000011FA  6000 000C                221          BRA     SDONE
 000011FE                           222  
-000011FE  43F9 000023AF            223  SIZEL   LEA     MODEL,A1
+000011FE  43F9 00002405            223  SIZEL   LEA     MODEL,A1
 00001204  6000 0002                224          BRA     SDONE
 00001208                           225  
 00001208  4E4F                     226  SDONE   TRAP    #15
@@ -240,7 +240,7 @@ Created On: 6/5/2023 8:01:46 PM
 0000120C                           236  *comparisons
 0000120C  B67C 0000                237  AM000   CMP     #%000,D3
 00001210  6600 001A                238          BNE     AM001
-00001214  43F9 000023B4            239          LEA     VALD,A1
+00001214  43F9 0000240A            239          LEA     VALD,A1
 0000121A  4E4F                     240          TRAP    #15
 0000121C  1206                     241          MOVE.B  D6,D1       *moving ea num to d1 to print
 0000121E  103C 0003                242          MOVE.B  #3,D0       *moving 3 to d0 to print register number
@@ -252,8 +252,8 @@ Created On: 6/5/2023 8:01:46 PM
 0000122C  B67C 0001                248  AM001   CMP     #%001,D3
 00001230  6600 0022                249          BNE     AM010
 00001234  BA7C 0000                250          CMP     #00,D5
-00001238  6700 0EC4                251          BEQ     DSERR
-0000123C  43F9 000023B2            252          LEA     VALA,A1
+00001238  6700 0F1A                251          BEQ     DSERR
+0000123C  43F9 00002408            252          LEA     VALA,A1
 00001242  4E4F                     253          TRAP    #15
 00001244  1206                     254          MOVE.B  D6,D1       *moving ea num to d1 to print
 00001246  103C 0003                255          MOVE.B  #3,D0       *moving 3 to d0 to print register number
@@ -263,51 +263,51 @@ Created On: 6/5/2023 8:01:46 PM
 00001254                           259  
 00001254  B67C 0002                260  AM010   CMP     #%010,D3
 00001258  6600 002A                261          BNE     AM011
-0000125C  43F9 000023BE            262          LEA     OPENPTR,A1
+0000125C  43F9 00002414            262          LEA     OPENPTR,A1
 00001262  4E4F                     263          TRAP    #15
-00001264  43F9 000023B2            264          LEA     VALA,A1
+00001264  43F9 00002408            264          LEA     VALA,A1
 0000126A  4E4F                     265          TRAP    #15
 0000126C  1206                     266          MOVE.B  D6,D1       *moving ea num to d1 to print
 0000126E  103C 0003                267          MOVE.B  #3,D0       *moving 3 to d0 to print register number
 00001272  4E4F                     268          TRAP    #15         *printing register number
 00001274  103C 000E                269          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
-00001278  43F9 000023C3            270          LEA     CLOSEPTR,A1
+00001278  43F9 00002419            270          LEA     CLOSEPTR,A1
 0000127E  4E4F                     271          TRAP    #15
 00001280  6000 00E4                272          BRA     AMEND
 00001284                           273  
 00001284  B67C 0003                274  AM011   CMP     #%011,D3
 00001288  6600 002A                275          BNE     AM100
-0000128C  43F9 000023BE            276          LEA     OPENPTR,A1
+0000128C  43F9 00002414            276          LEA     OPENPTR,A1
 00001292  4E4F                     277          TRAP    #15
-00001294  43F9 000023B2            278          LEA     VALA,A1
+00001294  43F9 00002408            278          LEA     VALA,A1
 0000129A  4E4F                     279          TRAP    #15
 0000129C  1206                     280          MOVE.B  D6,D1       *moving ea num to d1 to print
 0000129E  103C 0003                281          MOVE.B  #3,D0       *moving 3 to d0 to print register number
 000012A2  4E4F                     282          TRAP    #15         *printing register number
 000012A4  103C 000E                283          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
-000012A8  43F9 000023C5            284          LEA     CLOSEIPTR,A1
+000012A8  43F9 0000241B            284          LEA     CLOSEIPTR,A1
 000012AE  4E4F                     285          TRAP    #15
 000012B0  6000 00B4                286          BRA     AMEND
 000012B4                           287  
 000012B4  B67C 0004                288  AM100   CMP     #%100,D3
 000012B8  6600 002A                289          BNE     AM111
-000012BC  43F9 000023C0            290          LEA     OPENDPTR,A1
+000012BC  43F9 00002416            290          LEA     OPENDPTR,A1
 000012C2  4E4F                     291          TRAP    #15
-000012C4  43F9 000023B2            292          LEA     VALA,A1
+000012C4  43F9 00002408            292          LEA     VALA,A1
 000012CA  4E4F                     293          TRAP    #15
 000012CC  1206                     294          MOVE.B  D6,D1       *moving ea num to d1 to print
 000012CE  103C 0003                295          MOVE.B  #3,D0       *moving 3 to d0 to print register number
 000012D2  4E4F                     296          TRAP    #15         *printing register number
 000012D4  103C 000E                297          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
-000012D8  43F9 000023C3            298          LEA     CLOSEPTR,A1
+000012D8  43F9 00002419            298          LEA     CLOSEPTR,A1
 000012DE  4E4F                     299          TRAP    #15
 000012E0  6000 0084                300          BRA     AMEND
 000012E4                           301  
 000012E4  B67C 0007                302  AM111   CMP     #%111,D3
-000012E8  6600 0E14                303          BNE     DSERR
+000012E8  6600 0E6A                303          BNE     DSERR
 000012EC  BC7C 0000                304          CMP     #%000,D6
 000012F0  6600 0020                305          BNE     AM111001
-000012F4  43F9 000023CA            306          LEA     DOLLAR,A1
+000012F4  43F9 00002420            306          LEA     DOLLAR,A1
 000012FA  4E4F                     307          TRAP    #15
 000012FC  341A                     308          MOVE.W  (A2)+,D2
 000012FE  48E7 0400                309          MOVEM.L D5,-(SP)    
@@ -319,7 +319,7 @@ Created On: 6/5/2023 8:01:46 PM
 00001312                           315  AM111001
 00001312  BC7C 0001                316          CMP     #%001,D6
 00001316  6600 0020                317          BNE     AM111100
-0000131A  43F9 000023CA            318          LEA     DOLLAR,A1
+0000131A  43F9 00002420            318          LEA     DOLLAR,A1
 00001320  4E4F                     319          TRAP    #15
 00001322  241A                     320          MOVE.L  (A2)+,D2
 00001324  48E7 0400                321          MOVEM.L D5,-(SP)
@@ -330,8 +330,8 @@ Created On: 6/5/2023 8:01:46 PM
 00001338                           326          
 00001338                           327  AM111100
 00001338  BC7C 0004                328          CMP     #%100,D6
-0000133C  6600 0DC0                329          BNE     DSERR
-00001340  43F9 000023B6            330          LEA     VALN,A1
+0000133C  6600 0E16                329          BNE     DSERR
+00001340  43F9 0000240C            330          LEA     VALN,A1
 00001346  4E4F                     331          TRAP    #15
 00001348  341A                     332          MOVE.W  (A2)+,D2
 0000134A  48E7 0400                333          MOVEM.L D5,-(SP)    
@@ -384,7 +384,7 @@ Created On: 6/5/2023 8:01:46 PM
 000013A0  1A04                     380          MOVE.B  D4,D5
 000013A2  0205 0002                381          ANDI.B  #%0010,D5
 000013A6  0C05 0002                382          CMPI.B  #%0010,D5
-000013AA  6600 0D62                383          BNE     DSERRINS
+000013AA  6600 0DB8                383          BNE     DSERRINS
 000013AE                           384          
 000013AE  E55C                     385          ROL.W   #2,D4
 000013B0  1A04                     386          MOVE.B  D4,D5
@@ -398,7 +398,7 @@ Created On: 6/5/2023 8:01:46 PM
 000013C0  1C04                     394          MOVE.B  D4,D6           ; Move the byte in D4 to D5
 000013C2  0206 0007                395          ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits
 000013C6                           396          
-000013C6  43F9 000023B4            397          LEA     VALD,A1         ; Load effective address of Dn
+000013C6  43F9 0000240A            397          LEA     VALD,A1         ; Load effective address of Dn
 000013CC  4E4F                     398          TRAP    #15             ; Print Dn
 000013CE  1E05                     399          MOVE.B  D5,D7           ; Store the register number for later use
 000013D0                           400  
@@ -410,27 +410,27 @@ Created On: 6/5/2023 8:01:46 PM
 000013E0  BA3C 0002                406          CMP.B   #%010,D5        ; Compare with long size
 000013E4  6700 002E                407          BEQ     DANDL
 000013E8                           408          
-000013E8  6000 0D40                409          BRA     DSEND           ; Branch to DSEND in case of invalid code
+000013E8  6000 0D96                409          BRA     DSEND           ; Branch to DSEND in case of invalid code
 000013EC                           410  
-000013EC  43F9 000023E5            411  DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
+000013EC  43F9 0000243B            411  DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
 000013F2  4E4F                     412          TRAP    #15             ; Print ANDM string
-000013F4  43F9 000023A9            413          LEA     MODEB,A1        ; Load effective address of MODEB string
+000013F4  43F9 000023FF            413          LEA     MODEB,A1        ; Load effective address of MODEB string
 000013FA  4E4F                     414          TRAP    #15             ; Print MODEB string
 000013FC  6000 002A                415          BRA     DANDA           ; Branch to addressing mode parsing
 00001400                           416  
-00001400  43F9 000023E5            417  DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
+00001400  43F9 0000243B            417  DANDW   LEA     ANDM,A1         ; Load effective address of ANDM string
 00001406  4E4F                     418          TRAP    #15             ; Print ANDM string
-00001408  43F9 000023AC            419          LEA     MODEW,A1        ; Load effective address of MODEW string
+00001408  43F9 00002402            419          LEA     MODEW,A1        ; Load effective address of MODEW string
 0000140E  4E4F                     420          TRAP    #15             ; Print MODEW string
 00001410  6000 0016                421          BRA     DANDA           ; Branch to addressing mode parsing
 00001414                           422  
-00001414  43F9 000023E5            423  DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
+00001414  43F9 0000243B            423  DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
 0000141A  4E4F                     424          TRAP    #15             ; Print ANDM string
-0000141C  43F9 000023AF            425          LEA     MODEL,A1        ; Load effective address of MODEL string
+0000141C  43F9 00002405            425          LEA     MODEL,A1        ; Load effective address of MODEL string
 00001422  4E4F                     426          TRAP    #15             ; Print MODEL string
 00001424  6000 0002                427          BRA     DANDA           ; Branch to addressing mode parsing
 00001428                           428  
-00001428  43F9 0000235F            429  DANDA   LEA     SM5,A1
+00001428  43F9 000023B5            429  DANDA   LEA     SM5,A1
 0000142E  4E4F                     430          TRAP    #15
 00001430                           431  
 00001430  0204 0007                432          ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
@@ -438,14 +438,14 @@ Created On: 6/5/2023 8:01:46 PM
 00001436                           434  
 00001436  4EB8 120C                435          JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
 0000143A                           436  
-0000143A  6000 0CEE                437          BRA     DSEND                 
+0000143A  6000 0D44                437          BRA     DSEND                 
 0000143E                           438  
 0000143E                           439  
 0000143E                           440          
 0000143E                           441  *NEEDS INTEGRATION WITH AND OPCODE AND REST OF 00 PROCESSING
 0000143E  4E71                     442  DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
 00001440                           443          *size in d5 from above processing
-00001440  43F9 000023D4            444          LEA     MOVEM,A1
+00001440  43F9 0000242A            444          LEA     MOVEM,A1
 00001446  4E4F                     445          TRAP    #15
 00001448                           446                  
 00001448                           447          *dest reg to d7
@@ -473,20 +473,20 @@ Created On: 6/5/2023 8:01:46 PM
 0000147A  6700 0022                469          BEQ     MSIZEL
 0000147E  BA3C 0003                470          CMP.B   #%11,D5
 00001482  6700 0010                471          BEQ     MSIZEW       *Assume WORD type on memory pointer things
-00001486  6000 0C76                472          BRA     DSERR
+00001486  6000 0CCC                472          BRA     DSERR
 0000148A                           473          
-0000148A  43F9 000023A9            474  MSIZEB  LEA     MODEB,A1
+0000148A  43F9 000023FF            474  MSIZEB  LEA     MODEB,A1
 00001490  6000 0016                475          BRA     MSDONE
 00001494                           476  
-00001494  43F9 000023AC            477  MSIZEW  LEA     MODEW,A1
+00001494  43F9 00002402            477  MSIZEW  LEA     MODEW,A1
 0000149A  6000 000C                478          BRA     MSDONE
 0000149E                           479  
-0000149E  43F9 000023AF            480  MSIZEL  LEA     MODEL,A1
+0000149E  43F9 00002405            480  MSIZEL  LEA     MODEL,A1
 000014A4  6000 0002                481          BRA     MSDONE
 000014A8                           482  
 000014A8  4E4F                     483  MSDONE  TRAP    #15
 000014AA                           484  
-000014AA  43F9 0000235A            485          LEA     SM4,A1
+000014AA  43F9 000023AC            485          LEA     SM3,A1
 000014B0  4E4F                     486          TRAP    #15
 000014B2                           487          
 000014B2                           488          *source mode to d3
@@ -502,24 +502,24 @@ Created On: 6/5/2023 8:01:46 PM
 000014C2  4EB8 120C                498          JSR     ADDRMODEALL
 000014C6  B67C 0001                499          CMP     #%001,D3
 000014CA  6700 002C                500          BEQ     MOVEERRCHECK    *as size is diff, err check for byte op on addr reg direct
-000014CE  43F9 000023C8            501          LEA     COMMA,A1
+000014CE  43F9 0000241E            501          LEA     COMMA,A1
 000014D4  4E4F                     502          TRAP    #15
 000014D6  1C07                     503          MOVE.B  D7,D6
 000014D8  360E                     504          MOVE.W  A6,D3
 000014DA  4EB8 120C                505          JSR     ADDRMODEALL
-000014DE  6000 0C4A                506          BRA     DSEND
+000014DE  6000 0CA0                506          BRA     DSEND
 000014E2                           507  
 000014E2  4E71                     508  DMOVEA  NOP
 000014E4  BA7C 0001                509          CMP     #%01,D5     *if size is byte, err
-000014E8  6700 0C14                510          BEQ     DSERR
-000014EC  43F9 000023B2            511          LEA     VALA,A1        *else, print A and return
+000014E8  6700 0C6A                510          BEQ     DSERR
+000014EC  43F9 00002408            511          LEA     VALA,A1        *else, print A and return
 000014F2  4E4F                     512          TRAP    #15
 000014F4  6000 FF6C                513          BRA     MOVECONT
 000014F8                           514  
 000014F8                           515  MOVEERRCHECK
 000014F8  BA7C 0001                516          CMP     #%01,D5
-000014FC  6700 0C00                517          BEQ     DSERR
-00001500  6000 0C28                518          BRA     DSEND
+000014FC  6700 0C56                517          BEQ     DSERR
+00001500  6000 0C7E                518          BRA     DSEND
 00001504                           519  
 00001504                           520          
 00001504                           521  
@@ -554,23 +554,23 @@ Created On: 6/5/2023 8:01:46 PM
 00001536                           550  
 00001536                           551  DS100                       *DS100: Tier 3 binary search for 100 side
 00001536  E34C                     552          LSL.W   #1,D4
-00001538  6500 081C                553          BCS     DS1001
+00001538  6500 0872                553          BCS     DS1001
 0000153C  6000 0792                554          BRA     DS1000
 00001540                           555  
 00001540                           556  DS101                       *DS101: Tier 3 binary search for 101 side
 00001540  E34C                     557          LSL.W   #1,D4
-00001542  6500 08AA                558          BCS     DS1011
-00001546  6000 08A0                559          BRA     DS1010
+00001542  6500 0900                558          BCS     DS1011
+00001546  6000 08F6                559          BRA     DS1010
 0000154A                           560  
 0000154A                           561  DS110                       *DS110: Tier 3 binary search for 110 side
 0000154A  E34C                     562          LSL.W   #1,D4
-0000154C  6500 08AC                563          BCS     DS1101
-00001550  6000 08A2                564          BRA     DS1100
+0000154C  6500 0902                563          BCS     DS1101
+00001550  6000 08F8                564          BRA     DS1100
 00001554                           565  
 00001554                           566  DS111                       *DS111: Tier 3 binary search for 111 side
 00001554  E34C                     567          LSL.W   #1,D4
-00001556  6500 0BA0                568          BCS     DS1111
-0000155A  6000 0986                569          BRA     DS1110
+00001556  6500 0BF6                568          BCS     DS1111
+0000155A  6000 09DC                569          BRA     DS1110
 0000155E                           570  
 0000155E                           571  *DS Tier 4 ----------------------------------------------------------------------------------------
 0000155E                           572  
@@ -600,11 +600,11 @@ Created On: 6/5/2023 8:01:46 PM
 0000159A  B43C 0006                596          CMP.B   #%0110,D2
 0000159E  6700 0012                597          BEQ     DNOT
 000015A2                           598          
-000015A2  6000 0B6A                599          BRA     DSERRINS
+000015A2  6000 0BC0                599          BRA     DSERRINS
 000015A6                           600  
-000015A6  43F9 000023D0            601  DNOP    LEA     NOPM,A1
+000015A6  43F9 00002426            601  DNOP    LEA     NOPM,A1
 000015AC  4E4F                     602          TRAP    #15
-000015AE  6000 0B7A                603          BRA     DSEND
+000015AE  6000 0BD0                603          BRA     DSEND
 000015B2                           604          
 000015B2  E55C                     605  DNOT    ROL.W   #2,D4           ; shift D4 left by 2 bits to get size
 000015B4  1A04                     606          MOVE.B  D4,D5           ; move the byte in D4 to D5
@@ -617,23 +617,23 @@ Created On: 6/5/2023 8:01:46 PM
 000015CA  BA3C 0002                613          CMP.B   #%10,D5         ; compare with long size
 000015CE  6700 002E                614          BEQ     DNOTL
 000015D2                           615          
-000015D2  6000 0B56                616          BRA     DSEND           ; branch to DSEND in case of invalid code
+000015D2  6000 0BAC                616          BRA     DSEND           ; branch to DSEND in case of invalid code
 000015D6                           617  
-000015D6  43F9 000023EC            618  DNOTB   LEA     NOTM,A1         ; load effective address of NOTM string
+000015D6  43F9 00002442            618  DNOTB   LEA     NOTM,A1         ; load effective address of NOTM string
 000015DC  4E4F                     619          TRAP    #15             ; print NOTM string
-000015DE  43F9 000023A9            620          LEA     MODEB,A1        ; load effective address of MODEB string
+000015DE  43F9 000023FF            620          LEA     MODEB,A1        ; load effective address of MODEB string
 000015E4  4E4F                     621          TRAP    #15             ; print MODEB string
 000015E6  6000 002A                622          BRA     DNOTA           ; branch to addressing mode parsing
 000015EA                           623  
-000015EA  43F9 000023EC            624  DNOTW   LEA     NOTM,A1         ; load effective address of NOTM string
+000015EA  43F9 00002442            624  DNOTW   LEA     NOTM,A1         ; load effective address of NOTM string
 000015F0  4E4F                     625          TRAP    #15             ; print NOTM string
-000015F2  43F9 000023AC            626          LEA     MODEW,A1        ; load effective address of MODEW string
+000015F2  43F9 00002402            626          LEA     MODEW,A1        ; load effective address of MODEW string
 000015F8  4E4F                     627          TRAP    #15             ; print MODEW string
 000015FA  6000 0016                628          BRA     DNOTA           ; branch to addressing mode parsing
 000015FE                           629  
-000015FE  43F9 000023EC            630  DNOTL   LEA     NOTM,A1         ; load effective address of NOTM string
+000015FE  43F9 00002442            630  DNOTL   LEA     NOTM,A1         ; load effective address of NOTM string
 00001604  4E4F                     631          TRAP    #15             ; print NOTM string
-00001606  43F9 000023AF            632          LEA     MODEL,A1        ; load effective address of MODEL string
+00001606  43F9 00002405            632          LEA     MODEL,A1        ; load effective address of MODEL string
 0000160C  4E4F                     633          TRAP    #15             ; print MODEL string
 0000160E  6000 0002                634          BRA     DNOTA           ; branch to addressing mode parsing
 00001612                           635  
@@ -655,64 +655,64 @@ Created On: 6/5/2023 8:01:46 PM
 0000163C  BA3C 0007                651          CMP.B   #%111,D5        ; Compare with (xxx).W or (xxx).L
 00001640  6700 007E                652          BEQ     EXT
 00001644                           653              
-00001644  6000 0AE4                654          BRA     DSEND
+00001644  6000 0B3A                654          BRA     DSEND
 00001648                           655  
 00001648  1C01                     656  DREG    MOVE.B  D1,D6           ; Move the byte in D1 to D6
 0000164A  0206 0007                657          ANDI.B  #%111,D6        ; AND operation to isolate the last 3 bits for register number
-0000164E  DC39 000023B4            658          ADD.B   VALD,D6         ; Convert register number to ASCII
-00001654  43F9 000023B4            659          LEA     VALD,A1         ; Load effective address of Dn
+0000164E  DC39 0000240A            658          ADD.B   VALD,D6         ; Convert register number to ASCII
+00001654  43F9 0000240A            659          LEA     VALD,A1         ; Load effective address of Dn
 0000165A  4E4F                     660          TRAP    #15             ; Print Dn
-0000165C  6000 0ACC                661          BRA     DSEND
+0000165C  6000 0B22                661          BRA     DSEND
 00001660                           662  
 00001660  1C01                     663  ADREG   MOVE.B  D1,D6           ; Similar to DREG, but for An mode
 00001662  0206 0007                664          ANDI.B  #%111,D6
-00001666  DC39 000023B2            665          ADD.B   VALA,D6
-0000166C  43F9 000023B2            666          LEA     VALA,A1
+00001666  DC39 00002408            665          ADD.B   VALA,D6
+0000166C  43F9 00002408            666          LEA     VALA,A1
 00001672  4E4F                     667          TRAP    #15
-00001674  6000 0AB4                668          BRA     DSEND
+00001674  6000 0B0A                668          BRA     DSEND
 00001678                           669  
 00001678  1C01                     670  ADREGP  MOVE.B  D1,D6           ; Similar to ADREG, but for (An)+ mode
 0000167A  0206 0007                671          ANDI.B  #%111,D6
-0000167E  DC39 000023B2            672          ADD.B   VALA,D6
-00001684  43F9 000023B2            673          LEA     VALA,A1
+0000167E  DC39 00002408            672          ADD.B   VALA,D6
+00001684  43F9 00002408            673          LEA     VALA,A1
 0000168A  4E4F                     674          TRAP    #15
-0000168C  43F9 000023C5            675          LEA     CLOSEIPTR,A1    ; Load effective address of )+
+0000168C  43F9 0000241B            675          LEA     CLOSEIPTR,A1    ; Load effective address of )+
 00001692  4E4F                     676          TRAP    #15             ; Print )+
-00001694  6000 0A94                677          BRA     DSEND
+00001694  6000 0AEA                677          BRA     DSEND
 00001698                           678  
 00001698  1C01                     679  MADREG  MOVE.B  D1,D6           ; Similar to ADREG, but for -(An) mode
 0000169A  0206 0007                680          ANDI.B  #%111,D6
-0000169E  DC39 000023B2            681          ADD.B   VALA,D6
-000016A4  43F9 000023C0            682          LEA     OPENDPTR,A1     ; Load effective address of -(
+0000169E  DC39 00002408            681          ADD.B   VALA,D6
+000016A4  43F9 00002416            682          LEA     OPENDPTR,A1     ; Load effective address of -(
 000016AA  4E4F                     683          TRAP    #15             ; Print -(
-000016AC  43F9 000023B2            684          LEA     VALA,A1
+000016AC  43F9 00002408            684          LEA     VALA,A1
 000016B2  4E4F                     685          TRAP    #15
-000016B4  43F9 000023C3            686          LEA     CLOSEPTR,A1     ; Load effective address of )
+000016B4  43F9 00002419            686          LEA     CLOSEPTR,A1     ; Load effective address of )
 000016BA  4E4F                     687          TRAP    #15             ; Print )
-000016BC  6000 0A6C                688          BRA     DSEND
+000016BC  6000 0AC2                688          BRA     DSEND
 000016C0                           689  
 000016C0  1C01                     690  EXT     MOVE.B  D1,D6           ; For (xxx).W and (xxx).L modes
 000016C2  0206 0001                691          ANDI.B  #%1,D6
 000016C6  6700 000E                692          BEQ     EXTW
-000016CA  43F9 000023B6            693          LEA     VALN,A1         ; Load effective address of #
+000016CA  43F9 0000240C            693          LEA     VALN,A1         ; Load effective address of #
 000016D0  4E4F                     694          TRAP    #15             ; Print #
-000016D2  6000 0A56                695          BRA     DSEND
+000016D2  6000 0AAC                695          BRA     DSEND
 000016D6                           696  
-000016D6  43F9 000023B8            697  EXTW    LEA     VAL0,A1         ; Load effective address of 0
+000016D6  43F9 0000240E            697  EXTW    LEA     VAL0,A1         ; Load effective address of 0
 000016DC  4E4F                     698          TRAP    #15             ; Print 0
-000016DE  6000 0A4A                699          BRA     DSEND
+000016DE  6000 0AA0                699          BRA     DSEND
 000016E2                           700  
 000016E2                           701          
 000016E2  E55C                     702  DJSR    ROL.W   #2,D4
 000016E4  1404                     703          MOVE.B  D4,D2
 000016E6  0202 0007                704          ANDI.B  #%111,D2
 000016EA  0C02 0002                705          CMPI.B  #%10,D2
-000016EE  6600 0A0E                706          BNE     DSERR
+000016EE  6600 0A64                706          BNE     DSERR
 000016F2                           707          
-000016F2  43F9 00002411            708          LEA     JSRM,A1
+000016F2  43F9 00002467            708          LEA     JSRM,A1
 000016F8  4E4F                     709          TRAP    #15
 000016FA                           710          
-000016FA  43F9 0000236C            711          LEA     SM7,A1
+000016FA  43F9 000023C2            711          LEA     SM7,A1
 00001700  4E4F                     712          TRAP    #15
 00001702                           713  
 00001702  E75C                     714          ROL.W   #3,D4       * [D2] address mode
@@ -727,7 +727,7 @@ Created On: 6/5/2023 8:01:46 PM
 00001716  6700 001E                723          BEQ     DJSR_REG
 0000171A                           724          
 0000171A  0C02 0007                725          CMPI.B  #%111,D2
-0000171E  6600 09DE                726          BNE     DSERR
+0000171E  6600 0A34                726          BNE     DSERR
 00001722                           727          
 00001722  0C01 0000                728          CMPI.B  #%000,D1
 00001726  6700 0034                729          BEQ     DJSR_CUSW
@@ -735,56 +735,56 @@ Created On: 6/5/2023 8:01:46 PM
 0000172A  0C01 0001                731          CMPI.B  #%001,D1
 0000172E  6700 004A                732          BEQ     DJSR_CUSL
 00001732                           733          
-00001732  6000 09F6                734          BRA     DSEND
+00001732  6000 0A4C                734          BRA     DSEND
 00001736                           735          
 00001736                           736          
 00001736                           737          
 00001736                           738  DJSR_REG        
-00001736  43F9 000023BE            739          LEA     OPENPTR,A1
+00001736  43F9 00002414            739          LEA     OPENPTR,A1
 0000173C  4E4F                     740          TRAP    #15
 0000173E                           741          
-0000173E  43F9 000023B2            742          LEA     VALA,A1
+0000173E  43F9 00002408            742          LEA     VALA,A1
 00001744  4E4F                     743          TRAP    #15
 00001746                           744          
 00001746  103C 0003                745          MOVE.B  #3,D0
 0000174A  4E4F                     746          TRAP    #15
 0000174C  103C 000E                747          MOVE.B  #14,D0
 00001750                           748          
-00001750  43F9 000023C3            749          LEA     CLOSEPTR,A1
+00001750  43F9 00002419            749          LEA     CLOSEPTR,A1
 00001756  4E4F                     750          TRAP    #15
 00001758                           751          
-00001758  6000 09D0                752          BRA     DSEND
+00001758  6000 0A26                752          BRA     DSEND
 0000175C                           753  
 0000175C                           754          
 0000175C                           755  DJSR_CUSW
-0000175C  43F9 000023CA            756          LEA     DOLLAR,A1
+0000175C  43F9 00002420            756          LEA     DOLLAR,A1
 00001762  4E4F                     757          TRAP    #15
 00001764  341A                     758          MOVE.W  (A2)+,D2
 00001766  48E7 0400                759          MOVEM.L D5,-(SP)
 0000176A  1A3C 0030                760          MOVE.B  #48,D5
 0000176E  4EB8 117A                761          JSR     HEXOUT
 00001772  4CDF 0020                762          MOVEM.L (SP)+,D5
-00001776  6000 09B2                763          BRA     DSEND
+00001776  6000 0A08                763          BRA     DSEND
 0000177A                           764  
 0000177A                           765  DJSR_CUSL
-0000177A  43F9 000023CA            766          LEA     DOLLAR,A1
+0000177A  43F9 00002420            766          LEA     DOLLAR,A1
 00001780  4E4F                     767          TRAP    #15
 00001782  241A                     768          MOVE.L  (A2)+,D2
 00001784  48E7 0400                769          MOVEM.L D5,-(SP)
 00001788  1A3C 0030                770          MOVE.B  #48,D5
 0000178C  4EB8 117A                771          JSR     HEXOUT
 00001790  4CDF 0020                772          MOVEM.L (SP)+,D5
-00001794  6000 0994                773          BRA     DSEND
+00001794  6000 09EA                773          BRA     DSEND
 00001798                           774          
-00001798  43F9 00002415            775  DRTS    LEA     RTSM,A1
+00001798  43F9 0000246B            775  DRTS    LEA     RTSM,A1
 0000179E  4E4F                     776          TRAP    #15
-000017A0  6000 0988                777          BRA     DSEND
+000017A0  6000 09DE                777          BRA     DSEND
 000017A4                           778          
 000017A4                           779          
 000017A4                           780  DLEA    *printing
-000017A4  43F9 000023E1            781          LEA     LEAM,A1
+000017A4  43F9 00002437            781          LEA     LEAM,A1
 000017AA  4E4F                     782          TRAP    #15
-000017AC  43F9 0000236C            783          LEA     SM7,A1
+000017AC  43F9 000023C2            783          LEA     SM7,A1
 000017B2  4E4F                     784          TRAP    #15
 000017B4                           785          
 000017B4                           786          *shifting out 111
@@ -806,7 +806,7 @@ Created On: 6/5/2023 8:01:46 PM
 000017CE  B63C 0007                802          CMP.B   #%111,D3
 000017D2  6700 0006                803          BEQ     DLEAP
 000017D6                           804          
-000017D6  6000 0946                805          BRA     DSERREA
+000017D6  6000 099C                805          BRA     DSERREA
 000017DA                           806          
 000017DA                           807          *getting ea reg
 000017DA  E75C                     808  DLEAP   ROL.W   #3,D4
@@ -816,37 +816,37 @@ Created On: 6/5/2023 8:01:46 PM
 000017E2                           812          *printing
 000017E2  4EB8 120C                813          JSR     ADDRMODEALL
 000017E6                           814          
-000017E6  43F9 000023C8            815          LEA     COMMA,A1
+000017E6  43F9 0000241E            815          LEA     COMMA,A1
 000017EC  4E4F                     816          TRAP    #15
-000017EE  43F9 000023B2            817          LEA     VALA,A1
+000017EE  43F9 00002408            817          LEA     VALA,A1
 000017F4  4E4F                     818          TRAP    #15
 000017F6  103C 0003                819          MOVE.B  #3,D0
 000017FA  1202                     820          MOVE.B  D2,D1
 000017FC  4E4F                     821          TRAP    #15
 000017FE  103C 000E                822          MOVE.B  #14,D0
 00001802                           823          
-00001802  6000 0926                824          BRA DSEND
+00001802  6000 097C                824          BRA DSEND
 00001806                           825          
 00001806                           826  JSR010
 00001806  B63C 0002                827          CMP.B   #%010,D3
 0000180A  6600 002A                828          BNE     JSR111
-0000180E  43F9 000023BE            829          LEA     OPENPTR,A1
+0000180E  43F9 00002414            829          LEA     OPENPTR,A1
 00001814  4E4F                     830          TRAP    #15
-00001816  43F9 000023B2            831          LEA     VALA,A1
+00001816  43F9 00002408            831          LEA     VALA,A1
 0000181C  4E4F                     832          TRAP    #15
 0000181E  103C 0003                833          MOVE.B  #3,D0
 00001822  1206                     834          MOVE.B  D6,D1
 00001824  4E4F                     835          TRAP    #15
 00001826  103C 000E                836          MOVE.B  #14,D0
-0000182A  43F9 000023C3            837          LEA     CLOSEPTR,A1
+0000182A  43F9 00002419            837          LEA     CLOSEPTR,A1
 00001830  4E4F                     838          TRAP    #15
 00001832  6000 005E                839          BRA     JSRPRINT2
 00001836                           840  JSR111
 00001836  B63C 0007                841          CMP.B   #%111,D3
-0000183A  6600 08C2                842          BNE     DSERR
+0000183A  6600 0918                842          BNE     DSERR
 0000183E  BC3C 0000                843          CMP.B   #%000,D6
 00001842  6600 0024                844          BNE     JSR111001
-00001846  43F9 000023CA            845          LEA     DOLLAR,A1
+00001846  43F9 00002420            845          LEA     DOLLAR,A1
 0000184C  4E4F                     846          TRAP    #15
 0000184E  341A                     847          MOVE.W  (A2)+,D2
 00001850  48E7 0400                848          MOVEM.L D5,-(SP)    
@@ -858,8 +858,8 @@ Created On: 6/5/2023 8:01:46 PM
 00001868                           854          
 00001868                           855  JSR111001
 00001868  BC3C 0001                856          CMP.B   #%001,D6
-0000186C  6600 0890                857          BNE     DSERR
-00001870  43F9 000023CA            858          LEA     DOLLAR,A1
+0000186C  6600 08E6                857          BNE     DSERR
+00001870  43F9 00002420            858          LEA     DOLLAR,A1
 00001876  4E4F                     859          TRAP    #15
 00001878  241A                     860          MOVE.L  (A2)+,D2
 0000187A  48E7 0400                861          MOVEM.L D5,-(SP)
@@ -870,23 +870,23 @@ Created On: 6/5/2023 8:01:46 PM
 0000188E  6000 0002                866          BRA     JSRPRINT2
 00001892                           867          
 00001892                           868  JSRPRINT2
-00001892  43F9 000023C8            869          LEA     COMMA,A1
+00001892  43F9 0000241E            869          LEA     COMMA,A1
 00001898  4E4F                     870          TRAP    #15
-0000189A  43F9 000023B2            871          LEA     VALA,A1
+0000189A  43F9 00002408            871          LEA     VALA,A1
 000018A0  4E4F                     872          TRAP    #15
 000018A2  103C 0003                873          MOVE.B  #3,D0
 000018A6  3207                     874          MOVE.W  D7,D1
 000018A8  4E4F                     875          TRAP    #15
 000018AA  103C 000E                876          MOVE.B  #14,D0
 000018AE                           877          
-000018AE  6000 087A                878          BRA     DSEND
+000018AE  6000 08D0                878          BRA     DSEND
 000018B2                           879          
 000018B2                           880          
 000018B2                           881  DMOVEM
 000018B2                           882  *printing movem
-000018B2  43F9 000023D4            883          LEA     MOVEM,A1
+000018B2  43F9 0000242A            883          LEA     MOVEM,A1
 000018B8  4E4F                     884          TRAP    #15
-000018BA  43F9 000023BC            885          LEA     VALM,A1
+000018BA  43F9 00002412            885          LEA     VALM,A1
 000018C0  4E4F                     886          TRAP    #15
 000018C2                           887          
 000018C2                           888  *parsing initial bits
@@ -901,15 +901,15 @@ Created On: 6/5/2023 8:01:46 PM
 000018D2                           897          *printing size
 000018D2  BA7C 0000                898          CMP     #0,D5
 000018D6  6600 000E                899          BNE     MOVEML
-000018DA  43F9 000023AC            900          LEA     MODEW,A1
+000018DA  43F9 00002402            900          LEA     MODEW,A1
 000018E0  4E4F                     901          TRAP    #15
 000018E2  6000 000A                902          BRA     MOVEMEA
 000018E6                           903  MOVEML        
-000018E6  43F9 000023AF            904          LEA     MODEL,A1
+000018E6  43F9 00002405            904          LEA     MODEL,A1
 000018EC  4E4F                     905          TRAP    #15
 000018EE                           906          
 000018EE                           907  MOVEMEA   
-000018EE  43F9 00002356            908          LEA     SM3,A1
+000018EE  43F9 000023AC            908          LEA     SM3,A1
 000018F4  4E4F                     909          TRAP    #15
 000018F6                           910          
 000018F6  E75C                     911          ROL.W   #3,D4       *mode bits
@@ -924,7 +924,7 @@ Created On: 6/5/2023 8:01:46 PM
 0000190E                           920          
 0000190E  4EB8 120C                921          JSR     ADDRMODEALL
 00001912                           922          
-00001912  43F9 000023C8            923          LEA     COMMA,A1
+00001912  43F9 0000241E            923          LEA     COMMA,A1
 00001918  4E4F                     924          TRAP    #15
 0000191A                           925          
 0000191A  341A                     926  MOVEMEB MOVE.W  (A2)+,D2
@@ -952,7 +952,7 @@ Created On: 6/5/2023 8:01:46 PM
 0000194C  6C00 0040                948          BGE     MOVEM3
 00001950  103C 000E                949          MOVE.B  #14,D0
 00001954                           950          
-00001954  43F9 000023B2            951  MOVEM2  LEA     VALA,A1
+00001954  43F9 00002408            951  MOVEM2  LEA     VALA,A1
 0000195A  4E4F                     952          TRAP    #15
 0000195C                           953          
 0000195C  103C 0003                954          MOVE.B  #3,D0
@@ -963,12 +963,12 @@ Created On: 6/5/2023 8:01:46 PM
 00001968  BA3C 0001                959          CMP.B   #1,D5
 0000196C  6700 0020                960          BEQ     MOVEM3
 00001970                           961          
-00001970  43F9 000023CE            962          LEA     DASH,A1
+00001970  43F9 00002424            962          LEA     DASH,A1
 00001976  4E4F                     963          TRAP    #15
 00001978  D205                     964          ADD.B   D5,D1
 0000197A  5301                     965          SUBQ.B  #1,D1
 0000197C                           966          
-0000197C  43F9 000023B2            967          LEA     VALA,A1
+0000197C  43F9 00002408            967          LEA     VALA,A1
 00001982  4E4F                     968          TRAP    #15
 00001984  103C 0003                969          MOVE.B  #3,D0
 00001988  4E4F                     970          TRAP    #15
@@ -997,14 +997,14 @@ Created On: 6/5/2023 8:01:46 PM
 000019C0  6C00 0054                993          BGE     MOVEM5
 000019C4                           994          
 000019C4  103C 000E                995          MOVE.B  #14,D0
-000019C8  43F9 000023CC            996          LEA     SLASH,A1
+000019C8  43F9 00002422            996          LEA     SLASH,A1
 000019CE  4E4F                     997          TRAP    #15
 000019D0                           998  
 000019D0  103C 000E                999  MOVEM4  MOVE.B  #14,D0
 000019D4  B83C 0008               1000          CMP.B   #8,D4
 000019D8  6C00 003C               1001          BGE     MOVEM5
 000019DC                          1002          
-000019DC  43F9 000023B4           1003          LEA     VALD,A1
+000019DC  43F9 0000240A           1003          LEA     VALD,A1
 000019E2  4E4F                    1004          TRAP    #15
 000019E4                          1005          
 000019E4  103C 0003               1006          MOVE.B  #3,D0
@@ -1015,12 +1015,12 @@ Created On: 6/5/2023 8:01:46 PM
 000019F0  BA3C 0001               1011          CMP.B   #1,D5
 000019F4  6700 0020               1012          BEQ     MOVEM5
 000019F8                          1013          
-000019F8  43F9 000023CE           1014          LEA     DASH,A1
+000019F8  43F9 00002424           1014          LEA     DASH,A1
 000019FE  4E4F                    1015          TRAP    #15
 00001A00  D205                    1016          ADD.B   D5,D1
 00001A02  5301                    1017          SUBQ.B  #1,D1
 00001A04                          1018          
-00001A04  43F9 000023B4           1019          LEA     VALD,A1
+00001A04  43F9 0000240A           1019          LEA     VALD,A1
 00001A0A  4E4F                    1020          TRAP    #15
 00001A0C  103C 0003               1021          MOVE.B  #3,D0
 00001A10  4E4F                    1022          TRAP    #15
@@ -1031,14 +1031,14 @@ Created On: 6/5/2023 8:01:46 PM
 00001A16  103C 000E               1027  MOVEM5  MOVE.B  #14,D0
 00001A1A                          1028          
 00001A1A  BE3C 0001               1029          CMP.B   #1,D7
-00001A1E  6700 070A               1030          BEQ     DSEND
+00001A1E  6700 0760               1030          BEQ     DSEND
 00001A22                          1031          
-00001A22  43F9 000023C8           1032          LEA     COMMA,A1
+00001A22  43F9 0000241E           1032          LEA     COMMA,A1
 00001A28  4E4F                    1033          TRAP    #15
 00001A2A                          1034          
 00001A2A  4EB8 120C               1035          JSR     ADDRMODEALL
 00001A2E                          1036          
-00001A2E  6000 06FA               1037          BRA     DSEND
+00001A2E  6000 0750               1037          BRA     DSEND
 00001A32                          1038  
 00001A32                          1039  MOVEMLOOP
 00001A32  1A3C 0000               1040          MOVE.B  #0,D5
@@ -1080,16 +1080,16 @@ Created On: 6/5/2023 8:01:46 PM
 00001A74                          1076  MOVEMLOOPSINGLEAR
 00001A74                          1077          
 00001A74                          1078          
-00001A74  6000 06B4               1079          BRA     DSEND
+00001A74  6000 070A               1079          BRA     DSEND
 00001A78                          1080  
 00001A78                          1081  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 00001A78                          1082  
 00001A78  4E71                    1083  DS0101  NOP
 00001A7A                          1084          
 00001A7A  4E71                    1085  DADDQ   NOP
-00001A7C  43F9 000023D9           1086          LEA     ADDM,A1
+00001A7C  43F9 0000242F           1086          LEA     ADDM,A1
 00001A82  4E4F                    1087          TRAP    #15
-00001A84  43F9 000023BA           1088          LEA     VALQ,A1
+00001A84  43F9 00002410           1088          LEA     VALQ,A1
 00001A8A  4E4F                    1089          TRAP    #15
 00001A8C                          1090          
 00001A8C                          1091          *parsing data to d1
@@ -1102,14 +1102,14 @@ Created On: 6/5/2023 8:01:46 PM
 00001A96  1A04                    1098          MOVE.B  D4,D5
 00001A98  CA3C 0001               1099          AND.B   #%1,D5
 00001A9C  BA7C 0000               1100          CMP     #0,D5
-00001AA0  6600 065C               1101          BNE     DSERR
+00001AA0  6600 06B2               1101          BNE     DSERR
 00001AA4                          1102          
 00001AA4                          1103          *parsing and printing size
 00001AA4  E55C                    1104          ROL.W   #2,D4
 00001AA6  1A04                    1105          MOVE.B  D4,D5
 00001AA8  CA3C 0003               1106          AND.B   #%11,D5
 00001AAC  4EB8 11C2               1107          JSR     SIZE
-00001AB0  43F9 0000236C           1108          LEA     SM7,A1
+00001AB0  43F9 000023B0           1108          LEA     SM4,A1
 00001AB6  4E4F                    1109          TRAP    #15
 00001AB8                          1110          
 00001AB8                          1111          *parsing effective address information
@@ -1124,19 +1124,19 @@ Created On: 6/5/2023 8:01:46 PM
 00001AC4  CC3C 0007               1120          AND.B   #%111,D6
 00001AC8                          1121          
 00001AC8                          1122          *printing data
-00001AC8  43F9 000023B6           1123          LEA     VALN,A1
+00001AC8  43F9 0000240C           1123          LEA     VALN,A1
 00001ACE  4E4F                    1124          TRAP    #15
 00001AD0  103C 0003               1125          MOVE.B  #3,D0
 00001AD4  4E4F                    1126          TRAP    #15
 00001AD6  103C 000E               1127          MOVE.B  #14,D0
-00001ADA  43F9 000023C8           1128          LEA     COMMA,A1
+00001ADA  43F9 0000241E           1128          LEA     COMMA,A1
 00001AE0  4E4F                    1129          TRAP    #15
 00001AE2                          1130          
 00001AE2  B67C 0004               1131          CMP     #%100,D3
-00001AE6  6700 0616               1132          BEQ     DSERR
+00001AE6  6700 066C               1132          BEQ     DSERR
 00001AEA  4EB8 120C               1133          JSR     ADDRMODEALL
 00001AEE                          1134          
-00001AEE  6000 063A               1135          BRA     DSEND
+00001AEE  6000 0690               1135          BRA     DSEND
 00001AF2                          1136          
 00001AF2                          1137  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 00001AF2                          1138  
@@ -1157,12 +1157,12 @@ Created On: 6/5/2023 8:01:46 PM
 00001B12  B43C 0007               1153          CMP.B   #%0111,D2   *BEQ   
 00001B16  6700 010E               1154          BEQ     DBEQ
 00001B1A                          1155          
-00001B1A  6000 05F2               1156          BRA     DSERRINS
+00001B1A  6000 0648               1156          BRA     DSERRINS
 00001B1E                          1157          
-00001B1E  43F9 00002419           1158  DBRA    LEA     BRAM,A1
+00001B1E  43F9 0000246F           1158  DBRA    LEA     BRAM,A1
 00001B24  4E4F                    1159          TRAP    #15
 00001B26                          1160          
-00001B26  43F9 0000236C           1161          LEA     SM7,A1
+00001B26  43F9 000023C2           1161          LEA     SM7,A1
 00001B2C  4E4F                    1162          TRAP    #15
 00001B2E                          1163  
 00001B2E  E15C                    1164          ROL.W   #8,D4       * [D1] 8 bit Displacement 
@@ -1176,7 +1176,7 @@ Created On: 6/5/2023 8:01:46 PM
 00001B44  6700 0042               1172          BEQ     DBRA_32BIT      * Long
 00001B48                          1173          
 00001B48                          1174          * 8 Bit Displacement
-00001B48  43F9 000023CA           1175          LEA     DOLLAR,A1
+00001B48  43F9 00002420           1175          LEA     DOLLAR,A1
 00001B4E  4E4F                    1176          TRAP    #15
 00001B50                          1177          
 00001B50  341A                    1178          MOVE.W  (A2)+,D2
@@ -1184,15 +1184,15 @@ Created On: 6/5/2023 8:01:46 PM
 00001B54  5842                    1180          ADD.W   #4,D2   *unsure   
 00001B56  1A3C 0030               1181          MOVE.B  #48,D5
 00001B5A  4EB8 117A               1182          JSR     HEXOUT
-00001B5E  6000 05CA               1183          BRA     DSEND
+00001B5E  6000 0620               1183          BRA     DSEND
 00001B62                          1184  
 00001B62                          1185          *Displacement is put in D1      
 00001B62                          1186          
 00001B62                          1187          
-00001B62  6000 05C6               1188          BRA     DSEND
+00001B62  6000 061C               1188          BRA     DSEND
 00001B66                          1189          
 00001B66                          1190  DBRA_16BIT
-00001B66  43F9 000023CA           1191          LEA     DOLLAR,A1
+00001B66  43F9 00002420           1191          LEA     DOLLAR,A1
 00001B6C  4E4F                    1192          TRAP    #15
 00001B6E  341A                    1193          MOVE.W  (A2)+,D2
 00001B70  D44A                    1194          ADD.W   A2,D2
@@ -1201,10 +1201,10 @@ Created On: 6/5/2023 8:01:46 PM
 00001B78  1A3C 0030               1197          MOVE.B  #48,D5
 00001B7C  4EB8 117A               1198          JSR     HEXOUT
 00001B80  4CDF 0020               1199          MOVEM.L (SP)+,D5
-00001B84  6000 05A4               1200          BRA     DSEND
+00001B84  6000 05FA               1200          BRA     DSEND
 00001B88                          1201  
 00001B88                          1202  DBRA_32BIT
-00001B88  43F9 000023CA           1203          LEA     DOLLAR,A1
+00001B88  43F9 00002420           1203          LEA     DOLLAR,A1
 00001B8E  4E4F                    1204          TRAP    #15
 00001B90  241A                    1205          MOVE.L  (A2)+,D2
 00001B92  D48A                    1206          ADD.L   A2,D2
@@ -1213,14 +1213,14 @@ Created On: 6/5/2023 8:01:46 PM
 00001B9A  1A3C 0030               1209          MOVE.B  #48,D5
 00001B9E  4EB8 117A               1210          JSR     HEXOUT
 00001BA2  4CDF 0020               1211          MOVEM.L (SP)+,D5
-00001BA6  6000 0582               1212          BRA     DSEND
+00001BA6  6000 05D8               1212          BRA     DSEND
 00001BAA                          1213          
 00001BAA                          1214          
 00001BAA                          1215          
-00001BAA  43F9 00002405           1216  DBGT    LEA     BGTM,A1
+00001BAA  43F9 0000245B           1216  DBGT    LEA     BGTM,A1
 00001BB0  4E4F                    1217          TRAP    #15
 00001BB2                          1218          
-00001BB2  43F9 0000236C           1219          LEA     SM7,A1
+00001BB2  43F9 000023C2           1219          LEA     SM7,A1
 00001BB8  4E4F                    1220          TRAP    #15
 00001BBA                          1221          
 00001BBA  E15C                    1222          ROL.W   #8,D4       * [D1] 8 bit Displacement 
@@ -1233,7 +1233,7 @@ Created On: 6/5/2023 8:01:46 PM
 00001BC8  0C01 00FF               1229          CMPI.B  #%11111111,D1
 00001BCC  67BA                    1230          BEQ     DBRA_32BIT      * Long
 00001BCE                          1231          
-00001BCE  43F9 000023CA           1232          LEA     DOLLAR,A1
+00001BCE  43F9 00002420           1232          LEA     DOLLAR,A1
 00001BD4  4E4F                    1233          TRAP    #15
 00001BD6                          1234      
 00001BD6  340A                    1235          MOVE.W  A2,D2
@@ -1241,12 +1241,12 @@ Created On: 6/5/2023 8:01:46 PM
 00001BDA                          1237    
 00001BDA  1A3C 0030               1238          MOVE.B  #48,D5
 00001BDE  4EB8 117A               1239          JSR     HEXOUT
-00001BE2  6000 0546               1240          BRA     DSEND
+00001BE2  6000 059C               1240          BRA     DSEND
 00001BE6                          1241  
-00001BE6  43F9 00002409           1242  DBLE    LEA     BLEM,A1
+00001BE6  43F9 0000245F           1242  DBLE    LEA     BLEM,A1
 00001BEC  4E4F                    1243          TRAP    #15
 00001BEE                          1244          
-00001BEE  43F9 0000236C           1245          LEA     SM7,A1
+00001BEE  43F9 000023C2           1245          LEA     SM7,A1
 00001BF4  4E4F                    1246          TRAP    #15
 00001BF6                          1247          
 00001BF6  E15C                    1248          ROL.W   #8,D4       * [D1] 8 bit Displacement 
@@ -1259,7 +1259,7 @@ Created On: 6/5/2023 8:01:46 PM
 00001C06  0C01 00FF               1255          CMPI.B  #%11111111,D1
 00001C0A  6700 FF7C               1256          BEQ     DBRA_32BIT      * Long
 00001C0E                          1257          
-00001C0E  43F9 000023CA           1258          LEA     DOLLAR,A1
+00001C0E  43F9 00002420           1258          LEA     DOLLAR,A1
 00001C14  4E4F                    1259          TRAP    #15
 00001C16                          1260          
 00001C16  340A                    1261          MOVE.W  A2,D2
@@ -1268,12 +1268,12 @@ Created On: 6/5/2023 8:01:46 PM
 00001C1A  1A3C 0030               1264          MOVE.B  #48,D5
 00001C1E  4EB8 117A               1265          JSR     HEXOUT
 00001C22                          1266          
-00001C22  6000 0506               1267          BRA     DSEND
+00001C22  6000 055C               1267          BRA     DSEND
 00001C26                          1268  
-00001C26  43F9 0000240D           1269  DBEQ    LEA     BEQM,A1
+00001C26  43F9 00002463           1269  DBEQ    LEA     BEQM,A1
 00001C2C  4E4F                    1270          TRAP    #15
 00001C2E                          1271          
-00001C2E  43F9 0000236C           1272          LEA     SM7,A1
+00001C2E  43F9 000023C2           1272          LEA     SM7,A1
 00001C34  4E4F                    1273          TRAP    #15
 00001C36                          1274          
 00001C36  E15C                    1275          ROL.W   #8,D4       * [D1] 8 bit Displacement 
@@ -1286,7 +1286,7 @@ Created On: 6/5/2023 8:01:46 PM
 00001C46  0C01 00FF               1282          CMPI.B  #%11111111,D1
 00001C4A  6700 FF3C               1283          BEQ     DBRA_32BIT      * Long
 00001C4E                          1284          
-00001C4E  43F9 000023CA           1285          LEA     DOLLAR,A1
+00001C4E  43F9 00002420           1285          LEA     DOLLAR,A1
 00001C54  4E4F                    1286          TRAP    #15
 00001C56                          1287  
 00001C56  340A                    1288          MOVE.W  A2,D2
@@ -1295,18 +1295,18 @@ Created On: 6/5/2023 8:01:46 PM
 00001C5A  1A3C 0030               1291          MOVE.B  #48,D5
 00001C5E  4EB8 117A               1292          JSR     HEXOUT
 00001C62                          1293          
-00001C62  6000 04C6               1294          BRA     DSEND
+00001C62  6000 051C               1294          BRA     DSEND
 00001C66                          1295  
 00001C66                          1296  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 00001C66                          1297  
 00001C66  4E71                    1298  DS0111  NOP
 00001C68                          1299          
 00001C68  4E71                    1300  DMOVEQ  NOP
-00001C6A  43F9 000023D4           1301          LEA     MOVEM,A1
+00001C6A  43F9 0000242A           1301          LEA     MOVEM,A1
 00001C70  4E4F                    1302          TRAP    #15
-00001C72  43F9 000023BA           1303          LEA     VALQ,A1
+00001C72  43F9 00002410           1303          LEA     VALQ,A1
 00001C78  4E4F                    1304          TRAP    #15
-00001C7A  43F9 00002356           1305          LEA     SM3,A1
+00001C7A  43F9 000023AC           1305          LEA     SM3,A1
 00001C80  4E4F                    1306          TRAP    #15
 00001C82                          1307          
 00001C82                          1308          *getting register number
@@ -1319,26 +1319,26 @@ Created On: 6/5/2023 8:01:46 PM
 00001C8C  1C04                    1315          MOVE.B  D4,D6
 00001C8E  CC3C 0001               1316          AND.B   #%1,D6
 00001C92  BC3C 0000               1317          CMP.B   #0,D6
-00001C96  6600 0466               1318          BNE     DSERR
+00001C96  6600 04BC               1318          BNE     DSERR
 00001C9A                          1319          
 00001C9A                          1320          *getting data and printing information
 00001C9A  E15C                    1321          ROL.W   #8,D4
 00001C9C  1204                    1322          MOVE.B  D4,D1
 00001C9E  C23C 00FF               1323          AND.B   #%11111111,D1
-00001CA2  43F9 000023B6           1324          LEA     VALN,A1
+00001CA2  43F9 0000240C           1324          LEA     VALN,A1
 00001CA8  4E4F                    1325          TRAP    #15
 00001CAA  103C 0003               1326          MOVE.B  #3,D0
 00001CAE  4E4F                    1327          TRAP    #15
 00001CB0  103C 000E               1328          MOVE.B  #14,D0
-00001CB4  43F9 000023C8           1329          LEA     COMMA,A1
+00001CB4  43F9 0000241E           1329          LEA     COMMA,A1
 00001CBA  4E4F                    1330          TRAP    #15
-00001CBC  43F9 000023B4           1331          LEA     VALD,A1
+00001CBC  43F9 0000240A           1331          LEA     VALD,A1
 00001CC2  4E4F                    1332          TRAP    #15
 00001CC4  103C 0003               1333          MOVE.B  #3,D0
 00001CC8  3205                    1334          MOVE.W  D5,D1
 00001CCA  4E4F                    1335          TRAP    #15
 00001CCC                          1336          
-00001CCC  6000 045C               1337          BRA     DSEND
+00001CCC  6000 04B2               1337          BRA     DSEND
 00001CD0                          1338          
 00001CD0                          1339  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 00001CD0                          1340  
@@ -1352,636 +1352,661 @@ Created On: 6/5/2023 8:01:46 PM
 00001CDC  E75C                    1348          ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
 00001CDE  1A04                    1349          MOVE.B  D4,D5           ; Move the byte in D4 to D5
 00001CE0  0205 0007               1350          ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-00001CE4  BA3C 0000               1351          CMP.B   #%000,D5        ; Compare with byte size
-00001CE8  6700 0016               1352          BEQ     DORB
-00001CEC  BA3C 0001               1353          CMP.B   #%001,D5        ; Compare with word size
-00001CF0  6700 0022               1354          BEQ     DORW
-00001CF4  BA3C 0002               1355          CMP.B   #%010,D5        ; Compare with long size
-00001CF8  6700 002E               1356          BEQ     DORL
-00001CFC                          1357          
-00001CFC  6000 042C               1358          BRA     DSEND           ; Branch to DSEND in case of invalid code
-00001D00                          1359  
-00001D00  43F9 000023E9           1360  DORB    LEA     ORM,A1          ; Load effective address of ORM string
-00001D06  4E4F                    1361          TRAP    #15             ; Print ORM string
-00001D08  43F9 000023A9           1362          LEA     MODEB,A1        ; Load effective address of MODEB string
-00001D0E  4E4F                    1363          TRAP    #15             ; Print MODEB string
-00001D10  6000 002A               1364          BRA     DORA            ; Branch to addressing mode parsing
-00001D14                          1365  
-00001D14  43F9 000023E9           1366  DORW    LEA     ORM,A1          ; Load effective address of ORM string
-00001D1A  4E4F                    1367          TRAP    #15             ; Print ORM string
-00001D1C  43F9 000023AC           1368          LEA     MODEW,A1        ; Load effective address of MODEW string
-00001D22  4E4F                    1369          TRAP    #15             ; Print MODEW string
-00001D24  6000 0016               1370          BRA     DORA            ; Branch to addressing mode parsing
-00001D28                          1371  
-00001D28  43F9 000023E9           1372  DORL    LEA     ORM,A1          ; Load effective address of ORM string
-00001D2E  4E4F                    1373          TRAP    #15             ; Print ORM string
-00001D30  43F9 000023AF           1374          LEA     MODEL,A1        ; Load effective address of MODEL string
-00001D36  4E4F                    1375          TRAP    #15             ; Print MODEL string
-00001D38  6000 0002               1376          BRA     DORA            ; Branch to addressing mode parsing
-00001D3C                          1377  
-00001D3C  ED5C                    1378  DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
-00001D3E  1A04                    1379          MOVE.B  D4,D5           ; Move the byte in D4 to D5
-00001D40  0205 0038               1380          ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
-00001D44  E61D                    1381          ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
-00001D46  1605                    1382          MOVE.B  D5,D3           ; Store mode in D3 for further checks
-00001D48  0204 0007               1383          ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
-00001D4C  1C04                    1384          MOVE.B  D4,D6           ; Store the register number in D6 for later use
-00001D4E                          1385  
-00001D4E  4EB8 120C               1386          JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
-00001D52                          1387  
-00001D52  6000 03D6               1388          BRA     DSEND                    
-00001D56                          1389  
-00001D56                          1390  
-00001D56                          1391  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-00001D56                          1392  
-00001D56  4E71                    1393  DS1001  NOP
-00001D58  4E71                    1394  DSUB    NOP
-00001D5A                          1395  *print sub
-00001D5A  43F9 000023DD           1396          LEA     SUBM,A1
-00001D60  4E4F                    1397          TRAP    #15
-00001D62                          1398  
-00001D62                          1399  *parse dn reg: 3 bits
-00001D62                          1400  *number of the data register involved
-00001D62                          1401  *nums 0-7, paired with below
-00001D62  E75C                    1402          ROL.W   #3,D4       *dn reg num in d1
-00001D64  1E04                    1403          MOVE.B  D4,D7
-00001D66  0207 0007               1404          ANDI.B  #%111,D7
-00001D6A                          1405          
-00001D6A  3C47                    1406          MOVE.W  D7,A6       *temporary for storage
-00001D6C                          1407  
-00001D6C                          1408  *parse opmode: 3 bits
-00001D6C                          1409  *Dn - <ea> -> Dn: .B=000, .W=001, .L=010
-00001D6C                          1410  *<ea> - <Dn> -> <ea>: .B=100, .W=101, .L=110
-00001D6C                          1411  *invalid: 111, 011
-00001D6C                          1412  *parse first digit separately
-00001D6C  E35C                    1413          ROL.W   #1,D4       *addressing mode in d2
-00001D6E  1E04                    1414          MOVE.B  D4,D7
-00001D70  0207 0001               1415          ANDI.B  #%1,D7
-00001D74                          1416          
-00001D74                          1417  *parsing next two digits of size
-00001D74  E55C                    1418          ROL.W   #2,D4       *size in d5
-00001D76  1A04                    1419          MOVE.B  D4,D5
-00001D78  0205 0003               1420          ANDI.B  #%11,D5
-00001D7C  4EB8 11C2               1421          JSR     SIZE
-00001D80  43F9 0000236C           1422          LEA     SM7,A1
-00001D86  4E4F                    1423          TRAP    #15
-00001D88                          1424          
-00001D88                          1425  *if addressing mode=<ea>-Dn -> <ea> print ea info first
-00001D88  BE3C 0000               1426          CMP.B   #%0,D7       *if 1, then register info printed last
-00001D8C  6700 0026               1427          BEQ     DSUBEA      *branch to ea before register
-00001D90                          1428          
-00001D90                          1429  *printing register information
-00001D90                          1430  DSUBPRNTREG
-00001D90  43F9 000023B4           1431          LEA     VALD,A1
-00001D96  4E4F                    1432          TRAP    #15
-00001D98  320E                    1433          MOVE.W  A6,D1       *retrieving a6 register data
-00001D9A  103C 0003               1434          MOVE.B  #3,D0       *moving 3 to d0 to print register number
-00001D9E  4E4F                    1435          TRAP    #15         *printing register number
-00001DA0  103C 000E               1436          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
-00001DA4  BE3C 0000               1437          CMP.B   #%0,D7      *if info finished printing
-00001DA8  6700 0380               1438          BEQ     DSEND      *branch to end
-00001DAC  43F9 000023C8           1439          LEA     COMMA,A1
-00001DB2  4E4F                    1440          TRAP    #15
-00001DB4                          1441  
-00001DB4                          1442          
-00001DB4                          1443  * parse ea mode: 3 bits
-00001DB4                          1444  *Dn000, An001, (An)010, (An)+011, -(An)100, (d16An)101, (d8An,Xn)110, data111
-00001DB4                          1445  *address reg direct not allowed for .B operations
-00001DB4                          1446  *no invalid
-00001DB4                          1447  DSUBEA
-00001DB4  E75C                    1448          ROL.W   #3,D4       *ea mode
-00001DB6  1604                    1449          MOVE.B  D4,D3
-00001DB8  0203 0007               1450          ANDI.B  #%111,D3
-00001DBC                          1451  
-00001DBC                          1452  *parse ea reg: 3 bits
-00001DBC                          1453  *no invalid: paired with opmode below (nums 0-7)
-00001DBC                          1454  *if mode=111, 000=.W, 001=.L, 100=#<data>
-00001DBC  E75C                    1455          ROL.W   #3,D4       *ea mode
-00001DBE  1C04                    1456          MOVE.B  D4,D6
-00001DC0  0206 0007               1457          ANDI.B  #%111,D6
-00001DC4                          1458          
-00001DC4  2803                    1459          MOVE.L  D3,D4   *temporarily using D4 
-00001DC6                          1460          
-00001DC6                          1461  *comparisons
-00001DC6  B67C 0004               1462          CMP     #%100,D3
-00001DCA  6700 0332               1463          BEQ     DSERR
-00001DCE  4EB8 120C               1464          JSR     ADDRMODEALL
-00001DD2  BE3C 0001               1465          CMP.B   #%1,D7      *if info printed
-00001DD6  6700 0352               1466          BEQ     DSEND       *end
-00001DDA  43F9 000023C8           1467          LEA     COMMA,A1
-00001DE0  4E4F                    1468          TRAP    #15
-00001DE2  60AC                    1469          BRA     DSUBPRNTREG *check d6 for size of data
-00001DE4                          1470  *then take data from d4 and print (?)
-00001DE4                          1471  
-00001DE4  6000 0344               1472          BRA     DSEND
-00001DE8                          1473  
-00001DE8                          1474  
-00001DE8                          1475  
-00001DE8  4E71                    1476  DS1010  NOP
-00001DEA  6000 0322               1477          BRA     DSERRINS
-00001DEE                          1478  
-00001DEE                          1479          
-00001DEE                          1480  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-00001DEE                          1481  
-00001DEE  4E71                    1482  DS1011  NOP
-00001DF0  6000 031C               1483          BRA     DSERRINS
-00001DF4                          1484          
-00001DF4                          1485  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-00001DF4                          1486  
-00001DF4  4E71                    1487  DS1100  NOP
-00001DF6  6000 0316               1488          BRA     DSERRINS
-00001DFA                          1489          
-00001DFA                          1490  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-00001DFA                          1491  
-00001DFA  4E71                    1492  DS1101  NOP
-00001DFC                          1493  
-00001DFC  4E71                    1494  DADD    NOP
-00001DFE  43F9 000023D9           1495          LEA     ADDM,A1
-00001E04  4E4F                    1496          TRAP    #15
-00001E06                          1497          
-00001E06                          1498          *parse dn reg: 3 bits
-00001E06                          1499  *number of the data register involved
-00001E06                          1500  *nums 0-7, paired with below
-00001E06  E75C                    1501          ROL.W   #3,D4       *dn reg num in d7
-00001E08  1E04                    1502          MOVE.B  D4,D7
-00001E0A  0207 0007               1503          ANDI.B  #%111,D7
-00001E0E                          1504          
-00001E0E  3C47                    1505          MOVE.W  D7,A6
-00001E10                          1506  
-00001E10                          1507  *parse opmode: 3 bits
-00001E10                          1508  *Dn - <ea> -> Dn: .B=000, .W=001, .L=010
-00001E10                          1509  *<ea> - <Dn> -> <ea>: .B=100, .W=101, .L=110
-00001E10                          1510  *invalid: 111, 011
-00001E10                          1511  *parse first digit separately
-00001E10  E35C                    1512          ROL.W   #1,D4       *addressing mode in d2
-00001E12  1E04                    1513          MOVE.B  D4,D7
-00001E14  0207 0001               1514          ANDI.B  #%1,D7
-00001E18                          1515          
-00001E18                          1516  *parsing next two digits of size
-00001E18  E55C                    1517          ROL.W   #2,D4       *size in d5
-00001E1A  1A04                    1518          MOVE.B  D4,D5
-00001E1C  0205 0003               1519          ANDI.B  #%11,D5
-00001E20  BA3C 0003               1520          CMP.B   #%11,D5     *if size is 11, then opcode is ADDA
-00001E24  6700 007C               1521          BEQ     DADDA
-00001E28  4EB8 11C2               1522          JSR     SIZE
-00001E2C  43F9 0000236C           1523          LEA     SM7,A1
-00001E32  4E4F                    1524          TRAP    #15
-00001E34                          1525          
-00001E34                          1526  *if addressing mode=<ea>-Dn -> <ea> print ea info first
-00001E34  BE3C 0000               1527          CMP.B   #%0,D7       *if 0, then register info printed last
-00001E38  6700 002E               1528          BEQ     DADDEA      *branch to ea before register
-00001E3C                          1529          
-00001E3C                          1530  *printing register information
-00001E3C                          1531  DADDPRNTREG
-00001E3C  BA3C 0003               1532          CMP.B   #%11,D5
-00001E40  6700 0058               1533          BEQ     PRINTA
-00001E44  43F9 000023B4           1534          LEA     VALD,A1
-00001E4A                          1535  ADDCONT
-00001E4A  4E4F                    1536          TRAP    #15
-00001E4C  320E                    1537          MOVE.W  A6,D1       *moving reg num to d1 to print
-00001E4E  103C 0003               1538          MOVE.B  #3,D0       *moving 3 to d0 to print register number
-00001E52  4E4F                    1539          TRAP    #15         *printing register number
-00001E54  103C 000E               1540          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
-00001E58  BE3C 0000               1541          CMP.B   #%0,D7      *if info finished printing
-00001E5C  6700 02CC               1542          BEQ     DSEND      *branch to end
-00001E60  43F9 000023C8           1543          LEA     COMMA,A1
-00001E66  4E4F                    1544          TRAP    #15
-00001E68                          1545  
-00001E68                          1546          
-00001E68                          1547  * parse ea mode: 3 bits
-00001E68                          1548  *Dn000, An001, (An)010, (An)+011, -(An)100, (d16An)101, (d8An,Xn)110, data111
-00001E68                          1549  *address reg direct not allowed for .B operations
-00001E68                          1550  *no invalid
-00001E68                          1551  DADDEA
-00001E68  E75C                    1552          ROL.W   #3,D4       *ea mode
-00001E6A  1604                    1553          MOVE.B  D4,D3
-00001E6C  0203 0007               1554          ANDI.B  #%111,D3
-00001E70                          1555  
-00001E70                          1556  *parse ea reg: 3 bits
-00001E70                          1557  *no invalid: paired with opmode below (nums 0-7)
-00001E70                          1558  *if mode=111, 000=.W, 001=.L, 100=#<data>
-00001E70  E75C                    1559          ROL.W   #3,D4       *ea mode
-00001E72  1C04                    1560          MOVE.B  D4,D6
-00001E74  0206 0007               1561          ANDI.B  #%111,D6
-00001E78                          1562          
-00001E78                          1563  *comparisons
-00001E78  B67C 0004               1564          CMP     #%100,D3
-00001E7C  6700 005A               1565          BEQ     ADDDATACHECK
-00001E80                          1566  DATACHECKCONT
-00001E80  4EB8 120C               1567          JSR     ADDRMODEALL
-00001E84  BE3C 0001               1568          CMP.B   #%1,D7      *if info printed
-00001E88  6700 02A0               1569          BEQ     DSEND       *end
-00001E8C  43F9 000023C8           1570          LEA     COMMA,A1
-00001E92  4E4F                    1571          TRAP    #15
-00001E94  60A6                    1572          BRA     DADDPRNTREG 
-00001E96                          1573  
-00001E96  6000 0292               1574          BRA     DSEND
-00001E9A                          1575          
-00001E9A  43F9 000023B2           1576  PRINTA  LEA     VALA,A1
-00001EA0  60A8                    1577          BRA     ADDCONT
-00001EA2                          1578  
-00001EA2                          1579          
-00001EA2  4E71                    1580  DADDA   NOP
-00001EA4  43F9 000023B2           1581          LEA     VALA,A1
-00001EAA  4E4F                    1582          TRAP    #15
-00001EAC  BE3C 0000               1583          CMP.B   #%0,D7      *for adda, 0=word, 1=longword
-00001EB0  6600 000C               1584          BNE     ADDAL
-00001EB4  43F9 000023AC           1585          LEA     MODEW,A1
-00001EBA  6000 000C               1586          BRA     ADDSIZEEND
-00001EBE  43F9 000023AF           1587  ADDAL   LEA     MODEL,A1
-00001EC4  6000 0002               1588          BRA     ADDSIZEEND
-00001EC8                          1589  ADDSIZEEND
-00001EC8  4E4F                    1590          TRAP    #15
-00001ECA  43F9 0000236C           1591          LEA     SM7,A1
-00001ED0  4E4F                    1592          TRAP    #15
-00001ED2  1E3C 0000               1593          MOVE.B  #%0,D7       *set d2 to print adda in correct order: address register always last
-00001ED6  6090                    1594          BRA     DADDEA
-00001ED8                          1595  ADDDATACHECK
-00001ED8  BA3C 0003               1596          CMP.B   #%11,D5
-00001EDC  6700 0220               1597          BEQ     DSERR
-00001EE0  609E                    1598          BRA     DATACHECKCONT
-00001EE2                          1599          
-00001EE2                          1600          
-00001EE2                          1601  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-00001EE2                          1602  
-00001EE2                          1603  DS1110
-00001EE2  E75C                    1604          ROL.W   #3,D4           * [D2] Reading count
-00001EE4  1404                    1605          MOVE.B  D4,D2
-00001EE6  0202 0007               1606          ANDI.B  #%111,D2
-00001EEA                          1607          
-00001EEA  E35C                    1608          ROL.W   #1,D4           * [D3] Reading direction
-00001EEC  1604                    1609          MOVE.B  D4,D3
-00001EEE  0203 0001               1610          ANDI.B  #%1,D3
-00001EF2                          1611          
-00001EF2  E55C                    1612          ROL.W   #2,D4           * [D5] Reading size
-00001EF4  1A04                    1613          MOVE.B  D4,D5
-00001EF6  0205 0003               1614          ANDI.B  #%11,D5
-00001EFA                          1615          
-00001EFA  BA3C 0003               1616          CMP.B   #%11,D5   * Start processing code as memory if size is 11
-00001EFE  6700 00F0               1617          BEQ     DS1110MEM
-00001F02                          1618          
-00001F02  E35C                    1619          ROL.W   #1,D4           * [D6] Reading count mode
-00001F04  1C04                    1620          MOVE.B  D4,D6
-00001F06  0206 0001               1621          ANDI.B  #%1,D6
-00001F0A                          1622          
-00001F0A  E55C                    1623          ROL.W   #2,D4           * [D7] reading type of shift
-00001F0C  1E04                    1624          MOVE.B  D4,D7
-00001F0E  0207 0003               1625          ANDI.B  #%11,D7
-00001F12                          1626          
-00001F12  E75C                    1627          ROL.W   #3,D4           * [D1] reading register
-00001F14  1204                    1628          MOVE.B  D4,D1
-00001F16  0201 0007               1629          ANDI.B  #%111,D1
-00001F1A                          1630          
-00001F1A  BE3C 0001               1631          CMP.B   #%01,D7   *Determine shift type
-00001F1E  6700 008E               1632          BEQ     DLS
-00001F22  BE3C 0000               1633          CMP.B   #%00,D7
-00001F26  6700 0092               1634          BEQ     DAS
-00001F2A  BE3C 0003               1635          CMP.B   #%11,D7
-00001F2E  6700 0096               1636          BEQ     DRO
-00001F32                          1637          
-00001F32  6000 01F6               1638          BRA     DSEND               *Fallback in case of invalid code
-00001F36                          1639          
-00001F36  48E7 FFFF               1640  DS1110A MOVEM.L A0-A7/D0-D7,-(SP)   *Print shift direction
-00001F3A  4EB9 00001FD2           1641          JSR     DS1110SIDE
-00001F40  4CDF FFFF               1642          MOVEM.L (SP)+,A0-A7/D0-D7
-00001F44                          1643          
-00001F44  48E7 FFFF               1644          MOVEM.L A0-A7/D0-D7,-(SP)   *Print size
-00001F48  4EB8 11C2               1645          JSR     SIZE
-00001F4C  4CDF FFFF               1646          MOVEM.L (SP)+,A0-A7/D0-D7
-00001F50                          1647          
-00001F50  103C 000E               1648          MOVE.B  #14,D0
-00001F54  43F9 0000235F           1649          LEA     SM5,A1
-00001F5A  4E4F                    1650          TRAP    #15
-00001F5C                          1651          
-00001F5C  BA3C 0003               1652          CMP.B   #%11,D5
-00001F60  6700 00B4               1653          BEQ     DS1110MEMA
-00001F64                          1654          
-00001F64  BC3C 0001               1655          CMP.B   #%1,D6
-00001F68  6700 003A               1656          BEQ     DS1110_REG_D
-00001F6C  6000 002C               1657          BRA     DS1110_REG_I
-00001F70                          1658          
-00001F70  1C01                    1659  DS1110B MOVE.B  D1,D6               *We ned D1 for trap task so since we're done using D6, we put D1 into D6 temporarily
-00001F72                          1660          
-00001F72  103C 0003               1661          MOVE.B  #3,D0
-00001F76  1202                    1662          MOVE.B  D2,D1
-00001F78  4E4F                    1663          TRAP    #15
-00001F7A                          1664          
-00001F7A  103C 000E               1665          MOVE.B  #14,D0
-00001F7E  43F9 000023C8           1666          LEA     COMMA,A1
-00001F84  4E4F                    1667          TRAP    #15
-00001F86                          1668          
-00001F86  43F9 000023B4           1669          LEA     VALD,A1
-00001F8C  4E4F                    1670          TRAP    #15
-00001F8E                          1671          
-00001F8E  103C 0003               1672          MOVE.B  #3,D0
-00001F92  1206                    1673          MOVE.B  D6,D1
-00001F94  4E4F                    1674          TRAP    #15
-00001F96                          1675          
-00001F96  6000 0192               1676          BRA     DSEND
-00001F9A                          1677          
-00001F9A                          1678  DS1110_REG_I
-00001F9A  43F9 000023B6           1679          LEA     VALN,A1
-00001FA0  4E4F                    1680          TRAP    #15
-00001FA2  60CC                    1681          BRA     DS1110B
-00001FA4                          1682  
-00001FA4                          1683  DS1110_REG_D
-00001FA4  43F9 000023B4           1684          LEA     VALD,A1
-00001FAA  4E4F                    1685          TRAP    #15
-00001FAC  60C2                    1686          BRA     DS1110B       
-00001FAE                          1687          
-00001FAE  43F9 000023F0           1688  DLS     LEA     LSM,A1
-00001FB4  4E4F                    1689          TRAP    #15
-00001FB6  6000 FF7E               1690          BRA     DS1110A
-00001FBA                          1691          
-00001FBA  43F9 000023F7           1692  DAS     LEA     ASM,A1
-00001FC0  4E4F                    1693          TRAP    #15
-00001FC2  6000 FF72               1694          BRA     DS1110A
-00001FC6                          1695          
-00001FC6  43F9 000023FE           1696  DRO     LEA     ROM,A1
-00001FCC  4E4F                    1697          TRAP    #15
-00001FCE  6000 FF66               1698          BRA     DS1110A
-00001FD2                          1699          
-00001FD2                          1700  DS1110SIDE
-00001FD2  103C 0006               1701          MOVE.B  #6,D0
-00001FD6  B63C 0001               1702          CMP.B   #1,D3
-00001FDA  6700 000C               1703          BEQ     DS1110LSIDE
-00001FDE  123C 0052               1704          MOVE.B  #82,D1
-00001FE2  4E4F                    1705          TRAP    #15
-00001FE4  6000 0008               1706          BRA     DS1110SIDEEND
-00001FE8                          1707  
-00001FE8                          1708  DS1110LSIDE
-00001FE8  123C 004C               1709          MOVE.B  #76,D1
-00001FEC  4E4F                    1710          TRAP    #15
-00001FEE                          1711          
-00001FEE                          1712  DS1110SIDEEND
-00001FEE  4E75                    1713          RTS 
-00001FF0                          1714  
-00001FF0                          1715  DS1110MEM
-00001FF0                          1716                                  * Shift type is instead stored in D2
-00001FF0                          1717          
-00001FF0  E75C                    1718          ROL.W   #3,D4           * [D6] Reading address mode
-00001FF2  1C04                    1719          MOVE.B  D4,D6
-00001FF4  0206 0007               1720          ANDI.B  #%111,D6
-00001FF8                          1721          
-00001FF8  E75C                    1722          ROL.W   #3,D4           * [D1] Reading address register
-00001FFA  1204                    1723          MOVE.B  D4,D1
-00001FFC  0201 0007               1724          ANDI.B  #%111,D1
-00002000                          1725          
-00002000  B43C 0001               1726          CMP.B   #%01,D2
-00002004  67A8                    1727          BEQ     DLS
-00002006  B43C 0000               1728          CMP.B   #%00,D2
-0000200A  67AE                    1729          BEQ     DAS
-0000200C  B43C 0003               1730          CMP.B   #%11,D2
-00002010  67B4                    1731          BEQ     DRO
-00002012  6000 0116               1732          BRA     DSEND
-00002016                          1733          
-00002016                          1734          
-00002016                          1735  DS1110MEMA
-00002016                          1736          
-00002016  BC3C 0002               1737          CMP.B   #%010,D6
-0000201A  6700 002E               1738          BEQ     DS1110MEM_REG
-0000201E  BC3C 0003               1739          CMP.B   #%011,D6
-00002022  6700 004C               1740          BEQ     DS1110MEM_INC
-00002026  BC3C 0004               1741          CMP.B   #%100,D6
-0000202A  6700 006A               1742          BEQ     DS1110MEM_DEC
-0000202E                          1743          
-0000202E  BC3C 0007               1744          CMP.B   #%111,D6
-00002032  6600 00CA               1745          BNE     DSERR
-00002036                          1746          
-00002036  B23C 0000               1747          CMP.B   #%000,D1
-0000203A  6700 0080               1748          BEQ     DS1110MEM_CUSW
-0000203E  B23C 0001               1749          CMP.B   #%001,D1
-00002042  6700 0096               1750          BEQ     DS1110MEM_CUSL
-00002046                          1751          
-00002046  6000 00E2               1752          BRA     DSEND
-0000204A                          1753  
-0000204A                          1754  DS1110MEM_REG
-0000204A  43F9 000023BE           1755          LEA     OPENPTR,A1
-00002050  4E4F                    1756          TRAP    #15
-00002052                          1757          
-00002052  43F9 000023B2           1758          LEA     VALA,A1
-00002058  4E4F                    1759          TRAP    #15
-0000205A                          1760          
-0000205A  103C 0003               1761          MOVE.B  #3,D0
-0000205E  4E4F                    1762          TRAP    #15
-00002060  103C 000E               1763          MOVE.B  #14,D0
-00002064                          1764          
-00002064  43F9 000023C3           1765          LEA     CLOSEPTR,A1
-0000206A  4E4F                    1766          TRAP    #15
-0000206C                          1767          
-0000206C  6000 00BC               1768          BRA     DSEND
-00002070                          1769  
-00002070                          1770  DS1110MEM_INC
-00002070  43F9 000023BE           1771          LEA     OPENPTR,A1
-00002076  4E4F                    1772          TRAP    #15
-00002078                          1773          
-00002078  43F9 000023B2           1774          LEA     VALA,A1
-0000207E  4E4F                    1775          TRAP    #15
-00002080                          1776          
-00002080  103C 0003               1777          MOVE.B  #3,D0
-00002084  4E4F                    1778          TRAP    #15
-00002086  103C 000E               1779          MOVE.B  #14,D0
-0000208A                          1780          
-0000208A  43F9 000023C5           1781          LEA     CLOSEIPTR,A1
-00002090  4E4F                    1782          TRAP    #15
-00002092                          1783          
-00002092  6000 0096               1784          BRA     DSEND
-00002096                          1785  
-00002096                          1786  DS1110MEM_DEC
-00002096  43F9 000023C0           1787          LEA     OPENDPTR,A1
-0000209C  4E4F                    1788          TRAP    #15
-0000209E                          1789          
-0000209E  43F9 000023B2           1790          LEA     VALA,A1
-000020A4  4E4F                    1791          TRAP    #15
-000020A6                          1792          
-000020A6  103C 0003               1793          MOVE.B  #3,D0
-000020AA  4E4F                    1794          TRAP    #15
-000020AC  103C 000E               1795          MOVE.B  #14,D0
-000020B0                          1796          
-000020B0  43F9 000023C3           1797          LEA     CLOSEPTR,A1
-000020B6  4E4F                    1798          TRAP    #15
-000020B8                          1799          
-000020B8  6000 0070               1800          BRA     DSEND
-000020BC                          1801          
-000020BC                          1802  DS1110MEM_CUSW
-000020BC  43F9 000023CA           1803          LEA     DOLLAR,A1
-000020C2  4E4F                    1804          TRAP    #15
-000020C4  341A                    1805          MOVE.W  (A2)+,D2
-000020C6  48E7 0400               1806          MOVEM.L D5,-(SP)
-000020CA  1A3C 0030               1807          MOVE.B  #48,D5
-000020CE  4EB8 117A               1808          JSR     HEXOUT
-000020D2  4CDF 0020               1809          MOVEM.L (SP)+,D5
-000020D6  6000 0052               1810          BRA     DSEND
-000020DA                          1811          
-000020DA                          1812  DS1110MEM_CUSL
-000020DA  43F9 000023CA           1813          LEA     DOLLAR,A1
-000020E0  4E4F                    1814          TRAP    #15
-000020E2  241A                    1815          MOVE.L  (A2)+,D2
-000020E4  48E7 0400               1816          MOVEM.L D5,-(SP)
-000020E8  1A3C 0030               1817          MOVE.B  #48,D5
-000020EC  4EB8 117A               1818          JSR     HEXOUT
-000020F0  4CDF 0020               1819          MOVEM.L (SP)+,D5
-000020F4  6000 0034               1820          BRA     DSEND
-000020F8                          1821          
-000020F8                          1822  
-000020F8                          1823  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-000020F8                          1824  
-000020F8  4E71                    1825  DS1111  NOP
-000020FA  6000 002E               1826          BRA     DSEND
-000020FE                          1827  
-000020FE                          1828  *DS Final
-000020FE                          1829  *--------------------------------------------------------------------------------------------------
-000020FE                          1830  
-000020FE  103C 000E               1831  DSERR   MOVE.B  #14,D0
-00002102  43F9 0000237B           1832          LEA     ERRM,A1
-00002108  4E4F                    1833          TRAP    #15
-0000210A  6000 001E               1834          BRA     DSEND
-0000210E                          1835          
-0000210E                          1836  DSERRINS
-0000210E  103C 000E               1837          MOVE.B  #14,D0
-00002112  43F9 00002383           1838          LEA     ERRMINS,A1
-00002118  4E4F                    1839          TRAP    #15
-0000211A  6000 000E               1840          BRA     DSEND
-0000211E                          1841  
-0000211E                          1842  DSERREA
-0000211E  103C 000E               1843          MOVE.B  #14,D0
-00002122  43F9 00002384           1844          LEA     ERRMEA,A1
-00002128  4E4F                    1845          TRAP    #15
-0000212A                          1846  
-0000212A  4E75                    1847  DSEND   RTS
-0000212C                          1848  
-0000212C  43F9 0000234C           1849  DSEOF   LEA     LB,A1
-00002132  103C 000E               1850          MOVE.B  #14,D0
-00002136  4E4F                    1851          TRAP    #15
-00002138                          1852          
-00002138  43F9 0000224E           1853          LEA     REST,A1
-0000213E  103C 000E               1854          MOVE.B  #14,D0
-00002142  4E4F                    1855          TRAP    #15
-00002144                          1856          
-00002144  103C 0005               1857          MOVE.B  #5,D0
-00002148  4E4F                    1858          TRAP    #15
-0000214A                          1859          
-0000214A  B23C 0059               1860          CMP.B   #89,D1
-0000214E  6700 EEB0               1861          BEQ     START
-00002152  B23C 0079               1862          CMP.B   #121,D1
-00002156  6700 EEA8               1863          BEQ     START
-0000215A                          1864  
-0000215A  43F9 0000234C           1865  END     LEA     LB,A1
-00002160  103C 000E               1866          MOVE.B  #14,D0
-00002164  4E4F                    1867          TRAP    #15
-00002166                          1868          
-00002166  43F9 0000234C           1869          LEA     LB,A1
-0000216C  103C 000E               1870          MOVE.B  #14,D0
-00002170  4E4F                    1871          TRAP    #15
-00002172                          1872          
-00002172  43F9 0000226B           1873          LEA     ENDMSG,A1
-00002178  103C 000E               1874          MOVE.B  #14,D0
-0000217C  4E4F                    1875          TRAP    #15
-0000217E                          1876          
-0000217E  43F9 00002293           1877          LEA     AUTHOR,A1
-00002184  4E4F                    1878          TRAP    #15
-00002186                          1879          
-00002186  43F9 0000234C           1880          LEA     LB,A1
-0000218C  103C 000E               1881          MOVE.B  #14,D0
-00002190  4E4F                    1882          TRAP    #15
-00002192                          1883          
-00002192  103C 0009               1884          MOVE.B  #9,D0
-00002196  4E4F                    1885          TRAP    #15
-00002198                          1886  
-00002198                          1887  *Initialized Variables
-00002198                          1888  *--------------------------------------------------------------------------------------------------
-00002198                          1889  
-00002198  =0000000D               1890  CR      EQU     $0D
-00002198  =0000000A               1891  LF      EQU     $0A
-00002198  =00000009               1892  HT      EQU     $09
-00002198                          1893  
-00002198= 54 68 69 73 20 69 ...   1894  INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
-00002220= 45 6E 74 65 72 20 ...   1895  ASTART  DC.B    'Enter start address: $',0
-00002237= 45 6E 74 65 72 20 ...   1896  AEND    DC.B    'Enter end address:   $',0
-0000224E= 52 65 73 74 61 72 ...   1897  REST    DC.B    'Restart Disassembler (y/n)? ',0
-0000226B= 54 68 61 6E 6B 20 ...   1898  ENDMSG  DC.B    'Thank you for using the Disassembler!',CR,LF,0
-00002293= 4D 61 64 65 20 62 ...   1899  AUTHOR  DC.B    'Made by the ARM Cortex Companions!',CR,LF,0
-000022B8                          1900  
-000022B8= 45 52 52 4F 52 3A ...   1901  VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
-000022F2= 45 52 52 4F 52 3A ...   1902  VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
-00002318= 45 52 52 4F 52 3A ...   1903  VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
-0000234C                          1904  
-0000234C= 0D 0A 00                1905  LB      DC.B    CR,LF,0
-0000234F                          1906  
-0000234F= 09 00                   1907  HTM     DC.B    HT,0
-00002351                          1908  
-00002351= 20 00                   1909  SM1     DC.B    ' ',0
-00002353= 20 20 00                1910  SM2     DC.B    '  ',0
-00002356= 20 20 20 00             1911  SM3     DC.B    '   ',0
-0000235A= 20 20 20 20 00          1912  SM4     DC.B    '    ',0
-0000235F= 20 20 20 20 20 00       1913  SM5     DC.B    '     ',0
-00002365= 20 20 20 20 20 20 00    1914  SM6     DC.B    '      ',0
-0000236C= 20 20 20 20 20 20 ...   1915  SM7     DC.B    '       ',0
-00002374                          1916  
-00002374= 54 45 53 54 00          1917  TESTM   DC.B    'TEST',0
-00002379                          1918  
-00002379= 00                      1919  NOTH    DC.B    '',0
-0000237A= 00                      1920  NOTH2   DC.B    '',0
-0000237B                          1921  
-0000237B= 20 2A 45 52 52 4F ...   1922  ERRM    DC.B    ' *ERROR',0
-00002383= 00                      1923  ERRMINS DC.B    '',0
-00002384= 20 2A 45 52 52 4F ...   1924  ERRMEA  DC.B    ' *ERROR: Unsupported Addressing Mode',0
-000023A9                          1925  
-000023A9= 2E 42 00                1926  MODEB   DC.B    '.B',0
-000023AC= 2E 57 00                1927  MODEW   DC.B    '.W',0
-000023AF= 2E 4C 00                1928  MODEL   DC.B    '.L',0
-000023B2                          1929  
-000023B2= 41 00                   1930  VALA    DC.B    'A',0
-000023B4= 44 00                   1931  VALD    DC.B    'D',0
-000023B6= 23 00                   1932  VALN    DC.B    '#',0
-000023B8= 30 00                   1933  VAL0    DC.B    '0',0
-000023BA= 51 00                   1934  VALQ    DC.B    'Q',0
-000023BC= 4D 00                   1935  VALM    DC.B    'M',0
-000023BE                          1936  
-000023BE= 28 00                   1937  OPENPTR     DC.B    '(',0
-000023C0= 2D 28 00                1938  OPENDPTR    DC.B    '-(',0
-000023C3                          1939  
-000023C3= 29 00                   1940  CLOSEPTR    DC.B    ')',0
-000023C5= 29 2B 00                1941  CLOSEIPTR   DC.B    ')+',0
-000023C8                          1942  
-000023C8= 2C 00                   1943  COMMA   DC.B    ',',0
-000023CA= 24 00                   1944  DOLLAR  DC.B    '$',0
-000023CC= 2F 00                   1945  SLASH   DC.B    '/',0
-000023CE= 2D 00                   1946  DASH    DC.B    '-',0
-000023D0                          1947  
-000023D0= 4E 4F 50 00             1948  NOPM    DC.B    'NOP',0
-000023D4                          1949  
-000023D4= 4D 4F 56 45 00          1950  MOVEM   DC.B    'MOVE',0
-000023D9                          1951  
-000023D9= 41 44 44 00             1952  ADDM    DC.B    'ADD',0
-000023DD                          1953  
-000023DD= 53 55 42 00             1954  SUBM    DC.B    'SUB',0
-000023E1                          1955  
-000023E1= 4C 45 41 00             1956  LEAM    DC.B    'LEA',0
-000023E5                          1957  
-000023E5= 41 4E 44 00             1958  ANDM    DC.B    'AND',0
-000023E9= 4F 52 00                1959  ORM     DC.B    'OR',0
-000023EC= 4E 4F 54 00             1960  NOTM    DC.B    'NOT',0
-000023F0                          1961  
-000023F0= 4C 53 00                1962  LSM    DC.B    'LS',0
-000023F3= 4C 53 52 00             1963  LSRM    DC.B    'LSR',0
-000023F7= 41 53 00                1964  ASM    DC.B    'AS',0
-000023FA= 41 53 52 00             1965  ASRM    DC.B    'ASR',0
-000023FE                          1966  
-000023FE= 52 4F 00                1967  ROM    DC.B    'RO',0
-00002401= 52 4F 52 00             1968  RORM    DC.B    'ROR',0
-00002405                          1969  
-00002405= 42 47 54 00             1970  BGTM    DC.B    'BGT',0
-00002409= 42 4C 45 00             1971  BLEM    DC.B    'BLE',0
-0000240D= 42 45 51 00             1972  BEQM    DC.B    'BEQ',0
-00002411                          1973  
-00002411= 4A 53 52 00             1974  JSRM    DC.B    'JSR',0
-00002415= 52 54 53 00             1975  RTSM    DC.B    'RTS',0
-00002419                          1976  
-00002419= 42 52 41 00             1977  BRAM    DC.B    'BRA',0
-0000241D                          1978  
-0000241D                          1979  
-0000241D                          1980      END    START        ; last line of so
+00001CE4  1E05                    1351          MOVE.B  D5,D7           ; Store opmode in D7 for later use
+00001CE6  BA3C 0000               1352          CMP.B   #%000,D5        ; Compare with byte size
+00001CEA  6700 0016               1353          BEQ     DORB
+00001CEE  BA3C 0001               1354          CMP.B   #%001,D5        ; Compare with word size
+00001CF2  6700 0022               1355          BEQ     DORW
+00001CF6  BA3C 0002               1356          CMP.B   #%010,D5        ; Compare with long size
+00001CFA  6700 002E               1357          BEQ     DORL
+00001CFE                          1358  
+00001CFE  6000 0480               1359          BRA     DSEND           ; Branch to DSEND in case of invalid code
+00001D02                          1360  
+00001D02  43F9 0000243F           1361  DORB    LEA     ORM,A1          ; Load effective address of ORM string
+00001D08  4E4F                    1362          TRAP    #15             ; Print ORM string
+00001D0A  43F9 000023FF           1363          LEA     MODEB,A1        ; Load effective address of MODEB string
+00001D10  4E4F                    1364          TRAP    #15             ; Print MODEB string
+00001D12  6000 002A               1365          BRA     DORA            ; Branch to addressing mode parsing
+00001D16                          1366  
+00001D16  43F9 0000243F           1367  DORW    LEA     ORM,A1          ; Load effective address of ORM string
+00001D1C  4E4F                    1368          TRAP    #15             ; Print ORM string
+00001D1E  43F9 00002402           1369          LEA     MODEW,A1        ; Load effective address of MODEW string
+00001D24  4E4F                    1370          TRAP    #15             ; Print MODEW string
+00001D26  6000 0016               1371          BRA     DORA            ; Branch to addressing mode parsing
+00001D2A                          1372  
+00001D2A  43F9 0000243F           1373  DORL    LEA     ORM,A1          ; Load effective address of ORM string
+00001D30  4E4F                    1374          TRAP    #15             ; Print ORM string
+00001D32  43F9 00002405           1375          LEA     MODEL,A1        ; Load effective address of MODEL string
+00001D38  4E4F                    1376          TRAP    #15             ; Print MODEL string
+00001D3A  6000 0002               1377          BRA     DORA            ; Branch to addressing mode parsing
+00001D3E                          1378  
+00001D3E  43F9 000023B0           1379  DORA    LEA     SM4,A1
+00001D44  4E4F                    1380          TRAP    #15
+00001D46  ED5C                    1381          ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
+00001D48  1A04                    1382          MOVE.B  D4,D5           ; Move the byte in D4 to D5
+00001D4A  0205 0038               1383          ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
+00001D4E  E61D                    1384          ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
+00001D50  1605                    1385          MOVE.B  D5,D3           ; Store mode in D3 for further checks
+00001D52  0204 0007               1386          ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
+00001D56  1C04                    1387          MOVE.B  D4,D6           ; Store the register number in D6 for later use
+00001D58                          1388  
+00001D58  BE3C 0004               1389          CMP.B   #%100,D7        ; Compare opmode with '100'
+00001D5C  6D00 0006               1390          BLT     DORAE           ; If opmode < '100', branch to DORAE
+00001D60  6000 002A               1391          BRA     DORAD           ; Else, branch to DORAD
+00001D64                          1392  
+00001D64  4EB8 120C               1393  DORAE   JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+00001D68  103C 000E               1394          MOVE.B  #14,D0          ; Set D0 to #14 to print strings
+00001D6C  43F9 0000241E           1395          LEA     COMMA,A1        ; Load effective address of COMMA string
+00001D72  4E4F                    1396          TRAP    #15             ; Print comma
+00001D74  43F9 0000240A           1397          LEA     VALD,A1
+00001D7A  4E4F                    1398          TRAP    #15
+00001D7C  1206                    1399          MOVE.B  D6,D1           ; Move ea num to D1 to print
+00001D7E  103C 0003               1400          MOVE.B  #3,D0           ; Set D0 to #3 to print register number
+00001D82  4E4F                    1401          TRAP    #15             ; Print register number
+00001D84  103C 000E               1402          MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+00001D88  6000 03F6               1403          BRA     DSEND           ; Branch to DSEND
+00001D8C                          1404  
+00001D8C  1206                    1405  DORAD   MOVE.B  D6,D1           ; Move ea num to D1 to print
+00001D8E  103C 0003               1406          MOVE.B  #3,D0           ; Set D0 to #3 to print register number
+00001D92  4E4F                    1407          TRAP    #15             ; Print register number
+00001D94  103C 000E               1408          MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+00001D98  43F9 0000241E           1409          LEA     COMMA,A1        ; Load effective address of COMMA string
+00001D9E  4E4F                    1410          TRAP    #15             ; Print comma
+00001DA0  4EB8 120C               1411          JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
+00001DA4  103C 000E               1412          MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
+00001DA8  6000 03D6               1413          BRA     DSEND           ; Branch to DSEND                 
+00001DAC                          1414  
+00001DAC                          1415  
+00001DAC                          1416  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001DAC                          1417  
+00001DAC  4E71                    1418  DS1001  NOP
+00001DAE  4E71                    1419  DSUB    NOP
+00001DB0                          1420  *print sub
+00001DB0  43F9 00002433           1421          LEA     SUBM,A1
+00001DB6  4E4F                    1422          TRAP    #15
+00001DB8                          1423  
+00001DB8                          1424  *parse dn reg: 3 bits
+00001DB8                          1425  *number of the data register involved
+00001DB8                          1426  *nums 0-7, paired with below
+00001DB8  E75C                    1427          ROL.W   #3,D4       *dn reg num in d1
+00001DBA  1E04                    1428          MOVE.B  D4,D7
+00001DBC  0207 0007               1429          ANDI.B  #%111,D7
+00001DC0                          1430          
+00001DC0  3C47                    1431          MOVE.W  D7,A6       *temporary for storage
+00001DC2                          1432  
+00001DC2                          1433  *parse opmode: 3 bits
+00001DC2                          1434  *Dn - <ea> -> Dn: .B=000, .W=001, .L=010
+00001DC2                          1435  *<ea> - <Dn> -> <ea>: .B=100, .W=101, .L=110
+00001DC2                          1436  *invalid: 111, 011
+00001DC2                          1437  *parse first digit separately
+00001DC2  E35C                    1438          ROL.W   #1,D4       *addressing mode in d2
+00001DC4  1E04                    1439          MOVE.B  D4,D7
+00001DC6  0207 0001               1440          ANDI.B  #%1,D7
+00001DCA                          1441          
+00001DCA                          1442  *parsing next two digits of size
+00001DCA  E55C                    1443          ROL.W   #2,D4       *size in d5
+00001DCC  1A04                    1444          MOVE.B  D4,D5
+00001DCE  0205 0003               1445          ANDI.B  #%11,D5
+00001DD2  4EB8 11C2               1446          JSR     SIZE
+00001DD6  43F9 000023C2           1447          LEA     SM7,A1
+00001DDC  4E4F                    1448          TRAP    #15
+00001DDE                          1449          
+00001DDE                          1450  *if addressing mode=<ea>-Dn -> <ea> print ea info first
+00001DDE  BE3C 0000               1451          CMP.B   #%0,D7       *if 1, then register info printed last
+00001DE2  6700 0026               1452          BEQ     DSUBEA      *branch to ea before register
+00001DE6                          1453          
+00001DE6                          1454  *printing register information
+00001DE6                          1455  DSUBPRNTREG
+00001DE6  43F9 0000240A           1456          LEA     VALD,A1
+00001DEC  4E4F                    1457          TRAP    #15
+00001DEE  320E                    1458          MOVE.W  A6,D1       *retrieving a6 register data
+00001DF0  103C 0003               1459          MOVE.B  #3,D0       *moving 3 to d0 to print register number
+00001DF4  4E4F                    1460          TRAP    #15         *printing register number
+00001DF6  103C 000E               1461          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+00001DFA  BE3C 0000               1462          CMP.B   #%0,D7      *if info finished printing
+00001DFE  6700 0380               1463          BEQ     DSEND      *branch to end
+00001E02  43F9 0000241E           1464          LEA     COMMA,A1
+00001E08  4E4F                    1465          TRAP    #15
+00001E0A                          1466  
+00001E0A                          1467          
+00001E0A                          1468  * parse ea mode: 3 bits
+00001E0A                          1469  *Dn000, An001, (An)010, (An)+011, -(An)100, (d16An)101, (d8An,Xn)110, data111
+00001E0A                          1470  *address reg direct not allowed for .B operations
+00001E0A                          1471  *no invalid
+00001E0A                          1472  DSUBEA
+00001E0A  E75C                    1473          ROL.W   #3,D4       *ea mode
+00001E0C  1604                    1474          MOVE.B  D4,D3
+00001E0E  0203 0007               1475          ANDI.B  #%111,D3
+00001E12                          1476  
+00001E12                          1477  *parse ea reg: 3 bits
+00001E12                          1478  *no invalid: paired with opmode below (nums 0-7)
+00001E12                          1479  *if mode=111, 000=.W, 001=.L, 100=#<data>
+00001E12  E75C                    1480          ROL.W   #3,D4       *ea mode
+00001E14  1C04                    1481          MOVE.B  D4,D6
+00001E16  0206 0007               1482          ANDI.B  #%111,D6
+00001E1A                          1483          
+00001E1A  2803                    1484          MOVE.L  D3,D4   *temporarily using D4 
+00001E1C                          1485          
+00001E1C                          1486  *comparisons
+00001E1C  B67C 0004               1487          CMP     #%100,D3
+00001E20  6700 0332               1488          BEQ     DSERR
+00001E24  4EB8 120C               1489          JSR     ADDRMODEALL
+00001E28  BE3C 0001               1490          CMP.B   #%1,D7      *if info printed
+00001E2C  6700 0352               1491          BEQ     DSEND       *end
+00001E30  43F9 0000241E           1492          LEA     COMMA,A1
+00001E36  4E4F                    1493          TRAP    #15
+00001E38  60AC                    1494          BRA     DSUBPRNTREG *check d6 for size of data
+00001E3A                          1495  *then take data from d4 and print (?)
+00001E3A                          1496  
+00001E3A  6000 0344               1497          BRA     DSEND
+00001E3E                          1498  
+00001E3E                          1499  
+00001E3E                          1500  
+00001E3E  4E71                    1501  DS1010  NOP
+00001E40  6000 0322               1502          BRA     DSERRINS
+00001E44                          1503  
+00001E44                          1504          
+00001E44                          1505  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001E44                          1506  
+00001E44  4E71                    1507  DS1011  NOP
+00001E46  6000 031C               1508          BRA     DSERRINS
+00001E4A                          1509          
+00001E4A                          1510  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001E4A                          1511  
+00001E4A  4E71                    1512  DS1100  NOP
+00001E4C  6000 0316               1513          BRA     DSERRINS
+00001E50                          1514          
+00001E50                          1515  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001E50                          1516  
+00001E50  4E71                    1517  DS1101  NOP
+00001E52                          1518  
+00001E52  4E71                    1519  DADD    NOP
+00001E54  43F9 0000242F           1520          LEA     ADDM,A1
+00001E5A  4E4F                    1521          TRAP    #15
+00001E5C                          1522          
+00001E5C                          1523          *parse dn reg: 3 bits
+00001E5C                          1524  *number of the data register involved
+00001E5C                          1525  *nums 0-7, paired with below
+00001E5C  E75C                    1526          ROL.W   #3,D4       *dn reg num in d7
+00001E5E  1E04                    1527          MOVE.B  D4,D7
+00001E60  0207 0007               1528          ANDI.B  #%111,D7
+00001E64                          1529          
+00001E64  3C47                    1530          MOVE.W  D7,A6
+00001E66                          1531  
+00001E66                          1532  *parse opmode: 3 bits
+00001E66                          1533  *Dn - <ea> -> Dn: .B=000, .W=001, .L=010
+00001E66                          1534  *<ea> - <Dn> -> <ea>: .B=100, .W=101, .L=110
+00001E66                          1535  *invalid: 111, 011
+00001E66                          1536  *parse first digit separately
+00001E66  E35C                    1537          ROL.W   #1,D4       *addressing mode in d2
+00001E68  1E04                    1538          MOVE.B  D4,D7
+00001E6A  0207 0001               1539          ANDI.B  #%1,D7
+00001E6E                          1540          
+00001E6E                          1541  *parsing next two digits of size
+00001E6E  E55C                    1542          ROL.W   #2,D4       *size in d5
+00001E70  1A04                    1543          MOVE.B  D4,D5
+00001E72  0205 0003               1544          ANDI.B  #%11,D5
+00001E76  BA3C 0003               1545          CMP.B   #%11,D5     *if size is 11, then opcode is ADDA
+00001E7A  6700 007C               1546          BEQ     DADDA
+00001E7E  4EB8 11C2               1547          JSR     SIZE
+00001E82  43F9 000023B5           1548          LEA     SM5,A1
+00001E88  4E4F                    1549          TRAP    #15
+00001E8A                          1550          
+00001E8A                          1551  *if addressing mode=<ea>-Dn -> <ea> print ea info first
+00001E8A  BE3C 0000               1552          CMP.B   #%0,D7       *if 0, then register info printed last
+00001E8E  6700 002E               1553          BEQ     DADDEA      *branch to ea before register
+00001E92                          1554          
+00001E92                          1555  *printing register information
+00001E92                          1556  DADDPRNTREG
+00001E92  BA3C 0003               1557          CMP.B   #%11,D5
+00001E96  6700 0058               1558          BEQ     PRINTA
+00001E9A  43F9 0000240A           1559          LEA     VALD,A1
+00001EA0                          1560  ADDCONT
+00001EA0  4E4F                    1561          TRAP    #15
+00001EA2  320E                    1562          MOVE.W  A6,D1       *moving reg num to d1 to print
+00001EA4  103C 0003               1563          MOVE.B  #3,D0       *moving 3 to d0 to print register number
+00001EA8  4E4F                    1564          TRAP    #15         *printing register number
+00001EAA  103C 000E               1565          MOVE.B  #14,D0      *replacing 14 in d0 to print strings
+00001EAE  BE3C 0000               1566          CMP.B   #%0,D7      *if info finished printing
+00001EB2  6700 02CC               1567          BEQ     DSEND      *branch to end
+00001EB6  43F9 0000241E           1568          LEA     COMMA,A1
+00001EBC  4E4F                    1569          TRAP    #15
+00001EBE                          1570  
+00001EBE                          1571          
+00001EBE                          1572  * parse ea mode: 3 bits
+00001EBE                          1573  *Dn000, An001, (An)010, (An)+011, -(An)100, (d16An)101, (d8An,Xn)110, data111
+00001EBE                          1574  *address reg direct not allowed for .B operations
+00001EBE                          1575  *no invalid
+00001EBE                          1576  DADDEA
+00001EBE  E75C                    1577          ROL.W   #3,D4       *ea mode
+00001EC0  1604                    1578          MOVE.B  D4,D3
+00001EC2  0203 0007               1579          ANDI.B  #%111,D3
+00001EC6                          1580  
+00001EC6                          1581  *parse ea reg: 3 bits
+00001EC6                          1582  *no invalid: paired with opmode below (nums 0-7)
+00001EC6                          1583  *if mode=111, 000=.W, 001=.L, 100=#<data>
+00001EC6  E75C                    1584          ROL.W   #3,D4       *ea mode
+00001EC8  1C04                    1585          MOVE.B  D4,D6
+00001ECA  0206 0007               1586          ANDI.B  #%111,D6
+00001ECE                          1587          
+00001ECE                          1588  *comparisons
+00001ECE  B67C 0004               1589          CMP     #%100,D3
+00001ED2  6700 005A               1590          BEQ     ADDDATACHECK
+00001ED6                          1591  DATACHECKCONT
+00001ED6  4EB8 120C               1592          JSR     ADDRMODEALL
+00001EDA  BE3C 0001               1593          CMP.B   #%1,D7      *if info printed
+00001EDE  6700 02A0               1594          BEQ     DSEND       *end
+00001EE2  43F9 0000241E           1595          LEA     COMMA,A1
+00001EE8  4E4F                    1596          TRAP    #15
+00001EEA  60A6                    1597          BRA     DADDPRNTREG 
+00001EEC                          1598  
+00001EEC  6000 0292               1599          BRA     DSEND
+00001EF0                          1600          
+00001EF0  43F9 00002408           1601  PRINTA  LEA     VALA,A1
+00001EF6  60A8                    1602          BRA     ADDCONT
+00001EF8                          1603  
+00001EF8                          1604          
+00001EF8  4E71                    1605  DADDA   NOP
+00001EFA  43F9 00002408           1606          LEA     VALA,A1
+00001F00  4E4F                    1607          TRAP    #15
+00001F02  BE3C 0000               1608          CMP.B   #%0,D7      *for adda, 0=word, 1=longword
+00001F06  6600 000C               1609          BNE     ADDAL
+00001F0A  43F9 00002402           1610          LEA     MODEW,A1
+00001F10  6000 000C               1611          BRA     ADDSIZEEND
+00001F14  43F9 00002405           1612  ADDAL   LEA     MODEL,A1
+00001F1A  6000 0002               1613          BRA     ADDSIZEEND
+00001F1E                          1614  ADDSIZEEND
+00001F1E  4E4F                    1615          TRAP    #15
+00001F20  43F9 000023C2           1616          LEA     SM7,A1
+00001F26  4E4F                    1617          TRAP    #15
+00001F28  1E3C 0000               1618          MOVE.B  #%0,D7       *set d2 to print adda in correct order: address register always last
+00001F2C  6090                    1619          BRA     DADDEA
+00001F2E                          1620  ADDDATACHECK
+00001F2E  BA3C 0003               1621          CMP.B   #%11,D5
+00001F32  6700 0220               1622          BEQ     DSERR
+00001F36  609E                    1623          BRA     DATACHECKCONT
+00001F38                          1624          
+00001F38                          1625          
+00001F38                          1626  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+00001F38                          1627  
+00001F38                          1628  DS1110
+00001F38  E75C                    1629          ROL.W   #3,D4           * [D2] Reading count
+00001F3A  1404                    1630          MOVE.B  D4,D2
+00001F3C  0202 0007               1631          ANDI.B  #%111,D2
+00001F40                          1632          
+00001F40  E35C                    1633          ROL.W   #1,D4           * [D3] Reading direction
+00001F42  1604                    1634          MOVE.B  D4,D3
+00001F44  0203 0001               1635          ANDI.B  #%1,D3
+00001F48                          1636          
+00001F48  E55C                    1637          ROL.W   #2,D4           * [D5] Reading size
+00001F4A  1A04                    1638          MOVE.B  D4,D5
+00001F4C  0205 0003               1639          ANDI.B  #%11,D5
+00001F50                          1640          
+00001F50  BA3C 0003               1641          CMP.B   #%11,D5   * Start processing code as memory if size is 11
+00001F54  6700 00F0               1642          BEQ     DS1110MEM
+00001F58                          1643          
+00001F58  E35C                    1644          ROL.W   #1,D4           * [D6] Reading count mode
+00001F5A  1C04                    1645          MOVE.B  D4,D6
+00001F5C  0206 0001               1646          ANDI.B  #%1,D6
+00001F60                          1647          
+00001F60  E55C                    1648          ROL.W   #2,D4           * [D7] reading type of shift
+00001F62  1E04                    1649          MOVE.B  D4,D7
+00001F64  0207 0003               1650          ANDI.B  #%11,D7
+00001F68                          1651          
+00001F68  E75C                    1652          ROL.W   #3,D4           * [D1] reading register
+00001F6A  1204                    1653          MOVE.B  D4,D1
+00001F6C  0201 0007               1654          ANDI.B  #%111,D1
+00001F70                          1655          
+00001F70  BE3C 0001               1656          CMP.B   #%01,D7   *Determine shift type
+00001F74  6700 008E               1657          BEQ     DLS
+00001F78  BE3C 0000               1658          CMP.B   #%00,D7
+00001F7C  6700 0092               1659          BEQ     DAS
+00001F80  BE3C 0003               1660          CMP.B   #%11,D7
+00001F84  6700 0096               1661          BEQ     DRO
+00001F88                          1662          
+00001F88  6000 01F6               1663          BRA     DSEND               *Fallback in case of invalid code
+00001F8C                          1664          
+00001F8C  48E7 FFFF               1665  DS1110A MOVEM.L A0-A7/D0-D7,-(SP)   *Print shift direction
+00001F90  4EB9 00002028           1666          JSR     DS1110SIDE
+00001F96  4CDF FFFF               1667          MOVEM.L (SP)+,A0-A7/D0-D7
+00001F9A                          1668          
+00001F9A  48E7 FFFF               1669          MOVEM.L A0-A7/D0-D7,-(SP)   *Print size
+00001F9E  4EB8 11C2               1670          JSR     SIZE
+00001FA2  4CDF FFFF               1671          MOVEM.L (SP)+,A0-A7/D0-D7
+00001FA6                          1672          
+00001FA6  103C 000E               1673          MOVE.B  #14,D0
+00001FAA  43F9 000023B5           1674          LEA     SM5,A1
+00001FB0  4E4F                    1675          TRAP    #15
+00001FB2                          1676          
+00001FB2  BA3C 0003               1677          CMP.B   #%11,D5
+00001FB6  6700 00B4               1678          BEQ     DS1110MEMA
+00001FBA                          1679          
+00001FBA  BC3C 0001               1680          CMP.B   #%1,D6
+00001FBE  6700 003A               1681          BEQ     DS1110_REG_D
+00001FC2  6000 002C               1682          BRA     DS1110_REG_I
+00001FC6                          1683          
+00001FC6  1C01                    1684  DS1110B MOVE.B  D1,D6               *We ned D1 for trap task so since we're done using D6, we put D1 into D6 temporarily
+00001FC8                          1685          
+00001FC8  103C 0003               1686          MOVE.B  #3,D0
+00001FCC  1202                    1687          MOVE.B  D2,D1
+00001FCE  4E4F                    1688          TRAP    #15
+00001FD0                          1689          
+00001FD0  103C 000E               1690          MOVE.B  #14,D0
+00001FD4  43F9 0000241E           1691          LEA     COMMA,A1
+00001FDA  4E4F                    1692          TRAP    #15
+00001FDC                          1693          
+00001FDC  43F9 0000240A           1694          LEA     VALD,A1
+00001FE2  4E4F                    1695          TRAP    #15
+00001FE4                          1696          
+00001FE4  103C 0003               1697          MOVE.B  #3,D0
+00001FE8  1206                    1698          MOVE.B  D6,D1
+00001FEA  4E4F                    1699          TRAP    #15
+00001FEC                          1700          
+00001FEC  6000 0192               1701          BRA     DSEND
+00001FF0                          1702          
+00001FF0                          1703  DS1110_REG_I
+00001FF0  43F9 0000240C           1704          LEA     VALN,A1
+00001FF6  4E4F                    1705          TRAP    #15
+00001FF8  60CC                    1706          BRA     DS1110B
+00001FFA                          1707  
+00001FFA                          1708  DS1110_REG_D
+00001FFA  43F9 0000240A           1709          LEA     VALD,A1
+00002000  4E4F                    1710          TRAP    #15
+00002002  60C2                    1711          BRA     DS1110B       
+00002004                          1712          
+00002004  43F9 00002446           1713  DLS     LEA     LSM,A1
+0000200A  4E4F                    1714          TRAP    #15
+0000200C  6000 FF7E               1715          BRA     DS1110A
+00002010                          1716          
+00002010  43F9 0000244D           1717  DAS     LEA     ASM,A1
+00002016  4E4F                    1718          TRAP    #15
+00002018  6000 FF72               1719          BRA     DS1110A
+0000201C                          1720          
+0000201C  43F9 00002454           1721  DRO     LEA     ROM,A1
+00002022  4E4F                    1722          TRAP    #15
+00002024  6000 FF66               1723          BRA     DS1110A
+00002028                          1724          
+00002028                          1725  DS1110SIDE
+00002028  103C 0006               1726          MOVE.B  #6,D0
+0000202C  B63C 0001               1727          CMP.B   #1,D3
+00002030  6700 000C               1728          BEQ     DS1110LSIDE
+00002034  123C 0052               1729          MOVE.B  #82,D1
+00002038  4E4F                    1730          TRAP    #15
+0000203A  6000 0008               1731          BRA     DS1110SIDEEND
+0000203E                          1732  
+0000203E                          1733  DS1110LSIDE
+0000203E  123C 004C               1734          MOVE.B  #76,D1
+00002042  4E4F                    1735          TRAP    #15
+00002044                          1736          
+00002044                          1737  DS1110SIDEEND
+00002044  4E75                    1738          RTS 
+00002046                          1739  
+00002046                          1740  DS1110MEM
+00002046                          1741                                  * Shift type is instead stored in D2
+00002046                          1742          
+00002046  E75C                    1743          ROL.W   #3,D4           * [D6] Reading address mode
+00002048  1C04                    1744          MOVE.B  D4,D6
+0000204A  0206 0007               1745          ANDI.B  #%111,D6
+0000204E                          1746          
+0000204E  E75C                    1747          ROL.W   #3,D4           * [D1] Reading address register
+00002050  1204                    1748          MOVE.B  D4,D1
+00002052  0201 0007               1749          ANDI.B  #%111,D1
+00002056                          1750          
+00002056  B43C 0001               1751          CMP.B   #%01,D2
+0000205A  67A8                    1752          BEQ     DLS
+0000205C  B43C 0000               1753          CMP.B   #%00,D2
+00002060  67AE                    1754          BEQ     DAS
+00002062  B43C 0003               1755          CMP.B   #%11,D2
+00002066  67B4                    1756          BEQ     DRO
+00002068  6000 0116               1757          BRA     DSEND
+0000206C                          1758          
+0000206C                          1759          
+0000206C                          1760  DS1110MEMA
+0000206C                          1761          
+0000206C  BC3C 0002               1762          CMP.B   #%010,D6
+00002070  6700 002E               1763          BEQ     DS1110MEM_REG
+00002074  BC3C 0003               1764          CMP.B   #%011,D6
+00002078  6700 004C               1765          BEQ     DS1110MEM_INC
+0000207C  BC3C 0004               1766          CMP.B   #%100,D6
+00002080  6700 006A               1767          BEQ     DS1110MEM_DEC
+00002084                          1768          
+00002084  BC3C 0007               1769          CMP.B   #%111,D6
+00002088  6600 00CA               1770          BNE     DSERR
+0000208C                          1771          
+0000208C  B23C 0000               1772          CMP.B   #%000,D1
+00002090  6700 0080               1773          BEQ     DS1110MEM_CUSW
+00002094  B23C 0001               1774          CMP.B   #%001,D1
+00002098  6700 0096               1775          BEQ     DS1110MEM_CUSL
+0000209C                          1776          
+0000209C  6000 00E2               1777          BRA     DSEND
+000020A0                          1778  
+000020A0                          1779  DS1110MEM_REG
+000020A0  43F9 00002414           1780          LEA     OPENPTR,A1
+000020A6  4E4F                    1781          TRAP    #15
+000020A8                          1782          
+000020A8  43F9 00002408           1783          LEA     VALA,A1
+000020AE  4E4F                    1784          TRAP    #15
+000020B0                          1785          
+000020B0  103C 0003               1786          MOVE.B  #3,D0
+000020B4  4E4F                    1787          TRAP    #15
+000020B6  103C 000E               1788          MOVE.B  #14,D0
+000020BA                          1789          
+000020BA  43F9 00002419           1790          LEA     CLOSEPTR,A1
+000020C0  4E4F                    1791          TRAP    #15
+000020C2                          1792          
+000020C2  6000 00BC               1793          BRA     DSEND
+000020C6                          1794  
+000020C6                          1795  DS1110MEM_INC
+000020C6  43F9 00002414           1796          LEA     OPENPTR,A1
+000020CC  4E4F                    1797          TRAP    #15
+000020CE                          1798          
+000020CE  43F9 00002408           1799          LEA     VALA,A1
+000020D4  4E4F                    1800          TRAP    #15
+000020D6                          1801          
+000020D6  103C 0003               1802          MOVE.B  #3,D0
+000020DA  4E4F                    1803          TRAP    #15
+000020DC  103C 000E               1804          MOVE.B  #14,D0
+000020E0                          1805          
+000020E0  43F9 0000241B           1806          LEA     CLOSEIPTR,A1
+000020E6  4E4F                    1807          TRAP    #15
+000020E8                          1808          
+000020E8  6000 0096               1809          BRA     DSEND
+000020EC                          1810  
+000020EC                          1811  DS1110MEM_DEC
+000020EC  43F9 00002416           1812          LEA     OPENDPTR,A1
+000020F2  4E4F                    1813          TRAP    #15
+000020F4                          1814          
+000020F4  43F9 00002408           1815          LEA     VALA,A1
+000020FA  4E4F                    1816          TRAP    #15
+000020FC                          1817          
+000020FC  103C 0003               1818          MOVE.B  #3,D0
+00002100  4E4F                    1819          TRAP    #15
+00002102  103C 000E               1820          MOVE.B  #14,D0
+00002106                          1821          
+00002106  43F9 00002419           1822          LEA     CLOSEPTR,A1
+0000210C  4E4F                    1823          TRAP    #15
+0000210E                          1824          
+0000210E  6000 0070               1825          BRA     DSEND
+00002112                          1826          
+00002112                          1827  DS1110MEM_CUSW
+00002112  43F9 00002420           1828          LEA     DOLLAR,A1
+00002118  4E4F                    1829          TRAP    #15
+0000211A  341A                    1830          MOVE.W  (A2)+,D2
+0000211C  48E7 0400               1831          MOVEM.L D5,-(SP)
+00002120  1A3C 0030               1832          MOVE.B  #48,D5
+00002124  4EB8 117A               1833          JSR     HEXOUT
+00002128  4CDF 0020               1834          MOVEM.L (SP)+,D5
+0000212C  6000 0052               1835          BRA     DSEND
+00002130                          1836          
+00002130                          1837  DS1110MEM_CUSL
+00002130  43F9 00002420           1838          LEA     DOLLAR,A1
+00002136  4E4F                    1839          TRAP    #15
+00002138  241A                    1840          MOVE.L  (A2)+,D2
+0000213A  48E7 0400               1841          MOVEM.L D5,-(SP)
+0000213E  1A3C 0030               1842          MOVE.B  #48,D5
+00002142  4EB8 117A               1843          JSR     HEXOUT
+00002146  4CDF 0020               1844          MOVEM.L (SP)+,D5
+0000214A  6000 0034               1845          BRA     DSEND
+0000214E                          1846          
+0000214E                          1847  
+0000214E                          1848  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+0000214E                          1849  
+0000214E  4E71                    1850  DS1111  NOP
+00002150  6000 002E               1851          BRA     DSEND
+00002154                          1852  
+00002154                          1853  *DS Final
+00002154                          1854  *--------------------------------------------------------------------------------------------------
+00002154                          1855  
+00002154  103C 000E               1856  DSERR   MOVE.B  #14,D0
+00002158  43F9 000023D1           1857          LEA     ERRM,A1
+0000215E  4E4F                    1858          TRAP    #15
+00002160  6000 001E               1859          BRA     DSEND
+00002164                          1860          
+00002164                          1861  DSERRINS
+00002164  103C 000E               1862          MOVE.B  #14,D0
+00002168  43F9 000023D9           1863          LEA     ERRMINS,A1
+0000216E  4E4F                    1864          TRAP    #15
+00002170  6000 000E               1865          BRA     DSEND
+00002174                          1866  
+00002174                          1867  DSERREA
+00002174  103C 000E               1868          MOVE.B  #14,D0
+00002178  43F9 000023DA           1869          LEA     ERRMEA,A1
+0000217E  4E4F                    1870          TRAP    #15
+00002180                          1871  
+00002180  4E75                    1872  DSEND   RTS
+00002182                          1873  
+00002182  43F9 000023A2           1874  DSEOF   LEA     LB,A1
+00002188  103C 000E               1875          MOVE.B  #14,D0
+0000218C  4E4F                    1876          TRAP    #15
+0000218E                          1877          
+0000218E  43F9 000022A4           1878          LEA     REST,A1
+00002194  103C 000E               1879          MOVE.B  #14,D0
+00002198  4E4F                    1880          TRAP    #15
+0000219A                          1881          
+0000219A  103C 0005               1882          MOVE.B  #5,D0
+0000219E  4E4F                    1883          TRAP    #15
+000021A0                          1884          
+000021A0  B23C 0059               1885          CMP.B   #89,D1
+000021A4  6700 EE5A               1886          BEQ     START
+000021A8  B23C 0079               1887          CMP.B   #121,D1
+000021AC  6700 EE52               1888          BEQ     START
+000021B0                          1889  
+000021B0  43F9 000023A2           1890  END     LEA     LB,A1
+000021B6  103C 000E               1891          MOVE.B  #14,D0
+000021BA  4E4F                    1892          TRAP    #15
+000021BC                          1893          
+000021BC  43F9 000023A2           1894          LEA     LB,A1
+000021C2  103C 000E               1895          MOVE.B  #14,D0
+000021C6  4E4F                    1896          TRAP    #15
+000021C8                          1897          
+000021C8  43F9 000022C1           1898          LEA     ENDMSG,A1
+000021CE  103C 000E               1899          MOVE.B  #14,D0
+000021D2  4E4F                    1900          TRAP    #15
+000021D4                          1901          
+000021D4  43F9 000022E9           1902          LEA     AUTHOR,A1
+000021DA  4E4F                    1903          TRAP    #15
+000021DC                          1904          
+000021DC  43F9 000023A2           1905          LEA     LB,A1
+000021E2  103C 000E               1906          MOVE.B  #14,D0
+000021E6  4E4F                    1907          TRAP    #15
+000021E8                          1908          
+000021E8  103C 0009               1909          MOVE.B  #9,D0
+000021EC  4E4F                    1910          TRAP    #15
+000021EE                          1911  
+000021EE                          1912  *Initialized Variables
+000021EE                          1913  *--------------------------------------------------------------------------------------------------
+000021EE                          1914  
+000021EE  =0000000D               1915  CR      EQU     $0D
+000021EE  =0000000A               1916  LF      EQU     $0A
+000021EE  =00000009               1917  HT      EQU     $09
+000021EE                          1918  
+000021EE= 54 68 69 73 20 69 ...   1919  INTRO   DC.B    'This is a program that will disassemble machine code stored in memory!',CR,LF,'Inputs are read as hex form of longword size (up to 8 chars)!',CR,LF,0
+00002276= 45 6E 74 65 72 20 ...   1920  ASTART  DC.B    'Enter start address: $',0
+0000228D= 45 6E 74 65 72 20 ...   1921  AEND    DC.B    'Enter end address:   $',0
+000022A4= 52 65 73 74 61 72 ...   1922  REST    DC.B    'Restart Disassembler (y/n)? ',0
+000022C1= 54 68 61 6E 6B 20 ...   1923  ENDMSG  DC.B    'Thank you for using the Disassembler!',CR,LF,0
+000022E9= 4D 61 64 65 20 62 ...   1924  AUTHOR  DC.B    'Made by the ARM Cortex Companions!',CR,LF,0
+0000230E                          1925  
+0000230E= 45 52 52 4F 52 3A ...   1926  VERR1M  DC.B    'ERROR: End address must not be less than start address!',CR,LF,0
+00002348= 45 52 52 4F 52 3A ...   1927  VERR2M  DC.B    'ERROR: Invalid characters in input!',CR,LF,0
+0000236E= 45 52 52 4F 52 3A ...   1928  VERR3M  DC.B    'ERROR: Input cannot be greater than 8 characters!',CR,LF,0
+000023A2                          1929  
+000023A2= 0D 0A 00                1930  LB      DC.B    CR,LF,0
+000023A5                          1931  
+000023A5= 09 00                   1932  HTM     DC.B    HT,0
+000023A7                          1933  
+000023A7= 20 00                   1934  SM1     DC.B    ' ',0
+000023A9= 20 20 00                1935  SM2     DC.B    '  ',0
+000023AC= 20 20 20 00             1936  SM3     DC.B    '   ',0
+000023B0= 20 20 20 20 00          1937  SM4     DC.B    '    ',0
+000023B5= 20 20 20 20 20 00       1938  SM5     DC.B    '     ',0
+000023BB= 20 20 20 20 20 20 00    1939  SM6     DC.B    '      ',0
+000023C2= 20 20 20 20 20 20 ...   1940  SM7     DC.B    '       ',0
+000023CA                          1941  
+000023CA= 54 45 53 54 00          1942  TESTM   DC.B    'TEST',0
+000023CF                          1943  
+000023CF= 00                      1944  NOTH    DC.B    '',0
+000023D0= 00                      1945  NOTH2   DC.B    '',0
+000023D1                          1946  
+000023D1= 20 2A 45 52 52 4F ...   1947  ERRM    DC.B    ' *ERROR',0
+000023D9= 00                      1948  ERRMINS DC.B    '',0
+000023DA= 20 2A 45 52 52 4F ...   1949  ERRMEA  DC.B    ' *ERROR: Unsupported Addressing Mode',0
+000023FF                          1950  
+000023FF= 2E 42 00                1951  MODEB   DC.B    '.B',0
+00002402= 2E 57 00                1952  MODEW   DC.B    '.W',0
+00002405= 2E 4C 00                1953  MODEL   DC.B    '.L',0
+00002408                          1954  
+00002408= 41 00                   1955  VALA    DC.B    'A',0
+0000240A= 44 00                   1956  VALD    DC.B    'D',0
+0000240C= 23 00                   1957  VALN    DC.B    '#',0
+0000240E= 30 00                   1958  VAL0    DC.B    '0',0
+00002410= 51 00                   1959  VALQ    DC.B    'Q',0
+00002412= 4D 00                   1960  VALM    DC.B    'M',0
+00002414                          1961  
+00002414= 28 00                   1962  OPENPTR     DC.B    '(',0
+00002416= 2D 28 00                1963  OPENDPTR    DC.B    '-(',0
+00002419                          1964  
+00002419= 29 00                   1965  CLOSEPTR    DC.B    ')',0
+0000241B= 29 2B 00                1966  CLOSEIPTR   DC.B    ')+',0
+0000241E                          1967  
+0000241E= 2C 00                   1968  COMMA   DC.B    ',',0
+00002420= 24 00                   1969  DOLLAR  DC.B    '$',0
+00002422= 2F 00                   1970  SLASH   DC.B    '/',0
+00002424= 2D 00                   1971  DASH    DC.B    '-',0
+00002426                          1972  
+00002426= 4E 4F 50 00             1973  NOPM    DC.B    'NOP',0
+0000242A                          1974  
+0000242A= 4D 4F 56 45 00          1975  MOVEM   DC.B    'MOVE',0
+0000242F                          1976  
+0000242F= 41 44 44 00             1977  ADDM    DC.B    'ADD',0
+00002433                          1978  
+00002433= 53 55 42 00             1979  SUBM    DC.B    'SUB',0
+00002437                          1980  
+00002437= 4C 45 41 00             1981  LEAM    DC.B    'LEA',0
+0000243B                          1982  
+0000243B= 41 4E 44 00             1983  ANDM    DC.B    'AND',0
+0000243F= 4F 52 00                1984  ORM     DC.B    'OR',0
+00002442= 4E 4F 54 00             1985  NOTM    DC.B    'NOT',0
+00002446                          1986  
+00002446= 4C 53 00                1987  LSM    DC.B    'LS',0
+00002449= 4C 53 52 00             1988  LSRM    DC.B    'LSR',0
+0000244D= 41 53 00                1989  ASM    DC.B    'AS',0
+00002450= 41 53 52 00             1990  ASRM    DC.B    'ASR',0
+00002454                          1991  
+00002454= 52 4F 00                1992  ROM    DC.B    'RO',0
+00002457= 52 4F 52 00             1993  RORM    DC.B    'ROR',0
+0000245B                          1994  
+0000245B= 42 47 54 00             1995  BGTM    DC.B    'BGT',0
+0000245F= 42 4C 45 00             1996  BLEM    DC.B    'BLE',0
+00002463= 42 45 51 00             1997  BEQM    DC.B    'BEQ',0
+00002467                          1998  
+00002467= 4A 53 52 00             1999  JSRM    DC.B    'JSR',0
+0000246B= 52 54 53 00             2000  RTSM    DC.B    'RTS',0
+0000246F                          2001  
+0000246F= 42 52 41 00             2002  BRAM    DC.B    'BRA',0
+00002473                          2003  
+00002473                          2004  
+00002473                          2005      END    START        ; last line of so
 
 No errors detected
 No warnings generated
@@ -1990,15 +2015,15 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ADDAL               1EBE
-ADDCONT             1E4A
-ADDDATACHECK        1ED8
-ADDM                23D9
+ADDAL               1F14
+ADDCONT             1EA0
+ADDDATACHECK        1F2E
+ADDM                242F
 ADDRMODEALL         120C
-ADDSIZEEND          1EC8
+ADDSIZEEND          1F1E
 ADREG               1660
 ADREGP              1678
-AEND                2237
+AEND                228D
 AM000               120C
 AM001               122C
 AM010               1254
@@ -2008,32 +2033,32 @@ AM111               12E4
 AM111001            1312
 AM111100            1338
 AMEND               1366
-ANDM                23E5
-ASM                 23F7
-ASRM                23FA
-ASTART              2220
-AUTHOR              2293
-BEQM                240D
-BGTM                2405
-BLEM                2409
-BRAM                2419
-CLOSEIPTR           23C5
-CLOSEPTR            23C3
-COMMA               23C8
+ANDM                243B
+ASM                 244D
+ASRM                2450
+ASTART              2276
+AUTHOR              22E9
+BEQM                2463
+BGTM                245B
+BLEM                245F
+BRAM                246F
+CLOSEIPTR           241B
+CLOSEPTR            2419
+COMMA               241E
 CR                  D
-DADD                1DFC
-DADDA               1EA2
-DADDEA              1E68
-DADDPRNTREG         1E3C
+DADD                1E52
+DADDA               1EF8
+DADDEA              1EBE
+DADDPRNTREG         1E92
 DADDQ               1A7A
 DAND                139E
 DANDA               1428
 DANDB               13EC
 DANDL               1414
 DANDW               1400
-DAS                 1FBA
-DASH                23CE
-DATACHECKCONT       1E80
+DAS                 2010
+DASH                2424
+DATACHECKCONT       1ED6
 DBEQ                1C26
 DBGT                1BAA
 DBLE                1BE6
@@ -2047,7 +2072,7 @@ DJSR_CUSW           175C
 DJSR_REG            1736
 DLEA                17A4
 DLEAP               17DA
-DLS                 1FAE
+DLS                 2004
 DMOVE2              143E
 DMOVEA              14E2
 DMOVEM              18B2
@@ -2058,14 +2083,16 @@ DNOTA               1612
 DNOTB               15D6
 DNOTL               15FE
 DNOTW               15EA
-DOLLAR              23CA
+DOLLAR              2420
 DOR                 1CD2
-DORA                1D3C
-DORB                1D00
-DORL                1D28
-DORW                1D14
+DORA                1D3E
+DORAD               1D8C
+DORAE               1D64
+DORB                1D02
+DORL                1D2A
+DORW                1D16
 DREG                1648
-DRO                 1FC6
+DRO                 201C
 DRTS                1798
 DS0                 1376
 DS00                138A
@@ -2080,44 +2107,44 @@ DS1                 1380
 DS10                150E
 DS100               1536
 DS1000              1CD0
-DS1001              1D56
+DS1001              1DAC
 DS101               1540
-DS1010              1DE8
-DS1011              1DEE
+DS1010              1E3E
+DS1011              1E44
 DS11                1518
 DS110               154A
-DS1100              1DF4
-DS1101              1DFA
+DS1100              1E4A
+DS1101              1E50
 DS111               1554
-DS1110              1EE2
-DS1110A             1F36
-DS1110B             1F70
-DS1110LSIDE         1FE8
-DS1110MEM           1FF0
-DS1110MEMA          2016
-DS1110MEM_CUSL      20DA
-DS1110MEM_CUSW      20BC
-DS1110MEM_DEC       2096
-DS1110MEM_INC       2070
-DS1110MEM_REG       204A
-DS1110SIDE          1FD2
-DS1110SIDEEND       1FEE
-DS1110_REG_D        1FA4
-DS1110_REG_I        1F9A
-DS1111              20F8
-DSEND               212A
-DSEOF               212C
-DSERR               20FE
-DSERREA             211E
-DSERRINS            210E
-DSUB                1D58
-DSUBEA              1DB4
-DSUBPRNTREG         1D90
-END                 215A
-ENDMSG              226B
-ERRM                237B
-ERRMEA              2384
-ERRMINS             2383
+DS1110              1F38
+DS1110A             1F8C
+DS1110B             1FC6
+DS1110LSIDE         203E
+DS1110MEM           2046
+DS1110MEMA          206C
+DS1110MEM_CUSL      2130
+DS1110MEM_CUSW      2112
+DS1110MEM_DEC       20EC
+DS1110MEM_INC       20C6
+DS1110MEM_REG       20A0
+DS1110SIDE          2028
+DS1110SIDEEND       2044
+DS1110_REG_D        1FFA
+DS1110_REG_I        1FF0
+DS1111              214E
+DSEND               2180
+DSEOF               2182
+DSERR               2154
+DSERREA             2174
+DSERRINS            2164
+DSUB                1DAE
+DSUBEA              1E0A
+DSUBPRNTREG         1DE6
+END                 21B0
+ENDMSG              22C1
+ERRM                23D1
+ERRMEA              23DA
+ERRMINS             23D9
 EXT                 16C0
 EXTW                16D6
 HDONE               11C0
@@ -2129,25 +2156,25 @@ HSKIP3              11BE
 HSTEP               1182
 HSTEP2              11A0
 HT                  9
-HTM                 234F
-INTRO               2198
+HTM                 23A5
+INTRO               21EE
 JSR010              1806
 JSR111              1836
 JSR111001           1868
-JSRM                2411
+JSRM                2467
 JSRPRINT2           1892
-LB                  234C
-LEAM                23E1
+LB                  23A2
+LEAM                2437
 LF                  A
-LSM                 23F0
-LSRM                23F3
+LSM                 2446
+LSRM                2449
 MADREG              1698
-MODEB               23A9
-MODEL               23AF
-MODEW               23AC
+MODEB               23FF
+MODEL               2405
+MODEW               2402
 MOVECONT            1462
 MOVEERRCHECK        14F8
-MOVEM               23D4
+MOVEM               242A
 MOVEM2              1954
 MOVEM3              198E
 MOVEM31             19A4
@@ -2173,58 +2200,58 @@ MSIZE               1462
 MSIZEB              148A
 MSIZEL              149E
 MSIZEW              1494
-NOPM                23D0
-NOTH                2379
-NOTH2               237A
-NOTM                23EC
-OPENDPTR            23C0
-OPENPTR             23BE
-ORM                 23E9
+NOPM                2426
+NOTH                23CF
+NOTH2               23D0
+NOTM                2442
+OPENDPTR            2416
+OPENPTR             2414
+ORM                 243F
 PARSE               1086
 PCAPS               10B2
 PDONE               10DC
 PHEX                10A2
 PNUM                10BA
-PRINTA              1E9A
+PRINTA              1EF0
 PSTEP               108E
 PSTEP2              10BE
 RCONT               1166
 READLN              1118
-REST                224E
-ROM                 23FE
-RORM                2401
+REST                22A4
+ROM                 2454
+RORM                2457
 RPAUSE              116E
 RSTEP               111E
-RTSM                2415
+RTSM                246B
 SDONE               1208
 SIZE                11C2
 SIZEB               11EA
 SIZEL               11FE
 SIZEW               11F4
-SLASH               23CC
-SM1                 2351
-SM2                 2353
-SM3                 2356
-SM4                 235A
-SM5                 235F
-SM6                 2365
-SM7                 236C
+SLASH               2422
+SM1                 23A7
+SM2                 23A9
+SM3                 23AC
+SM4                 23B0
+SM5                 23B5
+SM6                 23BB
+SM7                 23C2
 SRET                120A
 START               1000
 STARTER             0
-SUBM                23DD
+SUBM                2433
 TEST                102A
-TESTM               2374
-VAL0                23B8
-VALA                23B2
-VALD                23B4
-VALM                23BC
-VALN                23B6
-VALQ                23BA
+TESTM               23CA
+VAL0                240E
+VALA                2408
+VALD                240A
+VALM                2412
+VALN                240C
+VALQ                2410
 VERR1               10E8
-VERR1M              22B8
+VERR1M              230E
 VERR2               10F8
-VERR2M              22F2
+VERR2M              2348
 VERR3               1108
-VERR3M              2318
+VERR3M              236E
 VINPUT              10DE

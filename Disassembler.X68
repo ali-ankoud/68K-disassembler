@@ -1371,7 +1371,7 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    LEA     SM4,A1
+DORA    LEA     SM6,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1562,7 +1562,7 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
         TRAP    #15             ; Print MODEL string
         BRA     DANDA           ; Branch to addressing mode parsing
 
-DANDA   LEA     SM4,A1
+DANDA   LEA     SM5,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -2091,7 +2091,6 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
-
 
 
 

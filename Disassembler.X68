@@ -1084,6 +1084,14 @@ DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
         MOVE.B  D5,D6           ; Store the register number in D6 for later use
+        LEA     VALD,A1         ; Load effective address of VALD string
+        TRAP    #15             ; Print D
+        MOVE.B  #3,D0           ; Move 3 to D0 to print register number
+        MOVE.B  D6,D1           ; Move the register number in D6 to D1
+        TRAP    #15             ; Print the register number
+
+        LEA     COMMA,A1        ; Load effective address of COMMA string
+        TRAP    #15             ; Print comma
 
         ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1115,9 +1123,7 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    LEA     SM6,A1
-        TRAP    #15
-		ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
+DORA    ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111000,D5     ; AND operation to isolate the mode bits
         ROR.B   #3,D5           ; Shift D5 right by 3 bits to get mode
@@ -1126,8 +1132,8 @@ DORA    LEA     SM6,A1
         MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
         JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
-
-        BRA     DSEND                    
+                    
+        BRA     DSEND                     
 
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

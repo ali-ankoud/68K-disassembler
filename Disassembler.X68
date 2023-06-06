@@ -462,10 +462,25 @@ DMOVE2  NOP                 *DMOVE2: Disassembly function serving MOVE and MOVEA
         
         CMP     #%001,D3
         BEQ     DMOVEA
+        
+
 MOVECONT
 *printing size then first addressing moode, then comma
 *size is different for move
-MSIZE   MOVE.B  #14,D0
+MSIZENORM  
+        MOVE.B  #14,D0
+        CMP.B   #%01,D5
+        BEQ     MSIZEBN
+        CMP.B   #%11,D5
+        BEQ     MSIZEWN
+        CMP.B   #%10,D5
+        BEQ     MSIZELN
+        CMP.B   #%11,D5
+        BEQ     MSIZEW       *Assume WORD type on memory pointer things
+        BRA     DSERR
+        
+MSIZE
+        MOVE.B  #14,D0
         CMP.B   #%01,D5
         BEQ     MSIZEB
         CMP.B   #%11,D5
@@ -475,7 +490,22 @@ MSIZE   MOVE.B  #14,D0
         CMP.B   #%11,D5
         BEQ     MSIZEW       *Assume WORD type on memory pointer things
         BRA     DSERR
-        
+
+MSIZEBN LEA     MODEB,A1
+        TRAP    #15
+        LEA     SM1,A1
+        BRA     MSDONE
+
+MSIZEWN LEA     MODEW,A1
+        TRAP    #15
+        LEA     SM1,A1
+        BRA     MSDONE
+
+MSIZELN LEA     MODEL,A1
+        TRAP    #15
+        LEA     SM1,A1
+        BRA     MSDONE
+    
 MSIZEB  LEA     MODEB,A1
         BRA     MSDONE
 
@@ -515,7 +545,7 @@ DMOVEA  NOP
         BEQ     DSERR
         LEA     VALA,A1        *else, print A and return
         TRAP    #15
-        BRA     MOVECONT
+        BRA     MSIZE
 
 MOVEERRCHECK
         CMP     #%01,D5
@@ -919,7 +949,7 @@ MOVEMEA
         ROL.W   #3,D4       *register bits
         MOVE.B  D4,D6
         ANDI.B  #%111,D6
-        
+        MOVE.W  (A2)+,D2
         CMP.B   #1,D7
         BNE     MOVEMEB
         
@@ -928,7 +958,7 @@ MOVEMEA
         LEA     COMMA,A1
         TRAP    #15
         
-MOVEMEB MOVE.W  (A2)+,D2
+MOVEMEB 
         
         MOVEM.L D7,-(SP)
         
@@ -1381,7 +1411,7 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    LEA     SM4,A1
+DORA    LEA     SM6,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1449,7 +1479,7 @@ DSUB    NOP
         MOVE.B  D4,D5
         ANDI.B  #%11,D5
         JSR     SIZE
-        LEA     SM7,A1
+        LEA     SM5,A1
         TRAP    #15
         
 *if addressing mode=<ea>-Dn -> <ea> print ea info first
@@ -1618,7 +1648,7 @@ ADDAL   LEA     MODEL,A1
         BRA     ADDSIZEEND
 ADDSIZEEND
         TRAP    #15
-        LEA     SM7,A1
+        LEA     SM4,A1
         TRAP    #15
         MOVE.B  #%0,D7       *set d2 to print adda in correct order: address register always last
         BRA     DADDEA
@@ -2008,6 +2038,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

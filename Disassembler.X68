@@ -1320,7 +1320,7 @@ DS1000  NOP
 DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        MOVE.B  D5,D6           ; Store the register number in D6 for later use
+        MOVE.W  D5,A6           ; Store the register number in D6 for later use
 
         ROL.W   #1,D4           ; Shift D4 left by 1 bit to get operation type
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1371,7 +1371,8 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    LEA     SM6,A1
+DORA    
+        LEA     SM4,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1391,7 +1392,7 @@ DORAE   JSR     ADDRMODEALL     ; Call subroutine to parse and print effective a
         TRAP    #15             ; Print comma
         LEA     VALD,A1
         TRAP    #15
-        MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.W  A6,D1           ; Move ea num to D1 to print
         MOVE.B  #3,D0           ; Set D0 to #3 to print register number
         TRAP    #15             ; Print register number
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
@@ -1399,7 +1400,7 @@ DORAE   JSR     ADDRMODEALL     ; Call subroutine to parse and print effective a
 
 DORAD   LEA     VALD,A1
         TRAP    #15
-        MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.W  A6,D1           ; Move ea num to D1 to print
         MOVE.B  #3,D0           ; Set D0 to #3 to print register number
         TRAP    #15             ; Print register number
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
@@ -1407,9 +1408,8 @@ DORAD   LEA     VALD,A1
         TRAP    #15             ; Print comma
         JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
-        BRA     DSEND           ; Branch to DSEND                 
+        BRA     DSEND           ; Branch to DSEND                            
         
-
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1510,7 +1510,7 @@ DS1011  NOP
 DAND    ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        MOVE.B  D5,D6           ; Store the register number in D6 for later use
+        MOVE.W  D5,A6           ; Store the register number in D6 for later use
 
         ROL.W   #1,D4           ; Shift D4 left by 1 bit to get operation type
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1562,7 +1562,7 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
         TRAP    #15             ; Print MODEL string
         BRA     DANDA           ; Branch to addressing mode parsing
 
-DANDA   LEA     SM5,A1
+DANDA   LEA     SM4,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1582,7 +1582,7 @@ DANDAE  JSR     ADDRMODEALL     ; Call subroutine to parse and print effective a
         TRAP    #15             ; Print comma
         LEA     VALD,A1
         TRAP    #15
-        MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.W  A6,D1           ; Move ea num to D1 to print
         MOVE.B  #3,D0           ; Set D0 to #3 to print register number
         TRAP    #15             ; Print register number
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
@@ -1590,7 +1590,7 @@ DANDAE  JSR     ADDRMODEALL     ; Call subroutine to parse and print effective a
 
 DANDAD  LEA     VALD,A1
         TRAP    #15  
-        MOVE.B  D6,D1           ; Move ea num to D1 to print
+        MOVE.W  A6,D1           ; Move ea num to D1 to print
         MOVE.B  #3,D0           ; Set D0 to #3 to print register number
         TRAP    #15             ; Print register number
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
@@ -1599,6 +1599,7 @@ DANDAD  LEA     VALD,A1
         JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
         BRA     DSEND           ; Branch to DSEND 
+
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

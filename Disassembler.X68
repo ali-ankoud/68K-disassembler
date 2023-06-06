@@ -1322,18 +1322,36 @@ DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
         MOVE.B  D5,D6           ; Store the register number in D6 for later use
 
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        ROL.W   #1,D4           ; Shift D4 left by 1 bit to get operation type
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        MOVE.B  D5,D7           ; Store opmode in D7 for later use
-        CMP.B   #%000,D5        ; Compare with byte size
+        ANDI.B  #%1,D5          ; AND operation to isolate the last bit
+        MOVE.B  D5,D7           ; Store operation type in D7 for later use
+        BEQ     DORV            ; If operation type is 0, branch to DORV
+        BRA     DORVN           ; Else, branch to DORVN
+
+DORV    ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%00,D5         ; Compare with byte size
         BEQ     DORB
-        CMP.B   #%001,D5        ; Compare with word size
+        CMP.B   #%01,D5         ; Compare with word size
         BEQ     DORW
-        CMP.B   #%010,D5        ; Compare with long size
+        CMP.B   #%10,D5         ; Compare with long size
         BEQ     DORL
 
-        BRA     DSEND           ; Branch to DSEND in case of invalid code
+        BRA     DSERR           ; Branch to DSERR in case of invalid code
+
+DORVN   ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%00,D5         ; Compare with byte size
+        BEQ     DORB
+        CMP.B   #%01,D5         ; Compare with word size
+        BEQ     DORW
+        CMP.B   #%10,D5         ; Compare with long size
+        BEQ     DORL
+
+        BRA     DSERR           ; Branch to DSERR in case of invalid code
 
 DORB    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print ORM string
@@ -1353,7 +1371,7 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         TRAP    #15             ; Print MODEL string
         BRA     DORA            ; Branch to addressing mode parsing
 
-DORA    LEA     SM6,A1
+DORA    LEA     SM4,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1363,7 +1381,7 @@ DORA    LEA     SM6,A1
         ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
         MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
-        CMP.B   #%100,D7        ; Compare opmode with '100'
+        CMP.B   #%1,D7          ; Compare opmode with '100'
         BLT     DORAE           ; If opmode < '100', branch to DORAE
         BRA     DORAD           ; Else, branch to DORAD
 
@@ -1379,7 +1397,9 @@ DORAE   JSR     ADDRMODEALL     ; Call subroutine to parse and print effective a
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
         BRA     DSEND           ; Branch to DSEND
 
-DORAD   MOVE.B  D6,D1           ; Move ea num to D1 to print
+DORAD   LEA     VALD,A1
+        TRAP    #15
+        MOVE.B  D6,D1           ; Move ea num to D1 to print
         MOVE.B  #3,D0           ; Set D0 to #3 to print register number
         TRAP    #15             ; Print register number
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
@@ -1388,6 +1408,7 @@ DORAD   MOVE.B  D6,D1           ; Move ea num to D1 to print
         JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
         BRA     DSEND           ; Branch to DSEND                 
+        
 
 
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1486,24 +1507,42 @@ DS1011  NOP
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DAND    
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
+DAND    ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
         MOVE.B  D5,D6           ; Store the register number in D6 for later use
 
-        ROL.W   #3,D4           ; Shift D4 left by 3 bits to get opmode
+        ROL.W   #1,D4           ; Shift D4 left by 1 bit to get operation type
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
-        ANDI.B  #%111,D5        ; AND operation to isolate the last 3 bits
-        MOVE.B  D5,D7           ; Store opmode in D7 for later use
-        CMP.B   #%000,D5        ; Compare with byte size
+        ANDI.B  #%1,D5          ; AND operation to isolate the last bit
+        MOVE.B  D5,D7           ; Store operation type in D7 for later use
+        BEQ     DANDV           ; If operation type is 0, branch to DANDV
+        BRA     DANDVN          ; Else, branch to DANDVN
+
+DANDV   ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%00,D5         ; Compare with byte size
         BEQ     DANDB
-        CMP.B   #%001,D5        ; Compare with word size
+        CMP.B   #%01,D5         ; Compare with word size
         BEQ     DANDW
-        CMP.B   #%010,D5        ; Compare with long size
+        CMP.B   #%10,D5         ; Compare with long size
         BEQ     DANDL
 
-        BRA     DSEND           ; Branch to DSEND in case of invalid code
+        BRA     DSERR           ; Branch to DSERR in case of invalid code
+
+DANDVN  ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
+        MOVE.B  D4,D5           ; Move the byte in D4 to D5
+        ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%00,D5         ; Compare with byte size
+        BEQ     DANDB
+        CMP.B   #%01,D5         ; Compare with word size
+        BEQ     DANDW
+        CMP.B   #%10,D5         ; Compare with long size
+        BEQ     DANDL
+
+        BRA     DSERR           ; Branch to DSERR in case of invalid code
+
 
 DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
         TRAP    #15             ; Print ANDM string
@@ -1523,7 +1562,7 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
         TRAP    #15             ; Print MODEL string
         BRA     DANDA           ; Branch to addressing mode parsing
 
-DANDA   LEA     SM5,A1
+DANDA   LEA     SM4,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1533,7 +1572,7 @@ DANDA   LEA     SM5,A1
         ANDI.B  #%111,D4        ; AND operation to isolate the last 3 bits in D4
         MOVE.B  D4,D6           ; Store the register number in D6 for later use
 
-        CMP.B   #%100,D7        ; Compare opmode with '100'
+        CMP.B   #%1,D7        ; Compare opmode with '100'
         BLT     DANDAE          ; If opmode < '100', branch to DANDAE
         BRA     DANDAD          ; Else, branch to DANDAD
 
@@ -1549,7 +1588,9 @@ DANDAE  JSR     ADDRMODEALL     ; Call subroutine to parse and print effective a
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
         BRA     DSEND           ; Branch to DSEND
 
-DANDAD  MOVE.B  D6,D1           ; Move ea num to D1 to print
+DANDAD  LEA     VALD,A1
+        TRAP    #15  
+        MOVE.B  D6,D1           ; Move ea num to D1 to print
         MOVE.B  #3,D0           ; Set D0 to #3 to print register number
         TRAP    #15             ; Print register number
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
@@ -1558,9 +1599,6 @@ DANDAD  MOVE.B  D6,D1           ; Move ea num to D1 to print
         JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
         MOVE.B  #14,D0          ; Set D0 back to #14 for printing the strings
         BRA     DSEND           ; Branch to DSEND 
-
-
-        BRA     DSEND       
         
 * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

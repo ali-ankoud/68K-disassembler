@@ -435,7 +435,7 @@ DANDA   LEA     SM4,A1
 
         CMP.B   #%100,D7        ; Compare opmode with '100'
         BLT     DANDAE          ; If opmode < '100', branch to DANDAE
-        BRA     DANDAD          ; Else, branch to DANDAD
+        BRA     DANDA           ; Else, branch to DANDAD
 
 DANDAE  JSR     ADDRMODEALL     ; Call subroutine to parse and print effective address
         MOVE.B  #14,D0          ; Set D0 to #14 to print strings
@@ -2047,6 +2047,7 @@ BRAM    DC.B    'BRA',0
 
 
     END    START        ; last line of so
+
 
 
 

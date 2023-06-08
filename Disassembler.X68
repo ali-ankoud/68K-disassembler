@@ -1332,6 +1332,8 @@ DOR     ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
 DORV    ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%11,D5
+        BEQ     DSERRINS        
         CMP.B   #%00,D5         ; Compare with byte size
         BEQ     DORB
         CMP.B   #%01,D5         ; Compare with word size
@@ -1344,6 +1346,8 @@ DORV    ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
 DORVN   ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%11,D5
+        BEQ     DSERRINS
         CMP.B   #%00,D5         ; Compare with byte size
         BEQ     DORB
         CMP.B   #%01,D5         ; Compare with word size
@@ -1372,7 +1376,7 @@ DORL    LEA     ORM,A1          ; Load effective address of ORM string
         BRA     DORA            ; Branch to addressing mode parsing
 
 DORA    
-        LEA     SM4,A1
+        LEA     SM6,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -1522,26 +1526,26 @@ DAND    ROL.W   #3,D4           ; Shift D4 left by 3 bits to get register number
 DANDV   ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%11,D5
+        BEQ     DSERRINS
         CMP.B   #%00,D5         ; Compare with byte size
         BEQ     DANDB
         CMP.B   #%01,D5         ; Compare with word size
         BEQ     DANDW
         CMP.B   #%10,D5         ; Compare with long size
         BEQ     DANDL
-
-        BRA     DSERR           ; Branch to DSERR in case of invalid code
 
 DANDVN  ROL.W   #2,D4           ; Shift D4 left by 2 bits to get size
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
         ANDI.B  #%11,D5         ; AND operation to isolate the last 2 bits
+        CMP.B   #%11,D5
+        BEQ     DSERRINS
         CMP.B   #%00,D5         ; Compare with byte size
         BEQ     DANDB
         CMP.B   #%01,D5         ; Compare with word size
         BEQ     DANDW
         CMP.B   #%10,D5         ; Compare with long size
         BEQ     DANDL
-
-        BRA     DSERR           ; Branch to DSERR in case of invalid code
 
 
 DANDB   LEA     ANDM,A1         ; Load effective address of ANDM string
@@ -1562,7 +1566,7 @@ DANDL   LEA     ANDM,A1         ; Load effective address of ANDM string
         TRAP    #15             ; Print MODEL string
         BRA     DANDA           ; Branch to addressing mode parsing
 
-DANDA   LEA     SM4,A1
+DANDA   LEA     SM5,A1
         TRAP    #15
         ROL.W   #6,D4           ; Shift D4 left by 6 bits to get addressing mode and register
         MOVE.B  D4,D5           ; Move the byte in D4 to D5
@@ -2100,7 +2104,3 @@ BRAM    DC.B    'BRA',0
 
 
 
-*~Font name~Courier New~
-*~Font size~10~
-*~Tab type~1~
-*~Tab size~4~
